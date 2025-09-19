@@ -15,7 +15,8 @@
       --ink:#070912; --ink2:#0a0d1c;
       --aur1:#5ef0ff; --aur2:#9b5cff; --aur3:#ff7ad9; --aur4:#ffd166; --aur5:#7dffcf;
       --text:#f8fbff; --muted:#cdd6ff;
-      --bg-img:url('https://github.com/EdddGaar/recorre/raw/main/assets/bg_fiesta.png'); /* cambia la ruta si usas otra imagen */
+      /* pon tu imagen si existe; si no, igual se ve bonito con gradiente */
+      --bg-img:url('https://raw.githubusercontent.com/EdddGaar/recorre/main/assets/bg_fiesta.png');
     }
     *{box-sizing:border-box}
     body{
@@ -26,21 +27,22 @@
       background-position: center top, center;
       background-repeat: no-repeat, no-repeat;
       overflow-x:hidden;
+      min-height:100vh;
     }
 
-    /* Particles */
+    /* Particles canvas */
     #particles-bg{position:fixed; inset:0; z-index:-1}
 
-    /* Container */
+    /* Layout */
     main{max-width:1200px; margin:0 auto 80px; padding:0 18px}
 
     /* Header */
-    header{padding:28px 18px 6px; text-align:center;}
+    header{padding:28px 18px 10px; text-align:center;}
     .logo-big{
       width:160px; height:160px; object-fit:cover; border-radius:50%;
       border:2px solid rgba(255,255,255,.65);
       box-shadow:0 0 55px rgba(255,209,102,.55), 0 0 100px rgba(155,92,255,.45);
-      margin-bottom:16px;
+      margin-bottom:12px;
     }
     .title{
       font-family:Outfit; font-weight:900; font-size:clamp(32px,4.8vw,60px);
@@ -53,15 +55,13 @@
       margin:14px auto 8px; text-align:center; font-family:Outfit; font-weight:900;
       font-size:clamp(28px,4.4vw,56px); line-height:1.1;
       text-shadow:0 2px 0 rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
-      animation:popTitle 1s ease both
     }
-    @keyframes popTitle{from{transform:scale(.8); opacity:0}to{transform:scale(1); opacity:1}}
 
     /* Section headings */
-    .section{margin:26px auto 0; max-width:1000px}
+    .section{margin:28px auto 0; max-width:1000px}
     .section h2{
       font-family:Outfit; font-weight:900; font-size:clamp(22px,3.2vw,30px);
-      margin:0 0 14px 0; text-align:center;
+      margin:0 0 16px 0; text-align:center;
     }
 
     /* Grids */
@@ -69,7 +69,6 @@
       display:grid; gap:18px;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
-    /* Week (wraps nicely, centered) */
     .week-wrap{max-width:1200px; margin:0 auto}
     .week{
       display:grid; gap:18px;
@@ -135,7 +134,7 @@
   <div id="particles-bg"></div>
 
   <header>
-    <img class="logo-big" src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Recorre" />
+    <img class="logo-big" src="https://raw.githubusercontent.com/EdddGaar/recorre/main/Re%20corre%20Logo.jpg" alt="Logo Recorre" />
     <div class="title">Recorre</div>
     <span class="subtitle">Wall Semanal de Cumpleaños</span>
     <h1 class="fiesta-title">¡FELIZ CUMPLEAÑOS!</h1>
@@ -172,67 +171,72 @@
     #RecorreToluca 🎽🔥🌄 · creado de Runners para Runners ❤️
   </footer>
 
-  <!-- libs -->
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <!-- libs con defer -->
+  <script defer src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
   <script>
-    // AOS
-    AOS.init({ once:true });
+    document.addEventListener('DOMContentLoaded', () => {
+      // AOS
+      if (window.AOS) AOS.init({ once:true });
 
-    // Particles (sutil para no competir con el fondo)
-    particlesJS('particles-bg', {
-      particles: { number:{value:50}, color:{value:['#5ef0ff','#9b5cff','#ff7ad9','#ffd166']}, size:{value:2.6,random:true}, move:{enable:true,speed:1} },
-      interactivity:{ events:{ onhover:{enable:true,mode:'repulse'} } }
-    });
-
-    // Confeti (solo confeti)
-    function launchConfetti(n=100){
-      const colors=['#5ef0ff','#9b5cff','#ff7ad9','#ffd166','#7dffcf'];
-      for(let i=0;i<n;i++){
-        const p=document.createElement('span'); p.className='confetti';
-        p.style.left=Math.random()*100+'vw';
-        p.style.background=colors[Math.floor(Math.random()*colors.length)];
-        p.style.animationDuration=(3+Math.random()*2)+'s';
-        document.body.appendChild(p);
-        setTimeout(()=>p.remove(),6000);
+      // Particles (sutil)
+      if (window.particlesJS) {
+        particlesJS('particles-bg', {
+          particles: { number:{value:50}, color:{value:['#5ef0ff','#9b5cff','#ff7ad9','#ffd166']}, size:{value:2.4,random:true}, move:{enable:true,speed:1} },
+          interactivity:{ events:{ onhover:{enable:true,mode:'repulse'} } }
+        });
       }
-    }
-    launchConfetti(120);
-    setInterval(()=>launchConfetti(70), 8000);
 
-    // ==== Semana completa de ejemplo (1–2 por día) ====
-    const weekData = {
-      Mon:[{name:'Raquel Jacinto'},{name:'Pablo Gil'}],
-      Tue:[{name:'Silverio Aguilar'}],
-      Wed:[{name:'Verónica Sánchez'},{name:'Ruth Anahí'}],
-      Thu:[{name:'Joel Miralrio'}],
-      Fri:[{name:'Liliana Romero'}],
-      Sat:[{name:'Omar Francisco'},{name:'Yénica S. García'}],
-      Sun:[{name:'Edgar Runner'}]
-    };
+      // Confeti (solo confeti)
+      function launchConfetti(n=100){
+        const colors=['#5ef0ff','#9b5cff','#ff7ad9','#ffd166','#7dffcf'];
+        for(let i=0;i<n;i++){
+          const p=document.createElement('span'); p.className='confetti';
+          p.style.left=Math.random()*100+'vw';
+          p.style.background=colors[Math.floor(Math.random()*colors.length)];
+          p.style.animationDuration=(3+Math.random()*2)+'s';
+          document.body.appendChild(p);
+          setTimeout(()=>p.remove(),6000);
+        }
+      }
+      launchConfetti(120);
+      setInterval(()=>launchConfetti(70), 8000);
 
-    const dayNames=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
-    const keys=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    const weekEl=document.getElementById('week');
+      // ==== Semana completa de ejemplo (1–2 por día) ====
+      const weekData = {
+        Mon:[{name:'Raquel Jacinto'},{name:'Pablo Gil'}],
+        Tue:[{name:'Silverio Aguilar'}],
+        Wed:[{name:'Verónica Sánchez'},{name:'Ruth Anahí'}],
+        Thu:[{name:'Joel Miralrio'}],
+        Fri:[{name:'Liliana Romero'}],
+        Sat:[{name:'Omar Francisco'},{name:'Yénica S. García'}],
+        Sun:[{name:'Edgar Runner'}]
+      };
 
-    keys.forEach((k,i)=>{
-      const col=document.createElement('div'); col.className='day'; col.setAttribute('data-aos','zoom-in'); col.setAttribute('data-aos-delay',String(60+i*40));
-      col.innerHTML=`
-        <div class="dayhead">
-          <div class="dname">${dayNames[i]}</div>
-          <div class="dchip">${k}</div>
-        </div>
-        <div class="grid" id="list-${i}"></div>`;
-      weekEl.appendChild(col);
+      const dayNames=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+      const keys=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      const weekEl=document.getElementById('week');
 
-      const mount=document.getElementById(\`list-\${i}\`);
-      const list=weekData[k]||[];
-      mount.innerHTML = list.length
-        ? list.map(m=>`<div class="card"><p class="name">${escapeHtml(m.name)}</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>`).join('')
-        : '<p class="wish" style="text-align:center;margin:6px 0">— Sin cumpleañeros —</p>';
+      keys.forEach((k,i)=>{
+        const col=document.createElement('div'); col.className='day'; col.setAttribute('data-aos','zoom-in'); col.setAttribute('data-aos-delay',String(60+i*40));
+        col.innerHTML=`
+          <div class="dayhead">
+            <div class="dname">${dayNames[i]}</div>
+            <div class="dchip">${k}</div>
+          </div>
+          <div class="grid" id="list-${i}"></div>`;
+        weekEl.appendChild(col);
+
+        const mount=document.getElementById(\`list-\${i}\`);
+        const list=weekData[k]||[];
+        mount.innerHTML = list.length
+          ? list.map(m=>`<div class="card"><p class="name">${escapeHtml(m.name)}</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>`).join('')
+          : '<p class="wish" style="text-align:center;margin:6px 0">— Sin cumpleañeros —</p>';
+      });
+
+      function escapeHtml(s){return String(s).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;"}[c]));}
     });
-
-    function escapeHtml(s){return String(s).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;"}[c]));}
   </script>
 </body>
 </html>
