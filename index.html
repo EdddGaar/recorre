@@ -12,23 +12,46 @@
 
   <style>
     :root{
-      --ink:#070912; --ink2:#0a0d1c;
-      --aur1:#5ef0ff; --aur2:#9b5cff; --aur3:#ff7ad9; --aur4:#ffd166; --aur5:#7dffcf;
-      --text:#f8fbff; --muted:#cdd6ff;
-      --bg-img:url('https://github.com/EdddGaar/recorre/raw/main/assets/bg_fiesta.png'); /* cambia la ruta si usas otro nombre */
+      /* Paleta pastel festiva */
+      --ink:#0b0f18; 
+      --ink2:#12172a;
+
+      /* Pasteles (confeti/partículas) */
+      --p1:#ffd1dc;  /* rosita */
+      --p2:#ffe5b4;  /* durazno */
+      --p3:#fff6a5;  /* amarillo suave */
+      --p4:#c7f9cc;  /* verde menta */
+      --p5:#bae1ff;  /* celeste */
+      --p6:#e6d2ff;  /* lila */
+      --p7:#ffc8dd;  /* rosa pastel vivo */
+
+      --text:#fbfdff; 
+      --muted:#dfe7ff;
+
+      /* Puedes cambiar esta imagen, pero dejé el fondo en gradiente pastel */
+      --bg-img:none;
     }
+
     *{box-sizing:border-box}
     body{
       margin:0; color:var(--text);
       font-family: Inter, system-ui, sans-serif;
-      background-image: var(--bg-img), linear-gradient(180deg, var(--ink), var(--ink2));
-      background-size: cover, auto;
-      background-position: center top, center;
-      background-repeat: no-repeat, no-repeat;
+
+      /* Fondo: degradado pastel con ligero “glow” radial */
+      background-image:
+        radial-gradient(1200px 800px at 20% -10%, rgba(255, 208, 236, .35), transparent 60%),
+        radial-gradient(1000px 700px at 90% 0%, rgba(186, 225, 255, .35), transparent 60%),
+        linear-gradient(180deg, #1a1f35 0%, #141a2d 40%, #10172a 100%),
+        var(--bg-img);
+      background-blend-mode: screen, screen, normal, normal;
+      background-size: cover, cover, auto, cover;
+      background-position: center top, right top, center, center;
+      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+
       overflow-x:hidden;
     }
 
-    /* Particles */
+    /* Particles canvas */
     #particles-bg{position:fixed; inset:0; z-index:-1}
 
     /* Header */
@@ -36,12 +59,12 @@
     .logo-big{
       width:160px; height:160px; object-fit:cover; border-radius:50%;
       border:2px solid rgba(255,255,255,.65);
-      box-shadow:0 0 55px rgba(255,209,102,.55), 0 0 100px rgba(155,92,255,.45);
+      box-shadow:0 0 55px rgba(255, 214, 240, .55), 0 0 100px rgba(186,225,255,.45);
       margin-bottom:18px;
     }
     .title{
       font-family:Outfit; font-weight:900; font-size:clamp(32px,4.8vw,60px);
-      background:linear-gradient(90deg,var(--aur1),var(--aur2),var(--aur3),var(--aur4));
+      background:linear-gradient(90deg,var(--p1),var(--p5),var(--p6),var(--p2),var(--p4));
       -webkit-background-clip:text; background-clip:text; color:transparent;
       text-shadow:0 2px 8px rgba(0,0,0,.4)
     }
@@ -61,7 +84,7 @@
     .day{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:22px; padding:18px; backdrop-filter:blur(14px)}
     .dname{font-family:Outfit; font-weight:900; font-size:22px; margin-bottom:12px}
     .card{
-      position:relative; text-align:center; padding:16px; border-radius:18px; background:rgba(255,255,255,.1);
+      position:relative; text-align:center; padding:16px; border-radius:18px; background:rgba(255,255,255,.10);
       border:1px solid rgba(255,255,255,.25); box-shadow:0 6px 28px rgba(0,0,0,.3)
     }
     .card::before{content:"🎂"; position:absolute; left:10px; top:8px; font-size:18px}
@@ -70,24 +93,23 @@
 
     footer{text-align:center; padding:30px 16px; color:var(--muted)}
 
-    /* Confeti */
+    /* Confeti (único efecto visual adicional) */
     .confetti{
-      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.9;
-      border-radius:2px; pointer-events:none; animation:fall linear forwards
+      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.95;
+      border-radius:2px; pointer-events:none; animation:fall linear forwards;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,.15));
+      mix-blend-mode: screen;
     }
-    @keyframes fall{to{transform:translateY(110vh) rotate(360deg); opacity:.95}}
+    @keyframes fall{
+      to{ transform:translateY(110vh) rotate(540deg); opacity:.98 }
+    }
 
-    /* Globos */
-    .balloon{
-      position:fixed; bottom:-120px; width:60px; height:80px; border-radius:50%;
-      background:radial-gradient(circle at 30% 30%, #fff, var(--aur3));
-      z-index:4; animation:rise linear forwards
+    /* Preferencias de accesibilidad: reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .confetti{animation-duration:0s !important}
+      *{animation:none !important; transition:none !important}
     }
-    .balloon::after{
-      content:""; position:absolute; bottom:-40px; left:50%;
-      width:2px; height:40px; background:#fff; transform:translateX(-50%)
-    }
-    @keyframes rise{to{transform:translateY(-120vh) scale(1.05) rotate(8deg); opacity:0}}
 
     /* Responsive tweaks */
     @media (max-width:560px){
@@ -109,7 +131,7 @@
 
   <main>
     <div class="week">
-      <!-- Ejemplo: sección de HOY con cumpleañeros -->
+      <!-- HOY -->
       <div class="day" data-aos="fade-up">
         <div class="dname">Hoy</div>
         <div class="card">
@@ -122,7 +144,7 @@
         </div>
       </div>
 
-      <!-- Puedes duplicar .day para otros días de la semana -->
+      <!-- MAÑANA -->
       <div class="day" data-aos="fade-up" data-aos-delay="100">
         <div class="dname">Mañana</div>
         <div class="card">
@@ -144,52 +166,71 @@
     // AOS
     AOS.init({ once:true });
 
-    // Particles
+    // Partículas pastel
     particlesJS('particles-bg', {
       particles: {
-        number:{value:50},
-        color:{value:['#5ef0ff','#9b5cff','#ff7ad9','#ffd166']},
-        size:{value:2.6,random:true},
-        move:{enable:true,speed:1}
+        number:{value:70},
+        color:{value:['#ffd1dc','#ffe5b4','#fff6a5','#c7f9cc','#bae1ff','#e6d2ff','#ffc8dd']},
+        opacity:{ value:0.7, random:true },
+        size:{value:3, random:true},
+        move:{enable:true, speed:1.1, random:true}
       },
-      interactivity:{ events:{ onhover:{enable:true,mode:'repulse'} } }
+      interactivity:{ events:{ onhover:{enable:true,mode:'repulse'} } },
+      retina_detect: true
     });
 
-    // Confeti
-    function launchConfetti(n=100){
-      const colors=['#5ef0ff','#9b5cff','#ff7ad9','#ffd166','#7dffcf'];
+    // ========= CONFETI (único efecto) =========
+    // Multi-forma/rotación para "sorpresa" visual
+    const CONFETTI_COLORS = ['#ffd1dc','#ffe5b4','#fff6a5','#c7f9cc','#bae1ff','#e6d2ff','#ffc8dd'];
+    const CONFETTI_SHAPES = ['rect', 'circle', 'tilt']; // tilt = rombo/triángulo estilizado
+
+    function spawnConfetti(n=140, durationRange=[2.8, 4.2]){
       for(let i=0;i<n;i++){
-        const p=document.createElement('span'); p.className='confetti';
-        p.style.left=Math.random()*100+'vw';
-        p.style.background=colors[Math.floor(Math.random()*colors.length)];
-        p.style.animationDuration=(3+Math.random()*2)+'s';
-        document.body.appendChild(p);
-        setTimeout(()=>p.remove(),6000);
+        const el=document.createElement('span'); 
+        el.className='confetti';
+        // color
+        el.style.background=CONFETTI_COLORS[(Math.random()*CONFETTI_COLORS.length)|0];
+        // posición inicial horizontal
+        el.style.left=(Math.random()*100)+'vw';
+        // tamaño y forma
+        const shape = CONFETTI_SHAPES[(Math.random()*CONFETTI_SHAPES.length)|0];
+        if(shape==='circle'){
+          const d = 6 + Math.random()*6;
+          el.style.width = d+'px';
+          el.style.height = d+'px';
+          el.style.borderRadius = '50%';
+        }else if(shape==='tilt'){
+          const w = 8 + Math.random()*8;
+          const h = 10 + Math.random()*10;
+          el.style.width = w+'px';
+          el.style.height = h+'px';
+          el.style.transform = `rotate(${Math.random()*360}deg) skew(${10+Math.random()*20}deg)`;
+        }else{
+          // rect por defecto
+          el.style.width = (6+Math.random()*6)+'px';
+          el.style.height = (10+Math.random()*10)+'px';
+          el.style.borderRadius = '2px';
+        }
+        // duración de la caída (más rápida para sensación de abundancia)
+        const dur = (durationRange[0] + Math.random()*(durationRange[1]-durationRange[0]));
+        el.style.animationDuration = dur+'s';
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), (dur*1000)+1200);
       }
     }
 
-    // Globos
-    function launchBalloons(n=8){
-      const palette=['#5ef0ff','#9b5cff','#ff7ad9','#ffd166','#7dffcf'];
-      for(let i=0;i<n;i++){
-        const b=document.createElement('div'); b.className='balloon';
-        const color = palette[Math.floor(Math.random()*palette.length)];
-        b.style.left=Math.random()*90+'vw';
-        b.style.background=`radial-gradient(circle at 30% 30%, #fff, ${color})`;
-        b.style.animationDuration=(6+Math.random()*3)+'s';
-        document.body.appendChild(b);
-        setTimeout(()=>b.remove(),9000);
-      }
+    // Disparos más frecuentes (cada 3.5s) y ráfaga inicial grande
+    function startConfettiShow(){
+      spawnConfetti(180, [2.3, 3.6]);   // ráfaga inicial
+      setInterval(()=>spawnConfetti(120, [2.4, 3.8]), 3500);
     }
 
-    // Intercalar efectos cada 8s (confeti ↔ globos)
-    let toggle=true;
-    function triggerFX(){ if(toggle){launchConfetti();} else{launchBalloons();} toggle=!toggle; }
-    triggerFX(); // inicio
-    setInterval(triggerFX,8000);
+    // Inicio
+    startConfettiShow();
 
-    // Ejemplo: disparo adicional al cargar si hay cumpleaños
-    launchConfetti(120);
+    // ======= Limpieza: NO globos =======
+    // Se eliminaron estilos y funciones de "balloons" por petición.
+
   </script>
 </body>
 </html>
