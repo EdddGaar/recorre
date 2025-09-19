@@ -9,16 +9,16 @@
     :root{
       --text:#ffffff; --muted:#eef1ff;
       /* paleta azul → violeta (sin rosa) */
-      --p1:#6faeff;  /* azul vivo */
-      --p2:#5977ff;  /* azul-violeta */
-      --p3:#7a61ff;  /* violeta */
-      --p4:#b4a8ff;  /* lila claro */
+      --p1:#6faeff;
+      --p2:#5977ff;
+      --p3:#7a61ff;
+      --p4:#b4a8ff;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{ margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text); overflow-x:hidden; background:#1a2040; }
 
-    /* ===== Fondo degradado (azul-violeta) ===== */
+    /* Fondo degradado animado */
     .gradient{
       position:fixed; inset:0; z-index:-4;
       background:
@@ -32,14 +32,14 @@
     }
     @keyframes gradientShift{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
 
-    /* ===== Banderines (SVG inline) ===== */
+    /* Banderines */
     .banners{ position:fixed; inset:0 0 auto 0; height:120px; z-index:-3; pointer-events:none }
     .banner-wrap{ width:100%; height:100% }
 
-    /* ===== Estrellas (canvas) ===== */
+    /* Estrellas */
     #stars{ position:fixed; inset:0; z-index:-2; pointer-events:none; mix-blend-mode:screen; opacity:.9 }
 
-    /* ===== Confeti ===== */
+    /* Confeti */
     .confetti{
       position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.98;
       border-radius:2px; pointer-events:none; animation:fall linear forwards;
@@ -152,7 +152,7 @@
   <footer>#RecorreToluca 💙💜 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
 
   <script>
-    /* ========= Estrellas ========= */
+    /* ===== Estrellas ===== */
     (function stars(){
       const c = document.getElementById('stars');
       const ctx = c.getContext('2d');
@@ -184,7 +184,7 @@
       addEventListener('resize', resize); resize(); requestAnimationFrame(tick);
     })();
 
-    /* ========= Utilidades de fecha ========= */
+    /* ===== Fecha utils ===== */
     const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
     const fmtDM = (d)=> d.toLocaleDateString('es-MX',{day:'2-digit',month:'short'}).replace('.', '');
     const at0=d=>{ const x=new Date(d); x.setHours(0,0,0,0); return x };
@@ -193,7 +193,7 @@
     function parseMD(md, year){ const [m, d]=md.split('-').map(Number); return new Date(year, m-1, d) }
     const isSameDay=(a,b)=> at0(a).getTime()===at0(b).getTime();
 
-    /* ========= Confeti ========= */
+    /* ===== Confeti ===== */
     const CONFETTI_COLORS = ['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
     const CONFETTI_SHAPES = ['rect','circle','tilt'];
     function confettiBurst(n=240, dur=[1.8, 3.0]){
@@ -210,7 +210,7 @@
       }
     }
 
-    // Botones
+    /* ===== Botones ===== */
     document.getElementById('btn-celebrar').addEventListener('click', ()=> confettiBurst());
     document.getElementById('btn-hoy').addEventListener('click', ()=>{
       const hoy=[...document.querySelectorAll('.title-day')].find(n=> n.textContent.trim()==='HOY');
@@ -218,13 +218,14 @@
     });
     document.getElementById('btn-reload').addEventListener('click', ()=> boot(true));
 
-    /* ========= Carga dinámica desde Apps Script ========= */
-    const JSON_URL = "https://script.google.com/macros/s/AKfycbzl9SeIr9by7aPCRR7E2Xje8C_fomba5tbk3kus5U10AjgSy9tbvxMr3my9wI5p4CoV9g/exec"; // <-- pega tu URL
+    /* ===== Carga dinámica desde Apps Script ===== */
+    const JSON_URL = "https://script.google.com/macros/s/AKfycbzl9SeIr9by7aPCRR7E2Xje8C_fomba5tbk3kus5U10AjgSy9tbvxMr3my9wI5p4CoV9g/exec"; // <-- Pega aquí tu URL de la WebApp (si usas rutas, añade ?route=birthdays)
 
     async function loadBirthdaysJSON(){
       const res = await fetch(JSON_URL, { cache:'no-store' });
-      if(!res.ok) throw new Error('No se pudo cargar JSON');
-      return await res.json(); // [{name, date, pace}]
+      const raw = await res.text(); // tolerante si el server no responde JSON
+      try { return JSON.parse(raw); }
+      catch { console.warn('Respuesta no-JSON:', raw); return []; }
     }
 
     function groupByWeek(list){
@@ -240,32 +241,75 @@
     }
 
     function render(){
-      const container=document.getElementById('vertical'); container.innerHTML='';
+      const container=document.getElementById('vertical'); 
+      container.innerHTML='';
+
       const blocks=groupByWeek(window.BIRTHDAYS || []);
       blocks.forEach((g)=>{
-        const section=document.createElement('section'); section.className='section';
-        const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
-        const cards=document.createElement('div'); cards.className='cards';
+        const section=document.createElement('section'); 
+        section.className='section';
+
+        const h=document.createElement('h2'); 
+        h.className='title-day'+(g.label==='HOY'?'':' small'); 
+        h.textContent=g.label; 
+        section.appendChild(h);
+
+        const cards=document.createElement('div'); 
+        cards.className='cards';
+
         if(!g.items.length){
-          const empty=document.createElement('div'); empty.className='card';
-          const p=document.createElement('p'); p.className='wish'; p.textContent='— Sin cumpleañer@s —';
-          empty.appendChild(p); cards.appendChild(empty);
-        }else{
+          const frasesDivertidas = [
+            "Esta semana nadie envejece… qué aburridos 🙄",
+            "Silencio en la pista… ni un pastel que correr esta vez 🏃🍰",
+            "¡Plot twist! Esta semana no hay pastel, sólo kilómetros extra 😅",
+            "Nadie cumple, pero igual puedes festejar tus agujetas nuevas 🎉👟",
+            "Semana libre de velitas 🎂… aprovecha para bajar el tiempo en 10k",
+            "Los cumpleañeros hicieron trampa y se escondieron… 🤔🎁"
+          ];
+          const empty=document.createElement('div'); 
+          empty.className='card';
+          const p=document.createElement('p'); 
+          p.className='wish'; 
+          p.textContent=frasesDivertidas[Math.floor(Math.random()*frasesDivertidas.length)];
+          empty.appendChild(p); 
+          cards.appendChild(empty);
+        } else {
           g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
-            const c=document.createElement('div'); c.className='card';
-            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
-            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
-            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
-            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='🎽 Recorre';
-            c.appendChild(badge); c.appendChild(n); c.appendChild(m); c.appendChild(w); cards.appendChild(c);
-          })
+            const c=document.createElement('div'); 
+            c.className='card';
+            const n=document.createElement('p'); 
+            n.className='name'; 
+            n.textContent=p.name;
+            const m=document.createElement('p'); 
+            m.className='meta'; 
+            m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+            const w=document.createElement('p'); 
+            w.className='wish'; 
+            w.textContent=p.wish || '¡Muchas felicidades!';
+            const badge=document.createElement('span'); 
+            badge.className='badge'; 
+            badge.textContent='🎽 Recorre';
+            c.appendChild(badge); 
+            c.appendChild(n); 
+            c.appendChild(m); 
+            c.appendChild(w); 
+            cards.appendChild(c);
+          });
         }
-        section.appendChild(cards); container.appendChild(section);
+
+        section.appendChild(cards); 
+        container.appendChild(section);
       });
 
-      // confeti auto si HOY hay cumple
+      // confeti auto:
       const hasToday = blocks.some(b=> b.label==='HOY' && b.items.length);
-      if(hasToday) confettiBurst(160, [1.6, 2.6]);
+      if (hasToday) {
+        // Cumple hoy → confeti normal
+        confettiBurst(160, [1.6, 2.6]);
+      } else {
+        // Sin cumples → confeti ligero para “celebrar la nada” 😅
+        confettiBurst(60, [1.2, 1.8]);
+      }
     }
 
     async function boot(forceReload=false){
@@ -279,7 +323,7 @@
         console.error(err);
         status.textContent = '⚠️ No se pudo cargar la lista de cumpleaños.';
         window.BIRTHDAYS = [];
-        render(); // muestra “Sin cumpleañer@s”
+        render();
       }
     }
 
@@ -289,7 +333,7 @@
       setTimeout(()=>{ boot(true); scheduleMidnightReload(); }, midnight-now);
     }
 
-    // Iniciar todo cuando cargue el DOM
+    // Iniciar
     document.addEventListener('DOMContentLoaded', ()=>{ boot(); scheduleMidnightReload(); });
   </script>
 </body>
