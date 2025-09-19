@@ -31,8 +31,11 @@
     /* Particles */
     #particles-bg{position:fixed; inset:0; z-index:-1}
 
+    /* Container */
+    main{max-width:1200px; margin:0 auto 80px; padding:0 18px}
+
     /* Header */
-    header{padding:28px 18px 10px; text-align:center;}
+    header{padding:28px 18px 6px; text-align:center;}
     .logo-big{
       width:160px; height:160px; object-fit:cover; border-radius:50%;
       border:2px solid rgba(255,255,255,.65);
@@ -46,7 +49,6 @@
       text-shadow:0 2px 8px rgba(0,0,0,.4)
     }
     .subtitle{display:block; font-size:14px; color:var(--muted); margin-top:6px}
-
     .fiesta-title{
       margin:14px auto 8px; text-align:center; font-family:Outfit; font-weight:900;
       font-size:clamp(28px,4.4vw,56px); line-height:1.1;
@@ -55,13 +57,34 @@
     }
     @keyframes popTitle{from{transform:scale(.8); opacity:0}to{transform:scale(1); opacity:1}}
 
-    /* Sections layout */
-    main{max-width:1100px; margin:10px auto 80px; padding:0 18px}
-    .section{margin-top:18px}
-    .section h2{font-family:Outfit; font-weight:900; font-size:clamp(22px,3.2vw,28px); margin:0 0 12px 0; text-align:left}
+    /* Section headings */
+    .section{margin:26px auto 0; max-width:1000px}
+    .section h2{
+      font-family:Outfit; font-weight:900; font-size:clamp(22px,3.2vw,30px);
+      margin:0 0 14px 0; text-align:center;
+    }
 
-    /* Cards grid */
-    .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px}
+    /* Grids */
+    .grid{
+      display:grid; gap:18px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    /* Week (wraps nicely, centered) */
+    .week-wrap{max-width:1200px; margin:0 auto}
+    .week{
+      display:grid; gap:18px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-items:stretch;
+    }
+
+    /* Day column */
+    .day{
+      background: rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.2);
+      border-radius:18px; padding:14px; backdrop-filter: blur(12px)
+    }
+    .dayhead{display:flex; justify-content:center; gap:10px; align-items:center; margin-bottom:12px}
+    .dname{font-family:Outfit; font-weight:900; font-size:16px}
+    .dchip{font-family:Outfit; font-weight:800; font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(155,92,255,.18); border:1px solid rgba(155,92,255,.4)}
 
     /* Birthday card */
     .card{
@@ -73,7 +96,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06) inset;
       overflow:hidden;
     }
-    /* animated border glow */
     .card::after{
       content:""; position:absolute; inset:-2px; border-radius:22px; padding:2px;
       background: conic-gradient(from 0deg, var(--aur1), var(--aur2), var(--aur3), var(--aur4), var(--aur5), var(--aur1));
@@ -92,21 +114,21 @@
     }
     .wish{font-size:15px; color:var(--muted); margin:0}
 
-    /* Week grid (resto de la semana) */
-    .week{display:grid; gap:18px; margin-top:8px; grid-template-columns: repeat(7, minmax(140px, 1fr));}
-    @media (max-width:1100px){ .week{grid-template-columns: repeat(4, 1fr);} }
-    @media (max-width:760px){ .week{grid-template-columns: repeat(2, 1fr);} }
-
-    .day{background: rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.2); border-radius:18px; padding:14px; backdrop-filter: blur(12px)}
-    .dayhead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
-    .dname{font-family:Outfit; font-weight:900; font-size:16px}
-    .dchip{font-family:Outfit; font-weight:800; font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(155,92,255,.18); border:1px solid rgba(155,92,255,.4)}
-
-    footer{text-align:center; padding:30px 16px; color:var(--muted)}
+    footer{text-align:center; padding:34px 16px; color:var(--muted)}
 
     /* Confeti */
-    .confetti{position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.9; border-radius:2px; pointer-events:none; animation:fall linear forwards}
+    .confetti{
+      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.9;
+      border-radius:2px; pointer-events:none; animation:fall linear forwards
+    }
     @keyframes fall{to{transform:translateY(110vh) rotate(360deg); opacity:.95}}
+
+    /* Responsive tweaks */
+    @media (max-width:560px){
+      .logo-big{width:140px; height:140px}
+      .name{font-size:18px}
+      .wish{font-size:14px}
+    }
   </style>
 </head>
 <body>
@@ -130,17 +152,19 @@
     </section>
 
     <!-- MAÑANA -->
-    <section class="section" data-aos="fade-up" data-aos-delay="100">
+    <section class="section" data-aos="fade-up" data-aos-delay="80">
       <h2>Mañana</h2>
       <div class="grid">
         <div class="card"><p class="name">Omar Francisco</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>
       </div>
     </section>
 
-    <!-- RESTO DE LA SEMANA (1–2 por día) -->
-    <section class="section" data-aos="fade-up" data-aos-delay="160">
+    <!-- ESTA SEMANA -->
+    <section class="section" data-aos="fade-up" data-aos-delay="120">
       <h2>Esta semana</h2>
-      <div class="week" id="week"></div>
+      <div class="week-wrap">
+        <div class="week" id="week"></div>
+      </div>
     </section>
   </main>
 
@@ -161,7 +185,7 @@
       interactivity:{ events:{ onhover:{enable:true,mode:'repulse'} } }
     });
 
-    // Confeti (solo confeti, sin globos)
+    // Confeti (solo confeti)
     function launchConfetti(n=100){
       const colors=['#5ef0ff','#9b5cff','#ff7ad9','#ffd166','#7dffcf'];
       for(let i=0;i<n;i++){
@@ -173,7 +197,6 @@
         setTimeout(()=>p.remove(),6000);
       }
     }
-    // Confeti al cargar y cada 8s
     launchConfetti(120);
     setInterval(()=>launchConfetti(70), 8000);
 
@@ -192,17 +215,24 @@
     const keys=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
     const weekEl=document.getElementById('week');
 
-    // Render resto de la semana
     keys.forEach((k,i)=>{
       const col=document.createElement('div'); col.className='day'; col.setAttribute('data-aos','zoom-in'); col.setAttribute('data-aos-delay',String(60+i*40));
-      col.innerHTML=`<div class="dayhead"><div class="dname">${dayNames[i]}</div><div class="dchip">${k}</div></div><div class="grid" id="list-${i}"></div>`;
+      col.innerHTML=`
+        <div class="dayhead">
+          <div class="dname">${dayNames[i]}</div>
+          <div class="dchip">${k}</div>
+        </div>
+        <div class="grid" id="list-${i}"></div>`;
       weekEl.appendChild(col);
-      const mount=document.getElementById(`list-${i}`);
+
+      const mount=document.getElementById(\`list-\${i}\`);
       const list=weekData[k]||[];
-      mount.innerHTML = list.length ? list.map(m=>`<div class="card"><p class="name">${escapeHtml(m.name)}</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>`).join('') : '<p class="wish">— Sin cumpleañeros —</p>';
+      mount.innerHTML = list.length
+        ? list.map(m=>`<div class="card"><p class="name">${escapeHtml(m.name)}</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>`).join('')
+        : '<p class="wish" style="text-align:center;margin:6px 0">— Sin cumpleañeros —</p>';
     });
 
-    function escapeHtml(s){return String(s).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':'&quot;'}[c]));}
+    function escapeHtml(s){return String(s).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;"}[c]));}
   </script>
 </body>
 </html>
