@@ -16,10 +16,7 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text);
-      overflow-x:hidden; background:#1a2040;
-    }
+    body{ margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text); overflow-x:hidden; background:#1a2040; }
 
     /* ===== Fondo degradado (azul-violeta) ===== */
     .gradient{
@@ -73,10 +70,8 @@
     .btn:hover{ transform: translateY(-1px); box-shadow:0 12px 30px rgba(0,0,0,.32), inset 0 1px 0 #fff }
     .btn-ghost{ background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10)); color:#fff; border:1px solid rgba(255,255,255,.28) }
 
-    .section{
-      margin:22px auto; padding:16px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26);
-      border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35)
-    }
+    .section{ margin:22px auto; padding:16px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26);
+      border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35) }
     .title-day{ text-align:center; font-family:Outfit; font-weight:900; margin:0 0 14px; font-size:clamp(28px,6.5vw,64px); line-height:1.05; text-shadow:0 3px 10px rgba(0,0,0,.4) }
     .title-day.small{ font-size:clamp(22px,4.6vw,40px) }
 
@@ -143,7 +138,7 @@
   </header>
 
   <main>
-    <p class="phrase">🎉 ¡Feliz cumpleaños a nuestros runners de la semana! 🎽✨</p>
+    <p class="phrase" id="status">🎉 Cargando cumpleañer@s…</p>
 
     <div class="toolbar">
       <button class="btn" id="btn-celebrar">🎊 Celebrar</button>
@@ -189,18 +184,6 @@
       addEventListener('resize', resize); resize(); requestAnimationFrame(tick);
     })();
 
-    /* ========= Datos de ejemplo ========= */
-    const BIRTHDAYS = [
-      { name: "Andrea Martínez",   date: "09-19", pace: "5:10/km", wish:"¡A volar en tus entrenos, Andrea!" },
-      { name: "Roberto Díaz",      date: "09-20", pace: "4:45/km", wish:"Más podios este año, Roberto" },
-      { name: "Claudia Fernández", date: "09-21", pace: "6:00/km", wish:"Kilómetros llenos de sonrisas, Claudia" },
-      { name: "Javier López",      date: "09-22", pace: "5:30/km", wish:"¡Sigue rompiendo marcas, Javier!" },
-      { name: "Paola Torres",      date: "09-23", pace: "5:50/km", wish:"Que nunca falte la energía, Paola" },
-      { name: "Sofía Ramírez",     date: "09-24", pace: "5:35/km", wish:"¡Un año de nuevos PRs!" },
-      { name: "Diego Gómez",       date: "09-25", pace: "4:58/km", wish:"¡A tope en las cuestas!" },
-      { name: "Mariana Cruz",      date: "09-26", pace: "5:20/km", wish:"¡Rutas y alegría sin fin!" }
-    ];
-
     /* ========= Utilidades de fecha ========= */
     const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
     const fmtDM = (d)=> d.toLocaleDateString('es-MX',{day:'2-digit',month:'short'}).replace('.', '');
@@ -209,43 +192,6 @@
     function sundayOfWeek(d){ const m=mondayOfWeek(d); const s=new Date(m); s.setDate(m.getDate()+6); return s }
     function parseMD(md, year){ const [m, d]=md.split('-').map(Number); return new Date(year, m-1, d) }
     const isSameDay=(a,b)=> at0(a).getTime()===at0(b).getTime();
-
-    function groupByWeek(list){
-      const today=new Date(); const start=mondayOfWeek(today), end=sundayOfWeek(today);
-      document.getElementById('week-range').textContent = `${fmtDM(start)} – ${fmtDM(end)}`;
-      const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d) }
-      const year=today.getFullYear(); const map=new Map(days.map(d=>[at0(d).getTime(), []]));
-      for(const p of list){ const dt=parseMD(p.date, year); if(at0(dt)>=at0(start)&&at0(dt)<=at0(end)){ map.get(at0(dt).getTime()).push(p) } }
-      const out=[]; const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
-      for(const d of days){ const label=isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()]; out.push({label,date:d,items:map.get(at0(d).getTime())||[]}) }
-      out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
-      return out;
-    }
-
-    function render(){
-      const container=document.getElementById('vertical'); container.innerHTML='';
-      const blocks=groupByWeek(BIRTHDAYS);
-      blocks.forEach((g,idx)=>{
-        const section=document.createElement('section'); section.className='section';
-        const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
-        const cards=document.createElement('div'); cards.className='cards';
-        if(!g.items.length){
-          const empty=document.createElement('div'); empty.className='card';
-          const p=document.createElement('p'); p.className='wish'; p.textContent='— Sin cumpleañer@s —';
-          empty.appendChild(p); cards.appendChild(empty);
-        }else{
-          g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
-            const c=document.createElement('div'); c.className='card';
-            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
-            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
-            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
-            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='🎽 Recorre';
-            c.appendChild(badge); c.appendChild(n); c.appendChild(m); c.appendChild(w); cards.appendChild(c);
-          })
-        }
-        section.appendChild(cards); container.appendChild(section);
-      })
-    }
 
     /* ========= Confeti ========= */
     const CONFETTI_COLORS = ['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
@@ -270,33 +216,81 @@
       const hoy=[...document.querySelectorAll('.title-day')].find(n=> n.textContent.trim()==='HOY');
       if(hoy) hoy.scrollIntoView({behavior:'smooth',block:'start'});
     });
-    document.getElementById('btn-reload').addEventListener('click', render);
+    document.getElementById('btn-reload').addEventListener('click', ()=> boot(true));
 
-    // Init + confeti si hoy hay cumple
-    function init(){
-      render();
-      const hasToday = groupByWeek(BIRTHDAYS).some(b=> b.label==='HOY' && b.items.length);
+    /* ========= Carga dinámica desde Apps Script ========= */
+    const JSON_URL = "https://script.google.com/macros/s/AKfycbzl9SeIr9by7aPCRR7E2Xje8C_fomba5tbk3kus5U10AjgSy9tbvxMr3my9wI5p4CoV9g/exec"; // <-- pega tu URL
+
+    async function loadBirthdaysJSON(){
+      const res = await fetch(JSON_URL, { cache:'no-store' });
+      if(!res.ok) throw new Error('No se pudo cargar JSON');
+      return await res.json(); // [{name, date, pace}]
+    }
+
+    function groupByWeek(list){
+      const today=new Date(); const start=mondayOfWeek(today), end=sundayOfWeek(today);
+      document.getElementById('week-range').textContent = `${fmtDM(start)} – ${fmtDM(end)}`;
+      const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d) }
+      const year=today.getFullYear(); const map=new Map(days.map(d=>[at0(d).getTime(), []]));
+      for(const p of list){ const dt=parseMD(p.date, year); if(at0(dt)>=at0(start)&&at0(dt)<=at0(end)){ map.get(at0(dt).getTime()).push(p) } }
+      const out=[]; const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
+      for(const d of days){ const label=isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()]; out.push({label,date:d,items:map.get(at0(d).getTime())||[]}) }
+      out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
+      return out;
+    }
+
+    function render(){
+      const container=document.getElementById('vertical'); container.innerHTML='';
+      const blocks=groupByWeek(window.BIRTHDAYS || []);
+      blocks.forEach((g)=>{
+        const section=document.createElement('section'); section.className='section';
+        const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
+        const cards=document.createElement('div'); cards.className='cards';
+        if(!g.items.length){
+          const empty=document.createElement('div'); empty.className='card';
+          const p=document.createElement('p'); p.className='wish'; p.textContent='— Sin cumpleañer@s —';
+          empty.appendChild(p); cards.appendChild(empty);
+        }else{
+          g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
+            const c=document.createElement('div'); c.className='card';
+            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
+            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
+            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='🎽 Recorre';
+            c.appendChild(badge); c.appendChild(n); c.appendChild(m); c.appendChild(w); cards.appendChild(c);
+          })
+        }
+        section.appendChild(cards); container.appendChild(section);
+      });
+
+      // confeti auto si HOY hay cumple
+      const hasToday = blocks.some(b=> b.label==='HOY' && b.items.length);
       if(hasToday) confettiBurst(160, [1.6, 2.6]);
     }
-    init();
+
+    async function boot(forceReload=false){
+      const status = document.getElementById('status');
+      try{
+        if (forceReload) status.textContent = '🔄 Actualizando…';
+        window.BIRTHDAYS = await loadBirthdaysJSON();
+        status.textContent = '🎉 ¡Feliz cumpleaños a nuestros runners de la semana! 🎽✨';
+        render();
+      }catch(err){
+        console.error(err);
+        status.textContent = '⚠️ No se pudo cargar la lista de cumpleaños.';
+        window.BIRTHDAYS = [];
+        render(); // muestra “Sin cumpleañer@s”
+      }
+    }
 
     // Recarga a medianoche para actualizar semana/día
-    (function scheduleMidnightReload(){
+    function scheduleMidnightReload(){
       const now=new Date(); const midnight=new Date(now); midnight.setHours(24,0,0,0);
-      setTimeout(()=>{ init(); scheduleMidnightReload(); }, midnight-now);
-    })();
+      setTimeout(()=>{ boot(true); scheduleMidnightReload(); }, midnight-now);
+    }
+
+    // Iniciar todo cuando cargue el DOM
+    document.addEventListener('DOMContentLoaded', ()=>{ boot(); scheduleMidnightReload(); });
   </script>
 </body>
-  <script>
-  const JSON_URL = "https://script.google.com/macros/s/XXXXX/exec?route=birthdays";
-  async function loadBirthdaysJSON(){
-    const res = await fetch(JSON_URL, {cache:'no-store'});
-    return await res.json(); // [{name, date, pace}]
-  }
-  (async function(){
-    try { window.BIRTHDAYS = await loadBirthdaysJSON(); }
-    catch(e){ console.error(e); window.BIRTHDAYS = []; }
-    render();
-  })();
-</script>
 </html>
