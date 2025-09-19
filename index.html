@@ -15,7 +15,6 @@
       --ink:#070912; --ink2:#0a0d1c;
       --aur1:#5ef0ff; --aur2:#9b5cff; --aur3:#ff7ad9; --aur4:#ffd166; --aur5:#7dffcf;
       --text:#f8fbff; --muted:#cdd6ff;
-      /* pon tu imagen si existe; si no, igual se ve bonito con gradiente */
       --bg-img:url('https://raw.githubusercontent.com/EdddGaar/recorre/main/assets/bg_fiesta.png');
     }
     *{box-sizing:border-box}
@@ -26,17 +25,12 @@
       background-size: cover, auto;
       background-position: center top, center;
       background-repeat: no-repeat, no-repeat;
-      overflow-x:hidden;
-      min-height:100vh;
+      overflow-x:hidden; min-height:100vh;
     }
-
-    /* Particles canvas */
     #particles-bg{position:fixed; inset:0; z-index:-1}
 
-    /* Layout */
     main{max-width:1200px; margin:0 auto 80px; padding:0 18px}
 
-    /* Header */
     header{padding:28px 18px 10px; text-align:center;}
     .logo-big{
       width:160px; height:160px; object-fit:cover; border-radius:50%;
@@ -57,42 +51,25 @@
       text-shadow:0 2px 0 rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
     }
 
-    /* Section headings */
     .section{margin:28px auto 0; max-width:1000px}
-    .section h2{
-      font-family:Outfit; font-weight:900; font-size:clamp(22px,3.2vw,30px);
-      margin:0 0 16px 0; text-align:center;
-    }
+    .section h2{font-family:Outfit; font-weight:900; font-size:clamp(22px,3.2vw,30px); margin:0 0 16px; text-align:center;}
 
-    /* Grids */
-    .grid{
-      display:grid; gap:18px;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
+    .grid{display:grid; gap:18px; grid-template-columns:repeat(auto-fit, minmax(280px,1fr));}
     .week-wrap{max-width:1200px; margin:0 auto}
-    .week{
-      display:grid; gap:18px;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      align-items:stretch;
-    }
+    .week{display:grid; gap:18px; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); align-items:stretch;}
 
-    /* Day column */
-    .day{
-      background: rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.2);
-      border-radius:18px; padding:14px; backdrop-filter: blur(12px)
-    }
+    .day{background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.2); border-radius:18px; padding:14px; backdrop-filter:blur(12px)}
     .dayhead{display:flex; justify-content:center; gap:10px; align-items:center; margin-bottom:12px}
     .dname{font-family:Outfit; font-weight:900; font-size:16px}
     .dchip{font-family:Outfit; font-weight:800; font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(155,92,255,.18); border:1px solid rgba(155,92,255,.4)}
 
-    /* Birthday card */
     .card{
       position:relative; padding:18px; border-radius:20px; text-align:center;
       background: radial-gradient(120% 120% at 0% 0%, rgba(94,240,255,.16), transparent 40%),
                   radial-gradient(120% 120% at 100% 0%, rgba(155,92,255,.16), transparent 40%),
                   rgba(255,255,255,.10);
       border:1px solid rgba(255,255,255,.25);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06) inset;
+      box-shadow:0 10px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06) inset;
       overflow:hidden;
     }
     .card::after{
@@ -103,26 +80,20 @@
     }
     @keyframes spin{to{transform:rotate(1turn)}}
 
-    /* Name typography */
     .name{
       font-family:Outfit; font-weight:900; margin:0 0 8px; letter-spacing:.3px;
       font-size:clamp(20px,2.2vw,24px);
-      background: linear-gradient(90deg, #fff, #ffe9a8 30%, #ffd166 50%, #ff7ad9 80%, #9b5cff);
+      background:linear-gradient(90deg,#fff,#ffe9a8 30%,#ffd166 50%,#ff7ad9 80%,#9b5cff);
       -webkit-background-clip:text; background-clip:text; color:transparent;
-      text-shadow: 0 2px 10px rgba(0,0,0,.35);
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
     }
     .wish{font-size:15px; color:var(--muted); margin:0}
 
     footer{text-align:center; padding:34px 16px; color:var(--muted)}
 
-    /* Confeti */
-    .confetti{
-      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.9;
-      border-radius:2px; pointer-events:none; animation:fall linear forwards
-    }
+    .confetti{position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.9; border-radius:2px; pointer-events:none; animation:fall linear forwards}
     @keyframes fall{to{transform:translateY(110vh) rotate(360deg); opacity:.95}}
 
-    /* Responsive tweaks */
     @media (max-width:560px){
       .logo-big{width:140px; height:140px}
       .name{font-size:18px}
@@ -141,28 +112,20 @@
   </header>
 
   <main>
-    <!-- HOY -->
     <section class="section" data-aos="fade-up">
       <h2>Hoy</h2>
-      <div class="grid">
-        <div class="card"><p class="name">Edgar Runner</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>
-        <div class="card"><p class="name">Liliana Romero</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>
-      </div>
+      <div id="grid-today" class="grid"></div>
     </section>
 
-    <!-- MAÑANA -->
     <section class="section" data-aos="fade-up" data-aos-delay="80">
       <h2>Mañana</h2>
-      <div class="grid">
-        <div class="card"><p class="name">Omar Francisco</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>
-      </div>
+      <div id="grid-tomorrow" class="grid"></div>
     </section>
 
-    <!-- ESTA SEMANA -->
     <section class="section" data-aos="fade-up" data-aos-delay="120">
       <h2>Esta semana</h2>
       <div class="week-wrap">
-        <div class="week" id="week"></div>
+        <div id="week" class="week"></div>
       </div>
     </section>
   </main>
@@ -176,67 +139,105 @@
   <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // AOS
+  (function(){
+    'use strict';
+
+    // ---------- util ----------
+    function el(tag, cls){ const n=document.createElement(tag); if(cls) n.className=cls; return n; }
+    function card(name){
+      const c = el('div','card');
+      const p1 = el('p','name'); p1.textContent = name;
+      const p2 = el('p','wish'); p2.textContent = 'Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨';
+      c.appendChild(p1); c.appendChild(p2);
+      return c;
+    }
+
+    // ---------- data demo (seguro) ----------
+    const todayList    = ['Edgar Runner','Liliana Romero'];
+    const tomorrowList = ['Omar Francisco'];
+    const weekData = {
+      Mon:['Raquel Jacinto','Pablo Gil'],
+      Tue:['Silverio Aguilar'],
+      Wed:['Verónica Sánchez','Ruth Anahí'],
+      Thu:['Joel Miralrio'],
+      Fri:['Liliana Romero'],
+      Sat:['Omar Francisco','Yénica S. García'],
+      Sun:['Edgar Runner']
+    };
+
+    // ---------- DOM ready ----------
+    document.addEventListener('DOMContentLoaded', function(){
       if (window.AOS) AOS.init({ once:true });
 
-      // Particles (sutil)
-      if (window.particlesJS) {
+      if (window.particlesJS){
         particlesJS('particles-bg', {
           particles: { number:{value:50}, color:{value:['#5ef0ff','#9b5cff','#ff7ad9','#ffd166']}, size:{value:2.4,random:true}, move:{enable:true,speed:1} },
           interactivity:{ events:{ onhover:{enable:true,mode:'repulse'} } }
         });
       }
 
-      // Confeti (solo confeti)
-      function launchConfetti(n=100){
+      // Confeti
+      function launchConfetti(n){
         const colors=['#5ef0ff','#9b5cff','#ff7ad9','#ffd166','#7dffcf'];
         for(let i=0;i<n;i++){
           const p=document.createElement('span'); p.className='confetti';
-          p.style.left=Math.random()*100+'vw';
-          p.style.background=colors[Math.floor(Math.random()*colors.length)];
+          p.style.left=(Math.random()*100)+'vw';
+          p.style.background=colors[(Math.random()*colors.length)|0];
           p.style.animationDuration=(3+Math.random()*2)+'s';
           document.body.appendChild(p);
-          setTimeout(()=>p.remove(),6000);
+          setTimeout(function(){ p.remove(); }, 6000);
         }
       }
       launchConfetti(120);
-      setInterval(()=>launchConfetti(70), 8000);
+      setInterval(function(){ launchConfetti(70); }, 8000);
 
-      // ==== Semana completa de ejemplo (1–2 por día) ====
-      const weekData = {
-        Mon:[{name:'Raquel Jacinto'},{name:'Pablo Gil'}],
-        Tue:[{name:'Silverio Aguilar'}],
-        Wed:[{name:'Verónica Sánchez'},{name:'Ruth Anahí'}],
-        Thu:[{name:'Joel Miralrio'}],
-        Fri:[{name:'Liliana Romero'}],
-        Sat:[{name:'Omar Francisco'},{name:'Yénica S. García'}],
-        Sun:[{name:'Edgar Runner'}]
-      };
+      // Render HOY
+      var gridToday = document.getElementById('grid-today');
+      if (todayList.length === 0){
+        var p = el('p','wish'); p.textContent = '— Sin cumpleañeros —'; gridToday.appendChild(p);
+      } else {
+        todayList.forEach(function(name){ gridToday.appendChild(card(name)); });
+      }
 
-      const dayNames=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
-      const keys=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-      const weekEl=document.getElementById('week');
+      // Render MAÑANA
+      var gridTomorrow = document.getElementById('grid-tomorrow');
+      if (tomorrowList.length === 0){
+        var p2 = el('p','wish'); p2.textContent = '— Sin cumpleañeros —'; gridTomorrow.appendChild(p2);
+      } else {
+        tomorrowList.forEach(function(name){ gridTomorrow.appendChild(card(name)); });
+      }
 
-      keys.forEach((k,i)=>{
-        const col=document.createElement('div'); col.className='day'; col.setAttribute('data-aos','zoom-in'); col.setAttribute('data-aos-delay',String(60+i*40));
-        col.innerHTML=`
-          <div class="dayhead">
-            <div class="dname">${dayNames[i]}</div>
-            <div class="dchip">${k}</div>
-          </div>
-          <div class="grid" id="list-${i}"></div>`;
+      // Render SEMANA
+      var weekEl = document.getElementById('week');
+      var dayNames = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+      var keys = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+      for (var i=0;i<7;i++){
+        var k = keys[i];
+        var col = el('div','day');
+        col.setAttribute('data-aos','zoom-in');
+        col.setAttribute('data-aos-delay', String(60+i*40));
+
+        var head = el('div','dayhead');
+        var dn = el('div','dname'); dn.textContent = dayNames[i];
+        var chip = el('div','dchip'); chip.textContent = k;
+        head.appendChild(dn); head.appendChild(chip);
+        col.appendChild(head);
+
+        var innerGrid = el('div','grid'); col.appendChild(innerGrid);
+
+        var list = weekData[k] || [];
+        if (list.length === 0){
+          var p3 = el('p','wish'); p3.style.textAlign='center'; p3.style.margin='6px 0'; p3.textContent='— Sin cumpleañeros —';
+          innerGrid.appendChild(p3);
+        } else {
+          list.forEach(function(name){ innerGrid.appendChild(card(name)); });
+        }
+
         weekEl.appendChild(col);
-
-        const mount=document.getElementById(\`list-\${i}\`);
-        const list=weekData[k]||[];
-        mount.innerHTML = list.length
-          ? list.map(m=>`<div class="card"><p class="name">${escapeHtml(m.name)}</p><p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p></div>`).join('')
-          : '<p class="wish" style="text-align:center;margin:6px 0">— Sin cumpleañeros —</p>';
-      });
-
-      function escapeHtml(s){return String(s).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;"}[c]));}
+      }
     });
+  })();
   </script>
 </body>
 </html>
