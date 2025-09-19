@@ -11,10 +11,10 @@
   <style>
     :root{
       --text:#ffffff; --muted:#eef1ff;
-      /* paleta azul → violeta → rosa pastel */
+      /* paleta azul → violeta */
       --p1:#7fb7ff;  /* azul pastel vivo */
-      --p2:#a58bff;  /* violeta lavanda */
-      --p3:#ffb6d5;  /* rosa pastel */
+      --p2:#5a6dff;  /* azul violeta */
+      --p3:#8a6cff;  /* violeta intenso */
       --p4:#d1c4ff;  /* lila claro */
     }
 
@@ -25,18 +25,18 @@
       overflow-x:hidden; background:#1a2040;
     }
 
-    /* ===== Fondo degradado (más azul-violeta-rosa pastel) ===== */
-    .gradient{ position:fixed; inset:0; z-index:-4; background: radial-gradient(120% 120% at 10% 10%, color-mix(in oklab, var(--p1) 85%, white 10%), transparent 60%),
-        radial-gradient(120% 120% at 90% 15%, color-mix(in oklab, var(--p2) 85%, white 10%), transparent 60%),
-        radial-gradient(120% 120% at 50% 90%, color-mix(in oklab, var(--p3) 85%, white 10%), transparent 60%),
+    /* ===== Fondo degradado (azul-violeta) ===== */
+    .gradient{ position:fixed; inset:0; z-index:-4; background: radial-gradient(120% 120% at 10% 10%, var(--p1), transparent 60%),
+        radial-gradient(120% 120% at 90% 15%, var(--p2), transparent 60%),
+        radial-gradient(120% 120% at 50% 90%, var(--p3), transparent 60%),
         linear-gradient(135deg, var(--p1), var(--p2) 45%, var(--p3) 80%);
       background-size: 140% 140%;
       animation: gradientShift 14s ease-in-out infinite alternate;
-      filter: saturate(1.12) contrast(1.03);
+      filter: saturate(1.12) contrast(1.05);
     }
     @keyframes gradientShift{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
 
-    /* ===== Banderines (SVG inline, no dependencias) ===== */
+    /* ===== Banderines (SVG inline) ===== */
     .banners{ position:fixed; inset:0 0 auto 0; height:120px; z-index:-3; pointer-events:none }
     .banner-wrap{ width:100%; height:100% }
 
@@ -190,70 +190,4 @@
       document.getElementById('week-range').textContent = `${fmtDM(start)} – ${fmtDM(end)}`;
       const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d) }
       const year=today.getFullYear(); const map=new Map(days.map(d=>[at0(d).getTime(), []]));
-      for(const p of list){ const dt=parseMD(p.date, year); if(at0(dt)>=at0(start)&&at0(dt)<=at0(end)){ map.get(at0(dt).getTime()).push(p) } }
-      const out=[]; const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
-      for(const d of days){ const label=isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()]; out.push({label,date:d,items:map.get(at0(d).getTime())||[]}) }
-      out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
-      return out;
-    }
-
-    function render(){
-      const container=document.getElementById('vertical'); container.innerHTML='';
-      const blocks=groupByWeek(BIRTHDAYS);
-      blocks.forEach((g,idx)=>{
-        const section=document.createElement('section'); section.className='section'; if(idx>0) section.style.animationDelay = (80*idx)+'ms';
-        const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
-        const cards=document.createElement('div'); cards.className='cards';
-        if(!g.items.length){ const empty=document.createElement('div'); empty.className='card'; const p=document.createElement('p'); p.className='wish'; p.textContent='— Sin cumpleañer@s —'; empty.appendChild(p); cards.appendChild(empty); }
-        else{
-          g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
-            const c=document.createElement('div'); c.className='card';
-            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
-            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
-            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
-            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='🎽 Recorre';
-            c.appendChild(badge); c.appendChild(n); c.appendChild(m); c.appendChild(w); cards.appendChild(c);
-          })
-        }
-        section.appendChild(cards); container.appendChild(section);
-      })
-    }
-
-    /* ========= Confeti ========= */
-    const CONFETTI_COLORS = ['#7fb7ff','#a58bff','#ffb6d5','#d1c4ff','#ffffff'];
-    const CONFETTI_SHAPES = ['rect','circle','tilt'];
-    function confettiBurst(n=240, dur=[1.8, 3.0]){
-      for(let i=0;i<n;i++){
-        const el = document.createElement('span'); el.className = 'confetti';
-        el.style.left = (Math.random()*100)+'vw';
-        el.style.background = CONFETTI_COLORS[(Math.random()*CONFETTI_COLORS.length)|0];
-        const shape = CONFETTI_SHAPES[(Math.random()*CONFETTI_SHAPES.length)|0];
-        if(shape==='circle'){ const d=5+Math.random()*7; el.style.width=d+'px'; el.style.height=d+'px'; el.style.borderRadius='50%'; }
-        else if(shape==='tilt'){ const w=7+Math.random()*9, h=9+Math.random()*11; el.style.width=w+'px'; el.style.height=h+'px'; el.style.transform=`rotate(${Math.random()*360}deg) skew(${10+Math.random()*20}deg)`; }
-        else{ el.style.width=(6+Math.random()*6)+'px'; el.style.height=(10+Math.random()*10)+'px'; el.style.borderRadius='2px'; }
-        const t = dur[0] + Math.random()*(dur[1]-dur[0]); el.style.animationDuration = t+'s';
-        document.body.appendChild(el); setTimeout(()=>el.remove(), t*1000 + 1200);
-      }
-    }
-
-    // Acciones UI
-    document.getElementById('btn-celebrar').addEventListener('click', ()=> confettiBurst());
-    document.getElementById('btn-hoy').addEventListener('click', ()=>{
-      const hoy=[...document.querySelectorAll('.title-day')].find(n=> n.textContent.trim()==='HOY'); if(hoy) hoy.scrollIntoView({behavior:'smooth',block:'start'});
-    });
-    document.getElementById('btn-reload').addEventListener('click', render);
-
-    // Init + confeti si hoy hay cumple
-    function init(){
-      render();
-      const hasToday = groupByWeek(BIRTHDAYS).some(b=> b.label==='HOY' && b.items.length);
-      if(hasToday) confettiBurst(160, [1.6, 2.6]);
-    }
-
-    init();
-
-    // Recarga a medianoche para actualizar semana/día
-    (function scheduleMidnightReload(){ const now=new Date(); const midnight=new Date(now); midnight.setHours(24,0,0,0); setTimeout(()=>{ init(); scheduleMidnightReload(); }, midnight-now) })();
-  </script>
-</body>
-</html>
+      for(const p of list){ const dt=parseMD(p.date, year); if(at0(dt)>=at0(start)&&at0(dt)<=at0(end)){ map
