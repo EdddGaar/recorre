@@ -8,113 +8,135 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <style>
     :root{
-      --bg1:#0f1020; --bg2:#141630;
-      --acc:#6cf; --acc2:#ff7bd1; --gold:#ffd166;
-      --text:#eef2ff; --muted:#b8c0ff;
-      --glass:rgba(255,255,255,.08); --glass-b:rgba(255,255,255,.16);
+      --bg1:#0f1020;
+      --bg2:#141630;
+      --acc:#6cf;
+      --acc2:#ff7bd1;
+      --glass: rgba(255,255,255,.08);
+      --glass-border: rgba(255,255,255,.15);
+      --text:#eef2ff;
+      --muted:#b8c0ff;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; color:var(--text);
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      background:
-        radial-gradient(1000px 700px at 10% 10%, #1b1e42 0%, transparent 60%),
-        radial-gradient(1000px 700px at 90% 20%, #2b1b3a 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
+      margin:0; color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background: radial-gradient(1200px 800px at 10% 10%, #1b1e42 0%, transparent 60%),
+                  radial-gradient(1200px 800px at 90% 20%, #2b1b3a 0%, transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
       overflow-x:hidden;
     }
-
-    /* Particles layer */
     #particles-bg{position:fixed; inset:0; z-index:-1}
 
-    header{padding:34px 20px 10px; text-align:center}
+    header{padding:32px 20px 12px; text-align:center; position:relative;}
     .logo-wrap{
-      display:inline-flex; align-items:center; gap:14px;
-      padding:14px 20px; border-radius:22px; text-align:left;
-      backdrop-filter: blur(12px);
+      display:inline-flex; align-items:center; gap:14px; position:relative;
+      padding:14px 22px; border-radius:20px; backdrop-filter: blur(10px);
       background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
-      border:1px solid var(--glass-b);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 80px 20px rgba(108,255,255,.08);
+      border:1px solid var(--glass-border);
+      box-shadow: 0 0 0 2px rgba(108, 255, 255, .08), 0 10px 30px rgba(0,0,0,.35);
     }
-    .logo-img{width:70px; height:70px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,.4); box-shadow:0 0 35px rgba(108,255,255,.35),0 0 65px rgba(255,123,209,.25); animation:glow 3s ease-in-out infinite alternate}
-    @keyframes glow{from{box-shadow:0 0 20px rgba(108,255,255,.25),0 0 40px rgba(255,123,209,.15)}to{box-shadow:0 0 40px rgba(108,255,255,.55),0 0 80px rgba(255,123,209,.3)}}
-    .brand{font-weight:800; letter-spacing:.3px; font-size:22px}
+    .logo-img {
+      width:64px; height:64px; border-radius:50%; object-fit:cover;
+      box-shadow: 0 0 25px rgba(108,255,255,.35), 0 0 45px rgba(255,123,209,.25);
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { box-shadow:0 0 20px rgba(108,255,255,.25), 0 0 40px rgba(255,123,209,.15); }
+      to   { box-shadow:0 0 35px rgba(108,255,255,.45), 0 0 65px rgba(255,123,209,.25); }
+    }
+    .brand{font-weight:800; letter-spacing:.3px; font-size:20px}
     .brand small{display:block; color:var(--muted); font-weight:600; font-size:12px; letter-spacing:.6px}
 
-    main{max-width:980px; margin:10px auto 70px; padding:0 18px}
-    .section{margin-top:34px}
-    .section h3{margin:0 0 16px 0; font-weight:800; text-transform:capitalize; text-align:center}
-    .section h3 span{display:inline-block; margin-left:10px}
-
-    /* Center grid nicely */
-    .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:20px; align-items:stretch}
+    main{max-width:900px; margin:20px auto 60px; padding:0 18px; text-align:center}
+    .section{margin-top:26px}
+    .section h3{margin:0 0 20px 0; font-weight:800; text-transform:capitalize; font-size:22px}
+    .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:24px; justify-items:center}
 
     .card{
-      position:relative;
-      border:1px solid var(--glass-b); border-radius:22px; padding:22px; text-align:center;
+      border:1px solid var(--glass-border); border-radius:20px; padding:24px; text-align:center;
       background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(12px);
       box-shadow: 0 6px 30px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.04) inset;
       transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
     }
-    .card:hover{ transform: translateY(-4px); box-shadow: 0 12px 38px rgba(0,0,0,.35), 0 0 0 1px rgba(108,255,255,.18) inset; border-color: rgba(108,255,255,.28) }
+    .card:hover{ transform: translateY(-4px); box-shadow: 0 10px 36px rgba(0,0,0,.35), 0 0 0 1px rgba(108,255,255,.15) inset; border-color: rgba(108,255,255,.25); }
+    .name{font-weight:800; margin:0 0 12px; font-size:20px}
+    .wish{font-size:15px; color:var(--muted); margin-top:10px; line-height:1.4}
 
-    /* Pastel (🎂) y globito (🎈) decorativos */
-    .card::before{content:"🎂"; position:absolute; left:14px; top:12px; font-size:20px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35))}
-    .card::after{content:"🎈"; position:absolute; right:12px; bottom:10px; font-size:18px; opacity:.85; animation:float 4.5s ease-in-out infinite}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .pulse{position:relative; display:inline-block; padding:6px 12px; border-radius:999px;
+      background: rgba(108,255,255,.18); border:1px solid rgba(108,255,255,.35);}
+    .pulse::before{
+      content:""; position:absolute; inset:-4px; border-radius:inherit; border:2px solid rgba(108,255,255,.4);
+      animation:pulse 1.6s ease-out infinite; filter: blur(1px);
+    }
+    @keyframes pulse{0%{opacity:.9; transform:scale(.95)} 70%{opacity:0; transform:scale(1.25)} 100%{opacity:0}}
 
-    .name{font-weight:800; margin:2px 0 10px; font-size:19px; letter-spacing:.2px}
-    .wish{font-size:15px; line-height:1.5; color:var(--muted); margin:0 auto; max-width:36ch}
-
-    /* Pulso en el día actual */
-    .pulse{position:relative; display:inline-block; padding:6px 12px; border-radius:999px; background: rgba(108,255,255,.18); border:1px solid rgba(108,255,255,.35)}
-    .pulse::before{content:""; position:absolute; inset:-4px; border-radius:inherit; border:2px solid rgba(108,255,255,.4); animation:pulse 1.6s ease-out infinite; filter: blur(1px)}
-    @keyframes pulse{0%{opacity:.9; transform:scale(.95)}70%{opacity:0; transform:scale(1.25)}100%{opacity:0}}
-
-    /* Divider suave */
-    .divider{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); margin:10px auto 0; width:min(680px,85%)}
-
-    footer{opacity:.7; text-align:center; padding:26px 16px}
+    footer{position:relative; text-align:center; padding:30px 16px 40px;}
+    /* Footer neon bar */
+    .footer-glow{position:absolute; left:50%; top:0; transform:translateX(-50%);
+      width:min(920px,92%); height:2px;
+      background:linear-gradient(90deg, transparent, #6cf, #8df, #ffd166, #ff7bd1, transparent);
+      filter:blur(0.6px); box-shadow:0 0 18px rgba(108,255,255,.5), 0 0 24px rgba(255,123,209,.35)}
+    .footer-brand{display:inline-flex; align-items:center; gap:12px; padding:10px 16px; border-radius:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      border:1px solid var(--glass-border); backdrop-filter:blur(10px); transition:transform .25s ease}
+    .footer-brand:hover{transform:translateY(-2px)}
+    .footer-logo{width:28px; height:28px; border-radius:50%; object-fit:cover; box-shadow:0 0 14px rgba(108,255,255,.35)}
+    .footer-text{font-weight:700; letter-spacing:.2px}
+    .footer-sub{display:block; font-weight:600; font-size:12px; color:var(--muted)}
+    .footer-heart{filter:drop-shadow(0 0 6px rgba(255,209,102,.8))}
     a{color:#cfe8ff; text-decoration:none}
+    @media (max-width:520px){
+      .grid{grid-template-columns:1fr}
+      .section h3{font-size:20px}
+      .name{font-size:18px}
+      .wish{font-size:14px}
+    }
+    a{color:#cfe8ff}
+
+    /* 🎂 Decoración temática de cumpleaños */
+    .card::after{
+      content:"🎂✨🥳"; display:block; margin-top:12px; font-size:18px;
+      opacity:.8; animation:bounce 2s infinite;
+    }
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   </style>
 </head>
 <body>
-  <!-- Particles background -->
   <div id="particles-bg"></div>
 
   <header data-aos="fade-down" data-aos-duration="900">
     <div class="logo-wrap">
-      <div class="logo-circle" aria-hidden="true"></div>
+      <img src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Recorre" class="logo-img" />
       <div class="brand">Recorre <small>Wall de Cumpleaños</small></div>
     </div>
   </header>
 
   <main>
-    <div class="section" data-aos="fade-up" data-aos-delay="80">
+    <div class="section" data-aos="fade-up" data-aos-delay="100">
       <h3>Hoy <span id="todayTitle" class="pulse"></span></h3>
       <div id="todayList" class="grid"></div>
-      <div class="divider"></div>
     </div>
 
-    <div class="section" data-aos="fade-up" data-aos-delay="180">
+    <div class="section" data-aos="fade-up" data-aos-delay="200">
       <h3>Mañana <span id="tomorrowTitle"></span></h3>
       <div id="tomorrowList" class="grid"></div>
     </div>
   </main>
 
-  <footer>#RecorreToluca 🎽🔥🌄 · <a href="https://github.com/EdddGaar/recorre" target="_blank" rel="noopener">GitHub</a></footer>
+  <footer>
+    <span class="footer-glow" aria-hidden="true"></span>
+    <a class="footer-brand" href="https://edddgaar.github.io/recorre/" target="_blank" rel="noopener">
+      <img class="footer-logo" src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Recorre"/>
+      <span class="footer-text">Recorre Toluca <span class="footer-sub">creado de Runners para Runners <span class="footer-heart">❤️</span></span></span>
+    </a>
+  </footer>
 
-  <!-- Particles.js -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <!-- AOS -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // Inicia AOS
     AOS.init({ once: true });
-
-    // Particles config
     particlesJS('particles-bg', {
       particles: {
         number: { value: 60, density: { enable: true, value_area: 900 } },
@@ -133,41 +155,31 @@
       retina_detect: true
     });
 
-    // ===== Demo de datos (placeholder) =====
-    // Reemplazaremos esto con tu API/Sheet cuando la conectemos.
+    // Datos demo
     const demo = {
       todayTitle: new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
       tomorrowTitle: new Date(Date.now()+86400000).toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
-      today: [ {name:'Sin cumpleañeros hoy', phone:''} ],
-      tomorrow: [
-        {name:'Omar Francisco', phone:'+52 *** 4963'},
-        {name:'Liliana Romero', phone:'+52 *** 9282'},
-        {name:'Silverio Aguilar', phone:'+52 *** 1736'}
-      ]
+      today: [],
+      tomorrow: [ {name:'Omar Francisco'}, {name:'Liliana Romero'}, {name:'Silverio Aguilar'} ]
     };
 
+    const GENERAL_MSG = "Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre!";
+
     function mount(list, el){
-      if(!list || !list.length){ el.innerHTML = '<p class="meta">— Sin cumpleañeros —</p>'; return; }
+      if(!list || !list.length){ el.innerHTML = '<p class="wish">— Ningún cumpleañero —</p>'; return; }
       el.innerHTML = list.map(m => `
         <div class="card" data-aos="zoom-in" data-aos-duration="600">
           <p class="name">${escapeHtml(m.name)}</p>
-          <p class="meta">${escapeHtml(m.phone||'')}</p>
-          <span class="badge">🎽 Recorre</span>
+          <p class="wish">${GENERAL_MSG}</p>
         </div>`
       ).join('');
     }
-    function escapeHtml(s){ return String(s).replace(/[<>&"]/g, c=>({"<":"&lt;", ">":"&gt;", "&":"&amp;", '"':'&quot;'}[c])); }
+    function escapeHtml(s){ return String(s).replace(/[<>&"]/g, c=>({"<":"&lt;","&":"&gt;","&":"&amp;","\"":"&quot;"}[c])); }
 
-    // Pinta títulos y listas demo
     document.getElementById('todayTitle').textContent = demo.todayTitle;
     document.getElementById('tomorrowTitle').textContent = demo.tomorrowTitle;
     mount(demo.today, document.getElementById('todayList'));
     mount(demo.tomorrow, document.getElementById('tomorrowList'));
-
-    // ===== Conexión futura =====
-    // Cuando tengas el WebApp de Apps Script que devuelve JSON, descomenta y usa:
-    // const API = 'https://script.google.com/macros/s/XXXXXXXX/exec?format=json';
-    // fetch(API).then(r=>r.json()).then(j=>{ /* mapear j -> today/tomorrow y montar */ });
   </script>
 </body>
 </html>
