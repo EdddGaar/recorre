@@ -287,4 +287,16 @@
     })();
   </script>
 </body>
+  <script>
+  const JSON_URL = "https://script.google.com/macros/s/XXXXX/exec?route=birthdays";
+  async function loadBirthdaysJSON(){
+    const res = await fetch(JSON_URL, {cache:'no-store'});
+    return await res.json(); // [{name, date, pace}]
+  }
+  (async function(){
+    try { window.BIRTHDAYS = await loadBirthdaysJSON(); }
+    catch(e){ console.error(e); window.BIRTHDAYS = []; }
+    render();
+  })();
+</script>
 </html>
