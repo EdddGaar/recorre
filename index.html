@@ -2,16 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Recorre | Wall de Cumpleaños</title>
-
   <!-- AOS (Animate On Scroll) -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-
   <style>
     :root{
       --bg1:#0f1020; --bg2:#141630;
-      --acc:#6cf; --acc2:#ff7bd1;
+      --acc:#6cf; --acc2:#ff7bd1; --gold:#ffd166;
       --text:#eef2ff; --muted:#b8c0ff;
       --glass:rgba(255,255,255,.08); --glass-b:rgba(255,255,255,.16);
     }
@@ -30,72 +28,53 @@
     /* Particles layer */
     #particles-bg{position:fixed; inset:0; z-index:-1}
 
-    header{padding:32px 20px 12px; text-align:center}
-    .brand-wrap{
+    header{padding:34px 20px 10px; text-align:center}
+    .logo-wrap{
       display:inline-flex; align-items:center; gap:14px;
-      padding:14px 20px; border-radius:22px;
+      padding:14px 20px; border-radius:22px; text-align:left;
       backdrop-filter: blur(12px);
       background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
       border:1px solid var(--glass-b);
       box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 80px 20px rgba(108,255,255,.08);
     }
-    .logo-outer{
-      position:relative; width:68px; height:68px; border-radius:50%;
-      display:grid; place-items:center;
-    }
-    .logo-outer::before{ /* halo suave */
-      content:""; position:absolute; inset:-10px; border-radius:50%;
-      background: radial-gradient(circle, rgba(108,255,255,.22), rgba(255,123,209,.12) 60%, transparent 70%);
-      filter: blur(8px);
-    }
-    .logo-glow{ /* aura animada */
-      position:absolute; inset:-16px; border-radius:50%;
-      box-shadow: 0 0 60px rgba(108,255,255,.35);
-      animation: glow 2.6s ease-in-out infinite alternate;
-    }
-    @keyframes glow{
-      from{box-shadow:0 0 40px rgba(108,255,255,.25)}
-      to{box-shadow:0 0 70px rgba(255,123,209,.35)}
-    }
-    .logo-img{
-      width:68px; height:68px; border-radius:50%; object-fit:cover;
-      border:1px solid rgba(255,255,255,.4);
-    }
-    .brand{
-      font-weight:800; letter-spacing:.3px; font-size:20px;
-    }
+    .logo-img{width:70px; height:70px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,.4); box-shadow:0 0 35px rgba(108,255,255,.35),0 0 65px rgba(255,123,209,.25); animation:glow 3s ease-in-out infinite alternate}
+    @keyframes glow{from{box-shadow:0 0 20px rgba(108,255,255,.25),0 0 40px rgba(255,123,209,.15)}to{box-shadow:0 0 40px rgba(108,255,255,.55),0 0 80px rgba(255,123,209,.3)}}
+    .brand{font-weight:800; letter-spacing:.3px; font-size:22px}
     .brand small{display:block; color:var(--muted); font-weight:600; font-size:12px; letter-spacing:.6px}
 
-    main{max-width:1100px; margin:20px auto 60px; padding:0 18px}
-    .section{margin-top:28px}
-    .section h3{margin:0 0 12px 0; font-weight:800; text-transform:capitalize}
-    .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:16px}
+    main{max-width:980px; margin:10px auto 70px; padding:0 18px}
+    .section{margin-top:34px}
+    .section h3{margin:0 0 16px 0; font-weight:800; text-transform:capitalize; text-align:center}
+    .section h3 span{display:inline-block; margin-left:10px}
+
+    /* Center grid nicely */
+    .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:20px; align-items:stretch}
 
     .card{
-      border:1px solid var(--glass-b); border-radius:18px; padding:16px;
+      position:relative;
+      border:1px solid var(--glass-b); border-radius:22px; padding:22px; text-align:center;
       background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       box-shadow: 0 6px 30px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.04) inset;
       transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
     }
-    .card:hover{
-      transform: translateY(-4px);
-      box-shadow: 0 10px 36px rgba(0,0,0,.35), 0 0 0 1px rgba(108,255,255,.15) inset;
-      border-color: rgba(108,255,255,.25);
-    }
-    .name{font-weight:800; margin:0 0 8px}
-    .msg{color:var(--muted); font-size:13.5px; margin:0}
+    .card:hover{ transform: translateY(-4px); box-shadow: 0 12px 38px rgba(0,0,0,.35), 0 0 0 1px rgba(108,255,255,.18) inset; border-color: rgba(108,255,255,.28) }
+
+    /* Pastel (🎂) y globito (🎈) decorativos */
+    .card::before{content:"🎂"; position:absolute; left:14px; top:12px; font-size:20px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+    .card::after{content:"🎈"; position:absolute; right:12px; bottom:10px; font-size:18px; opacity:.85; animation:float 4.5s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+    .name{font-weight:800; margin:2px 0 10px; font-size:19px; letter-spacing:.2px}
+    .wish{font-size:15px; line-height:1.5; color:var(--muted); margin:0 auto; max-width:36ch}
 
     /* Pulso en el día actual */
-    .pulse{
-      position:relative; display:inline-block; padding:6px 12px; border-radius:999px;
-      background: rgba(108,255,255,.18); border:1px solid rgba(108,255,255,.35);
-    }
-    .pulse::before{
-      content:""; position:absolute; inset:-4px; border-radius:inherit; border:2px solid rgba(108,255,255,.4);
-      animation:pulse 1.6s ease-out infinite; filter: blur(1px);
-    }
-    @keyframes pulse{0%{opacity:.9; transform:scale(.95)} 70%{opacity:0; transform:scale(1.25)} 100%{opacity:0}}
+    .pulse{position:relative; display:inline-block; padding:6px 12px; border-radius:999px; background: rgba(108,255,255,.18); border:1px solid rgba(108,255,255,.35)}
+    .pulse::before{content:""; position:absolute; inset:-4px; border-radius:inherit; border:2px solid rgba(108,255,255,.4); animation:pulse 1.6s ease-out infinite; filter: blur(1px)}
+    @keyframes pulse{0%{opacity:.9; transform:scale(.95)}70%{opacity:0; transform:scale(1.25)}100%{opacity:0}}
+
+    /* Divider suave */
+    .divider{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); margin:10px auto 0; width:min(680px,85%)}
 
     footer{opacity:.7; text-align:center; padding:26px 16px}
     a{color:#cfe8ff; text-decoration:none}
@@ -106,105 +85,89 @@
   <div id="particles-bg"></div>
 
   <header data-aos="fade-down" data-aos-duration="900">
-    <div class="brand-wrap">
-      <div class="logo-outer">
-        <span class="logo-glow"></span>
-        <img
-          src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg"
-          alt="Logo Recorre" class="logo-img" />
-      </div>
+    <div class="logo-wrap">
+      <div class="logo-circle" aria-hidden="true"></div>
       <div class="brand">Recorre <small>Wall de Cumpleaños</small></div>
     </div>
   </header>
 
   <main>
-    <div class="section" data-aos="fade-up" data-aos-delay="120">
+    <div class="section" data-aos="fade-up" data-aos-delay="80">
       <h3>Hoy <span id="todayTitle" class="pulse"></span></h3>
       <div id="todayList" class="grid"></div>
+      <div class="divider"></div>
     </div>
 
-    <div class="section" data-aos="fade-up" data-aos-delay="220">
+    <div class="section" data-aos="fade-up" data-aos-delay="180">
       <h3>Mañana <span id="tomorrowTitle"></span></h3>
       <div id="tomorrowList" class="grid"></div>
     </div>
   </main>
 
-  <footer>#RecorreToluca 🎽🔥🌄 · <a href="https://edddgaar.github.io/recorre/" target="_blank" rel="noopener">Sitio</a></footer>
+  <footer>#RecorreToluca 🎽🔥🌄 · <a href="https://github.com/EdddGaar/recorre" target="_blank" rel="noopener">GitHub</a></footer>
 
   <!-- Particles.js -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <!-- AOS -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
   <script>
     // Inicia AOS
-    AOS.init({ once:true });
+    AOS.init({ once: true });
 
-    // Particles
+    // Particles config
     particlesJS('particles-bg', {
       particles: {
-        number: { value: 60, density: { enable:true, value_area: 900 } },
-        color: { value: ['#6cf','#ff7bd1','#9cf'] },
-        shape: { type:'circle' },
-        opacity: { value: .4 },
-        size: { value: 2.6, random:true },
-        line_linked: { enable:true, distance:150, color:'#7cdcff', opacity:.25, width:1 },
-        move: { enable:true, speed:1.2 }
+        number: { value: 60, density: { enable: true, value_area: 900 } },
+        color: { value: ['#6cf', '#ff7bd1', '#9cf'] },
+        shape: { type: 'circle' },
+        opacity: { value: 0.4 },
+        size: { value: 2.6, random: true },
+        line_linked: { enable: true, distance: 150, color: '#7cdcff', opacity: 0.25, width: 1 },
+        move: { enable: true, speed: 1.2 }
       },
       interactivity: {
-        detect_on:'canvas',
-        events:{ onhover:{enable:true, mode:'repulse'}, onclick:{enable:true, mode:'push'} },
-        modes:{ repulse:{ distance:120 } }
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+        modes: { repulse: { distance: 120 } }
       },
-      retina_detect:true
+      retina_detect: true
     });
 
-    // ======== Datos DEMO (solo nombres + mensaje bonito) ========
-    // Sustituiremos esto por tu WebApp/JSON del Sheet.
+    // ===== Demo de datos (placeholder) =====
+    // Reemplazaremos esto con tu API/Sheet cuando la conectemos.
     const demo = {
       todayTitle: new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
       tomorrowTitle: new Date(Date.now()+86400000).toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
-      today: [],
+      today: [ {name:'Sin cumpleañeros hoy', phone:''} ],
       tomorrow: [
-        {name:'Omar Francisco'},
-        {name:'Liliana Romero'},
-        {name:'Silverio Aguilar'}
+        {name:'Omar Francisco', phone:'+52 *** 4963'},
+        {name:'Liliana Romero', phone:'+52 *** 9282'},
+        {name:'Silverio Aguilar', phone:'+52 *** 1736'}
       ]
     };
 
-    const MESSAGE = "Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨";
-
     function mount(list, el){
-      if(!list || !list.length){
-        el.innerHTML = '<p class="msg">— Sin cumpleañeros —</p>';
-        return;
-      }
+      if(!list || !list.length){ el.innerHTML = '<p class="meta">— Sin cumpleañeros —</p>'; return; }
       el.innerHTML = list.map(m => `
         <div class="card" data-aos="zoom-in" data-aos-duration="600">
           <p class="name">${escapeHtml(m.name)}</p>
-          <p class="msg">${MESSAGE}</p>
-        </div>
-      `).join('');
+          <p class="meta">${escapeHtml(m.phone||'')}</p>
+          <span class="badge">🎽 Recorre</span>
+        </div>`
+      ).join('');
     }
-    function escapeHtml(s){ return String(s).replace(/[<>&"]/g, c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])); }
+    function escapeHtml(s){ return String(s).replace(/[<>&"]/g, c=>({"<":"&lt;", ">":"&gt;", "&":"&amp;", '"':'&quot;'}[c])); }
 
-    // Pinta títulos y listas (demo)
+    // Pinta títulos y listas demo
     document.getElementById('todayTitle').textContent = demo.todayTitle;
     document.getElementById('tomorrowTitle').textContent = demo.tomorrowTitle;
     mount(demo.today, document.getElementById('todayList'));
     mount(demo.tomorrow, document.getElementById('tomorrowList'));
 
-    // ======== Conexión futura con tu Sheet ========
-    // 1) Publica tu Apps Script WebApp que devuelva JSON (hoy/mañana).
-    // 2) Sustituye abajo la URL y transforma el JSON a {today:[], tomorrow:[]}
-    //
-    // const API = 'https://script.google.com/macros/s/XXXXX/exec?format=json';
-    // fetch(API).then(r=>r.json()).then(j=>{
-    //   document.getElementById('todayTitle').textContent = j.today_label;
-    //   document.getElementById('tomorrowTitle').textContent = j.tomorrow_label;
-    //   mount(j.today, document.getElementById('todayList'));
-    //   mount(j.tomorrow, document.getElementById('tomorrowList'));
-    // });
+    // ===== Conexión futura =====
+    // Cuando tengas el WebApp de Apps Script que devuelve JSON, descomenta y usa:
+    // const API = 'https://script.google.com/macros/s/XXXXXXXX/exec?format=json';
+    // fetch(API).then(r=>r.json()).then(j=>{ /* mapear j -> today/tomorrow y montar */ });
   </script>
 </body>
 </html>
