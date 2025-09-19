@@ -13,70 +13,145 @@
   <style>
     :root{
       --text:#ffffff; --muted:#e7edff;
+      /* Paleta solicitada */
+      --c1:#84b6f4; /* azul pastel vivo */
+      --c2:#fdcae1; /* rosa */
+      --c3:#bfb0f2; /* lila */
+      --c4:#88eb89; /* verde menta */
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text);
-      overflow-x:hidden; background:#111742;
+      overflow-x:hidden; background:#0f1330;
     }
 
-    /* Fondo burbuja multicolor dinámico */
-    .bg-bubbles{
-      position:fixed; inset:0; z-index:-1; overflow:hidden; background:#111742;
+    /* ======= FONDO FESTIVO (gradiente + mosaico suave + burbujas) ======= */
+    /* Capa 1: aurora/gradiente con tus 4 colores */
+    .aurora{
+      position:fixed; inset:0; z-index:-3;
+      background:
+        radial-gradient(70vh 60vh at 15% 20%, color-mix(in oklab, var(--c2) 70%, white 15%), transparent 60%),
+        radial-gradient(60vh 55vh at 85% 18%, color-mix(in oklab, var(--c1) 75%, white 10%), transparent 60%),
+        radial-gradient(80vh 65vh at 25% 85%, color-mix(in oklab, var(--c4) 75%, white 10%), transparent 60%),
+        radial-gradient(65vh 55vh at 75% 78%, color-mix(in oklab, var(--c3) 75%, white 10%), transparent 60%),
+        linear-gradient(180deg, #141b37 0%, #12173a 45%, #0f1330 100%);
+      filter:saturate(1.2) contrast(1.03);
+      animation: auroraShift 24s ease-in-out infinite alternate;
     }
-    .bubble{
-      position:absolute; border-radius:50%; opacity:.7; animation: rise 20s linear infinite;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.9), transparent 70%);
+    @keyframes auroraShift{
+      0%{ background-position: 0% 0%, 100% 0%, 20% 100%, 80% 100%, 50% 50%}
+      100%{ background-position: 6% -3%, 94% 2%, 26% 96%, 76% 92%, 50% 50%}
+    }
+
+    /* Capa 2: efecto "mosaico poligonal" con SVG + blur */
+    .mosaic{
+      position:fixed; inset:0; z-index:-2; pointer-events:none;
+      filter: opacity(.38) saturate(1.4) blur(1px);
       mix-blend-mode: screen;
     }
-    .bubble:nth-child(1){ width:120px; height:120px; left:10%; bottom:-150px; background: radial-gradient(circle, #ffb3c6, transparent 70%); animation-duration:25s; }
-    .bubble:nth-child(2){ width:160px; height:160px; left:35%; bottom:-180px; background: radial-gradient(circle, #bae1ff, transparent 70%); animation-duration:30s; animation-delay:5s; }
-    .bubble:nth-child(3){ width:200px; height:200px; left:70%; bottom:-200px; background: radial-gradient(circle, #c7f9cc, transparent 70%); animation-duration:28s; animation-delay:2s; }
-    .bubble:nth-child(4){ width:180px; height:180px; left:50%; bottom:-220px; background: radial-gradient(circle, #fff5a5, transparent 70%); animation-duration:32s; animation-delay:8s; }
-    .bubble:nth-child(5){ width:140px; height:140px; left:80%; bottom:-160px; background: radial-gradient(circle, #e6d2ff, transparent 70%); animation-duration:26s; animation-delay:3s; }
-    @keyframes rise{
-      from{ transform:translateY(0) scale(1); opacity:.7 }
-      to{ transform:translateY(-120vh) scale(1.2); opacity:0 }
-    }
+    .mosaic svg{ width:100%; height:100%; display:block }
+
+    /* Capa 3: burbujas coloridas elevándose */
+    .bg-bubbles{ position:fixed; inset:0; z-index:-1; overflow:hidden }
+    .bubble{ position:absolute; border-radius:50%; opacity:.8; animation: rise 20s linear infinite; mix-blend-mode:screen; }
+    .bubble:nth-child(1){ width:140px; height:140px; left:10%; bottom:-160px; background: radial-gradient(circle, var(--c2), transparent 70%); animation-duration:26s; }
+    .bubble:nth-child(2){ width:180px; height:180px; left:35%; bottom:-200px; background: radial-gradient(circle, var(--c1), transparent 70%); animation-duration:29s; animation-delay:5s; }
+    .bubble:nth-child(3){ width:220px; height:220px; left:70%; bottom:-230px; background: radial-gradient(circle, var(--c4), transparent 70%); animation-duration:27s; animation-delay:2s; }
+    .bubble:nth-child(4){ width:160px; height:160px; left:52%; bottom:-180px; background: radial-gradient(circle, var(--c3), transparent 70%); animation-duration:31s; animation-delay:8s; }
+    .bubble:nth-child(5){ width:120px; height:120px; left:82%; bottom:-140px; background: radial-gradient(circle, color-mix(in oklab, var(--c2) 60%, var(--c1) 40%), transparent 70%); animation-duration:24s; animation-delay:3s; }
+    @keyframes rise{ from{ transform:translateY(0) scale(1); opacity:.85 } to{ transform:translateY(-120vh) scale(1.2); opacity:0 } }
 
     header{ text-align:center; padding:28px 18px 8px; }
-    .logo{ width:140px; height:140px; border-radius:50%; object-fit:cover;
-      border:2px solid rgba(255,255,255,.7);
-      box-shadow:0 0 50px rgba(255,209,220,.55), 0 0 90px rgba(186,225,255,.45);
-      margin-bottom:12px; }
+    .logo{ width:140px; height:140px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,.7); box-shadow:0 0 50px rgba(253,202,225,.55), 0 0 90px rgba(132,182,244,.45); margin-bottom:12px; }
     .brand{font-family:Outfit; font-weight:900; font-size:clamp(28px,4.4vw,52px);
-      background:linear-gradient(90deg,#ffb3c6,#fff5a5,#bae1ff,#c7f9cc,#e6d2ff);
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-      text-shadow:0 2px 8px rgba(0,0,0,.35);
+      background:linear-gradient(90deg,var(--c2),var(--c4),var(--c1),var(--c3)); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 2px 8px rgba(0,0,0,.35);
     }
 
-    main{max-width:960px; margin:0 auto 86px; padding:0 18px}
-    .phrase{ text-align:center; margin:10px auto 24px; max-width:860px;
-      font-size:clamp(16px,2.4vw,20px); color:var(--muted);
-      background:linear-gradient(90deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.22);
-      border-radius:16px; padding:12px 16px; backdrop-filter: blur(10px);
-    }
+    main{max-width:980px; margin:0 auto 86px; padding:0 18px}
+    .phrase{ text-align:center; margin:10px auto 24px; max-width:880px; font-size:clamp(16px,2.4vw,20px); color:var(--muted);
+      background:linear-gradient(90deg, rgba(255,255,255,.14), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.22); border-radius:16px; padding:12px 16px; backdrop-filter: blur(10px); }
 
-    .section{ margin:24px auto; padding:16px; background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08)); border:1px solid rgba(255,255,255,.24); border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35); }
+    .toolbar{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin:8px 0 18px; }
+    .btn{ appearance:none; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; color:#0f1330; font-weight:800; background:linear-gradient(180deg,#fff,#f4f6ff); box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 #fff; transition:.15s; font-family:Inter; }
+    .btn:hover{ transform: translateY(-1px); box-shadow:0 12px 30px rgba(0,0,0,.32), inset 0 1px 0 #fff }
+    .btn-ghost{ background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10)); color:#fff; border:1px solid rgba(255,255,255,.28) }
+
+    .section{ margin:24px auto; padding:16px; background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.08)); border:1px solid rgba(255,255,255,.26); border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35); }
     .title-day{ text-align:center; font-family:Outfit; font-weight:900; margin:0 0 14px; font-size:clamp(28px,6.5vw,64px); line-height:1.05; text-shadow:0 2px 0 rgba(0,0,0,.28), 0 10px 30px rgba(0,0,0,.35); }
     .title-day.small{ font-size:clamp(22px,4.6vw,40px) }
 
     .cards{ display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto; }
-    .card{ text-align:center; padding:18px 16px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.28); box-shadow:0 6px 28px rgba(0,0,0,.28); transition:transform .18s ease, box-shadow .18s ease; }
+    .card{ position:relative; text-align:center; padding:18px 16px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.28); box-shadow:0 6px 28px rgba(0,0,0,.28); transition:transform .18s ease, box-shadow .18s ease; overflow:hidden; }
     .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.34) }
     .card::before{content:"🎂"; position:absolute; left:10px; top:10px; font-size:18px}
     .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px}
-    .meta{font-size:14px; opacity:.9; margin:0 0 8px}
+    .meta{font-size:14px; opacity:.92; margin:0 0 8px}
     .wish{font-size:15px; color:var(--muted); margin:0}
+    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:linear-gradient(90deg,var(--c4),var(--c2)); color:#0f1330; font-weight:900; box-shadow:0 6px 16px rgba(0,0,0,.2)}
 
     footer{text-align:center; padding:26px 16px; color:var(--muted)}
+
+    /* Responsive */
+    @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
+    @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
   </style>
 </head>
 <body>
-  <div class="bg-bubbles">
+  <!-- FONDO -->
+  <div class="aurora"></div>
+  <div class="mosaic" aria-hidden="true">
+    <!-- SVG low-poly simple con la paleta solicitada -->
+    <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--c2)"/>
+          <stop offset="50%" stop-color="var(--c1)"/>
+          <stop offset="100%" stop-color="var(--c3)"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--c4)"/>
+          <stop offset="60%" stop-color="var(--c2)"/>
+          <stop offset="100%" stop-color="var(--c1)"/>
+        </linearGradient>
+      </defs>
+      <g opacity="0.9">
+        <polygon points="0,0 25,0 12,18" fill="url(#g1)"/>
+        <polygon points="25,0 50,0 40,18" fill="var(--c1)"/>
+        <polygon points="50,0 75,0 62,16" fill="var(--c3)"/>
+        <polygon points="75,0 100,0 88,18" fill="url(#g2)"/>
+
+        <polygon points="0,20 12,18 8,40" fill="var(--c2)"/>
+        <polygon points="12,18 25,0 28,32" fill="var(--c4)"/>
+        <polygon points="25,0 40,18 32,38" fill="url(#g2)"/>
+        <polygon points="40,18 50,0 50,36" fill="var(--c1)"/>
+        <polygon points="50,0 62,16 66,36" fill="var(--c3)"/>
+        <polygon points="62,16 75,0 74,32" fill="var(--c2)"/>
+        <polygon points="75,0 88,18 90,36" fill="var(--c4)"/>
+        <polygon points="88,18 100,0 100,32" fill="url(#g1)"/>
+
+        <polygon points="0,40 8,40 6,64" fill="var(--c1)"/>
+        <polygon points="8,40 28,32 16,64" fill="var(--c3)"/>
+        <polygon points="28,32 32,38 26,66" fill="var(--c2)"/>
+        <polygon points="32,38 50,36 40,70" fill="url(#g1)"/>
+        <polygon points="50,36 66,36 56,68" fill="var(--c4)"/>
+        <polygon points="66,36 74,32 68,66" fill="var(--c1)"/>
+        <polygon points="74,32 90,36 82,68" fill="var(--c3)"/>
+        <polygon points="90,36 100,32 94,70" fill="var(--c2)"/>
+
+        <polygon points="0,64 6,64 12,100 0,100" fill="var(--c4)"/>
+        <polygon points="6,64 16,64 20,100 12,100" fill="var(--c2)"/>
+        <polygon points="16,64 26,66 32,100 20,100" fill="url(#g2)"/>
+        <polygon points="26,66 40,70 44,100 32,100" fill="var(--c1)"/>
+        <polygon points="40,70 56,68 58,100 44,100" fill="var(--c3)"/>
+        <polygon points="56,68 68,66 72,100 58,100" fill="var(--c4)"/>
+        <polygon points="68,66 82,68 86,100 72,100" fill="var(--c2)"/>
+        <polygon points="82,68 94,70 100,100 86,100" fill="url(#g1)"/>
+      </g>
+    </svg>
+  </div>
+  <div class="bg-bubbles" aria-hidden="true">
     <div class="bubble"></div>
     <div class="bubble"></div>
     <div class="bubble"></div>
@@ -90,17 +165,90 @@
   </header>
 
   <main>
-    <p class="phrase" id="global-phrase">¡Que este cumpleaños sea pura fiesta, kilómetros y mucha alegría! 🎉🎽✨</p>
+    <p class="phrase" id="global-phrase">¡Cumpleaños = fiesta, kilómetros y alegría! 🎉🎽✨</p>
+
+    <div class="toolbar">
+      <button class="btn" id="btn-celebrate">🎉 Celebrar</button>
+      <button class="btn btn-ghost" id="btn-hoy">Ir a HOY</button>
+      <button class="btn btn-ghost" id="btn-refetch">Recargar datos</button>
+    </div>
+
     <div id="vertical"></div>
   </main>
 
-  <footer>#RecorreToluca 🎽🔥🌄 · Creado de Runners para Runners ❤️</footer>
+  <footer>#RecorreToluca 🎽🔥🌄 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
 
-  <!-- scripts -->
+  <!-- libs -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
+    // ========= DATOS DE EJEMPLO =========
+    const BIRTHDAYS = [
+      { name: "Fernanda Sánchez",  date: "08-17", pace:"5:15/km", wish:"¡A volar esos tenis, Fer!" },
+      { name: "Luis Hernández",    date: "08-17", pace:"5:00/km", wish:"Que lleguen nuevos PRs, Luis" },
+      { name: "Ana Gómez",         date: "08-18", pace:"6:05/km", wish:"Más rutas y sonrisas, Ana" },
+      { name: "Jorge Pérez",       date: "08-20", pace:"4:55/km", wish:"Kilómetros felices, Jorge" },
+      { name: "María López",       date: "08-21", pace:"5:40/km", wish:"¡A romper marcas, María!" },
+      { name: "Carlos Ramírez",    date: "08-22", pace:"5:20/km", wish:"Salud y metas logradas, Carlos" },
+      { name: "Paola Ortega",      date: "08-23", pace:"5:50/km", wish:"¡Que sea un año épico, Pao!" },
+    ];
+
+    // ========= UTILIDADES FECHA =========
+    const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const fmtDM = (d)=> d.toLocaleDateString('es-MX',{day:'2-digit',month:'short'}).replace('.', '');
+    const at0=d=>{ const x=new Date(d); x.setHours(0,0,0,0); return x };
+    function mondayOfWeek(d){ const x=at0(d); const w=x.getDay(); const diff=(w===0?-6:1-w); x.setDate(x.getDate()+diff); return x }
+    function sundayOfWeek(d){ const m=mondayOfWeek(d); const s=new Date(m); s.setDate(m.getDate()+6); return s }
+    function parseMD(md, year){ const [m, d]=md.split('-').map(Number); return new Date(year, m-1, d) }
+    const isSameDay=(a,b)=> at0(a).getTime()===at0(b).getTime();
+
+    function groupByWeek(list){
+      const today=new Date(); const start=mondayOfWeek(today), end=sundayOfWeek(today);
+      document.getElementById('week-range').textContent = `${fmtDM(start)} – ${fmtDM(end)}`;
+      const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d) }
+      const year=today.getFullYear(); const map=new Map(days.map(d=>[at0(d).getTime(), []]));
+      for(const p of list){ const dt=parseMD(p.date, year); if(at0(dt)>=at0(start)&&at0(dt)<=at0(end)){ map.get(at0(dt).getTime()).push(p) } }
+      const out=[]; const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
+      for(const d of days){ const label=isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()]; out.push({label,date:d,items:map.get(at0(d).getTime())||[]}) }
+      out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
+      return out;
+    }
+
+    function render(){
+      const container=document.getElementById('vertical'); container.innerHTML='';
+      const blocks=groupByWeek(BIRTHDAYS);
+      blocks.forEach((g,idx)=>{
+        const section=document.createElement('section'); section.className='section'; section.setAttribute('data-aos','fade-up'); if(idx>0) section.setAttribute('data-aos-delay', String(80*idx));
+        const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
+        const cards=document.createElement('div'); cards.className='cards';
+        if(!g.items.length){ const empty=document.createElement('div'); empty.className='card'; const p=document.createElement('p'); p.className='wish'; p.textContent='— Sin cumpleañer@s —'; empty.appendChild(p); cards.appendChild(empty); }
+        else{
+          g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
+            const c=document.createElement('div'); c.className='card';
+            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
+            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
+            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='🎽 Recorre';
+            c.appendChild(badge); c.appendChild(n); c.appendChild(m); c.appendChild(w); cards.appendChild(c);
+          })
+        }
+        section.appendChild(cards); container.appendChild(section);
+      })
+    }
+
+    // ===== EFECTOS =====
     AOS.init({ once:true });
-    // Aquí integras la lógica de cumpleaños como antes (groupByWeek, render, etc.)
+    function confettiBurst(){
+      // Usa las burbujas existentes como fondo festivo; si quieres confeti adicional puedo agregarlo.
+    }
+
+    document.getElementById('btn-celebrate').addEventListener('click', confettiBurst);
+    document.getElementById('btn-hoy').addEventListener('click', ()=>{
+      const hoy=[...document.querySelectorAll('.title-day')].find(n=> n.textContent.trim()==='HOY'); if(hoy) hoy.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    document.getElementById('btn-refetch').addEventListener('click', render);
+
+    // Init
+    render();
   </script>
 </body>
 </html>
