@@ -4,159 +4,155 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Recorre | Cumpleaños de la Semana</title>
-
-  <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <!-- AOS -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-
   <style>
     :root{
       --text:#ffffff; --muted:#e7edff;
-      /* Paleta solicitada */
-      --c1:#84b6f4; /* azul pastel vivo */
-      --c2:#fdcae1; /* rosa */
-      --c3:#bfb0f2; /* lila */
-      --c4:#88eb89; /* verde menta */
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text);
-      overflow-x:hidden; background:#0f1330;
+      overflow-x:hidden; background:#15203b;
     }
 
-    /* ======= FONDO FESTIVO (gradiente + mosaico suave + burbujas) ======= */
-    /* Capa 1: aurora/gradiente con tus 4 colores */
-    .aurora{
+    /* ===== Fondo degradado estilo tarjeta (azul->violeta) con animación ===== */
+    .gradient{
       position:fixed; inset:0; z-index:-3;
-      background:
-        radial-gradient(70vh 60vh at 15% 20%, color-mix(in oklab, var(--c2) 70%, white 15%), transparent 60%),
-        radial-gradient(60vh 55vh at 85% 18%, color-mix(in oklab, var(--c1) 75%, white 10%), transparent 60%),
-        radial-gradient(80vh 65vh at 25% 85%, color-mix(in oklab, var(--c4) 75%, white 10%), transparent 60%),
-        radial-gradient(65vh 55vh at 75% 78%, color-mix(in oklab, var(--c3) 75%, white 10%), transparent 60%),
-        linear-gradient(180deg, #141b37 0%, #12173a 45%, #0f1330 100%);
-      filter:saturate(1.2) contrast(1.03);
-      animation: auroraShift 24s ease-in-out infinite alternate;
+      background: linear-gradient(135deg, #3a7bd5 0%, #4b6cb7 45%, #7353ba 80%, #b06ab3 100%);
+      background-size: 200% 200%;
+      animation: gradientShift 12s ease-in-out infinite alternate;
+      filter: saturate(1.1);
     }
-    @keyframes auroraShift{
-      0%{ background-position: 0% 0%, 100% 0%, 20% 100%, 80% 100%, 50% 50%}
-      100%{ background-position: 6% -3%, 94% 2%, 26% 96%, 76% 92%, 50% 50%}
+    @keyframes gradientShift{
+      0%{ background-position:0% 50% }
+      100%{ background-position:100% 50% }
     }
 
-    /* Capa 2: efecto "mosaico poligonal" con SVG + blur */
-    .mosaic{
+    /* ===== Estrellas animadas (canvas) ===== */
+    #stars{
       position:fixed; inset:0; z-index:-2; pointer-events:none;
-      filter: opacity(.38) saturate(1.4) blur(1px);
-      mix-blend-mode: screen;
+      mix-blend-mode: screen; opacity:.9;
     }
-    .mosaic svg{ width:100%; height:100%; display:block }
 
-    /* Capa 3: burbujas coloridas elevándose */
-    .bg-bubbles{ position:fixed; inset:0; z-index:-1; overflow:hidden }
-    .bubble{ position:absolute; border-radius:50%; opacity:.8; animation: rise 20s linear infinite; mix-blend-mode:screen; }
-    .bubble:nth-child(1){ width:140px; height:140px; left:10%; bottom:-160px; background: radial-gradient(circle, var(--c2), transparent 70%); animation-duration:26s; }
-    .bubble:nth-child(2){ width:180px; height:180px; left:35%; bottom:-200px; background: radial-gradient(circle, var(--c1), transparent 70%); animation-duration:29s; animation-delay:5s; }
-    .bubble:nth-child(3){ width:220px; height:220px; left:70%; bottom:-230px; background: radial-gradient(circle, var(--c4), transparent 70%); animation-duration:27s; animation-delay:2s; }
-    .bubble:nth-child(4){ width:160px; height:160px; left:52%; bottom:-180px; background: radial-gradient(circle, var(--c3), transparent 70%); animation-duration:31s; animation-delay:8s; }
-    .bubble:nth-child(5){ width:120px; height:120px; left:82%; bottom:-140px; background: radial-gradient(circle, color-mix(in oklab, var(--c2) 60%, var(--c1) 40%), transparent 70%); animation-duration:24s; animation-delay:3s; }
-    @keyframes rise{ from{ transform:translateY(0) scale(1); opacity:.85 } to{ transform:translateY(-120vh) scale(1.2); opacity:0 } }
+    /* ===== Banderines (SVG inline) ===== */
+    .banners{
+      position:fixed; inset:0 0 auto 0; height:120px; z-index:-1; pointer-events:none;
+    }
+    .banner-wrap{ width:100%; height:100% }
 
     header{ text-align:center; padding:28px 18px 8px; }
-    .logo{ width:140px; height:140px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,.7); box-shadow:0 0 50px rgba(253,202,225,.55), 0 0 90px rgba(132,182,244,.45); margin-bottom:12px; }
+    .logo{
+      width:120px; height:120px; border-radius:50%; object-fit:cover;
+      border:2px solid rgba(255,255,255,.85);
+      box-shadow:0 0 40px rgba(0,0,0,.35);
+      margin-bottom:12px;
+    }
     .brand{font-family:Outfit; font-weight:900; font-size:clamp(28px,4.4vw,52px);
-      background:linear-gradient(90deg,var(--c2),var(--c4),var(--c1),var(--c3)); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 2px 8px rgba(0,0,0,.35);
+      color:#fff; text-shadow:0 3px 12px rgba(0,0,0,.45);
     }
 
     main{max-width:980px; margin:0 auto 86px; padding:0 18px}
-    .phrase{ text-align:center; margin:10px auto 24px; max-width:880px; font-size:clamp(16px,2.4vw,20px); color:var(--muted);
-      background:linear-gradient(90deg, rgba(255,255,255,.14), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.22); border-radius:16px; padding:12px 16px; backdrop-filter: blur(10px); }
+    .phrase{
+      text-align:center; margin:10px auto 24px; max-width:880px;
+      font-size:clamp(16px,2.4vw,20px); color:#fff;
+      background:rgba(0,0,0,.20); border:1px solid rgba(255,255,255,.25);
+      border-radius:16px; padding:12px 16px; backdrop-filter: blur(6px);
+    }
 
     .toolbar{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin:8px 0 18px; }
-    .btn{ appearance:none; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; color:#0f1330; font-weight:800; background:linear-gradient(180deg,#fff,#f4f6ff); box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 #fff; transition:.15s; font-family:Inter; }
+    .btn{
+      appearance:none; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; color:#15203b; font-weight:800;
+      background:linear-gradient(180deg,#fff,#f2f5ff); box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 #fff; transition:.15s; font-family:Inter;
+    }
     .btn:hover{ transform: translateY(-1px); box-shadow:0 12px 30px rgba(0,0,0,.32), inset 0 1px 0 #fff }
     .btn-ghost{ background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10)); color:#fff; border:1px solid rgba(255,255,255,.28) }
 
-    .section{ margin:24px auto; padding:16px; background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.08)); border:1px solid rgba(255,255,255,.26); border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35); }
-    .title-day{ text-align:center; font-family:Outfit; font-weight:900; margin:0 0 14px; font-size:clamp(28px,6.5vw,64px); line-height:1.05; text-shadow:0 2px 0 rgba(0,0,0,.28), 0 10px 30px rgba(0,0,0,.35); }
+    .section{
+      margin:24px auto; padding:16px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.26);
+      border-radius:22px; backdrop-filter: blur(14px);
+      box-shadow:0 10px 36px rgba(0,0,0,.35);
+    }
+    .title-day{
+      text-align:center; font-family:Outfit; font-weight:900; margin:0 0 14px;
+      font-size:clamp(28px,6.5vw,64px); line-height:1.05; text-shadow:0 3px 10px rgba(0,0,0,.4);
+    }
     .title-day.small{ font-size:clamp(22px,4.6vw,40px) }
 
     .cards{ display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto; }
-    .card{ position:relative; text-align:center; padding:18px 16px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.28); box-shadow:0 6px 28px rgba(0,0,0,.28); transition:transform .18s ease, box-shadow .18s ease; overflow:hidden; }
-    .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.34) }
+    .card{
+      position:relative; text-align:center; padding:18px 16px; border-radius:18px;
+      background:rgba(255,255,255,.15); box-shadow:0 6px 28px rgba(0,0,0,.30);
+      transition:transform .18s ease, box-shadow .18s ease; overflow:hidden;
+    }
+    .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.40) }
     .card::before{content:"🎂"; position:absolute; left:10px; top:10px; font-size:18px}
-    .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px}
-    .meta{font-size:14px; opacity:.92; margin:0 0 8px}
-    .wish{font-size:15px; color:var(--muted); margin:0}
-    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:linear-gradient(90deg,var(--c4),var(--c2)); color:#0f1330; font-weight:900; box-shadow:0 6px 16px rgba(0,0,0,.2)}
+    .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px; color:#fff}
+    .meta{font-size:14px; opacity:.95; margin:0 0 8px; color:#eaeaff}
+    .wish{font-size:15px; color:#fff; margin:0}
+    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900; }
 
-    footer{text-align:center; padding:26px 16px; color:var(--muted)}
+    footer{text-align:center; padding:26px 16px; color:#fff}
 
-    /* Responsive */
     @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
-    @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+    @media (prefers-reduced-motion: reduce){
+      .gradient{animation:none}
+    }
   </style>
 </head>
 <body>
-  <!-- FONDO -->
-  <div class="aurora"></div>
-  <div class="mosaic" aria-hidden="true">
-    <!-- SVG low-poly simple con la paleta solicitada -->
-    <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="var(--c2)"/>
-          <stop offset="50%" stop-color="var(--c1)"/>
-          <stop offset="100%" stop-color="var(--c3)"/>
-        </linearGradient>
-        <linearGradient id="g2" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="var(--c4)"/>
-          <stop offset="60%" stop-color="var(--c2)"/>
-          <stop offset="100%" stop-color="var(--c1)"/>
-        </linearGradient>
-      </defs>
-      <g opacity="0.9">
-        <polygon points="0,0 25,0 12,18" fill="url(#g1)"/>
-        <polygon points="25,0 50,0 40,18" fill="var(--c1)"/>
-        <polygon points="50,0 75,0 62,16" fill="var(--c3)"/>
-        <polygon points="75,0 100,0 88,18" fill="url(#g2)"/>
+  <!-- Fondo -->
+  <div class="gradient" aria-hidden="true"></div>
+  <canvas id="stars"></canvas>
 
-        <polygon points="0,20 12,18 8,40" fill="var(--c2)"/>
-        <polygon points="12,18 25,0 28,32" fill="var(--c4)"/>
-        <polygon points="25,0 40,18 32,38" fill="url(#g2)"/>
-        <polygon points="40,18 50,0 50,36" fill="var(--c1)"/>
-        <polygon points="50,0 62,16 66,36" fill="var(--c3)"/>
-        <polygon points="62,16 75,0 74,32" fill="var(--c2)"/>
-        <polygon points="75,0 88,18 90,36" fill="var(--c4)"/>
-        <polygon points="88,18 100,0 100,32" fill="url(#g1)"/>
-
-        <polygon points="0,40 8,40 6,64" fill="var(--c1)"/>
-        <polygon points="8,40 28,32 16,64" fill="var(--c3)"/>
-        <polygon points="28,32 32,38 26,66" fill="var(--c2)"/>
-        <polygon points="32,38 50,36 40,70" fill="url(#g1)"/>
-        <polygon points="50,36 66,36 56,68" fill="var(--c4)"/>
-        <polygon points="66,36 74,32 68,66" fill="var(--c1)"/>
-        <polygon points="74,32 90,36 82,68" fill="var(--c3)"/>
-        <polygon points="90,36 100,32 94,70" fill="var(--c2)"/>
-
-        <polygon points="0,64 6,64 12,100 0,100" fill="var(--c4)"/>
-        <polygon points="6,64 16,64 20,100 12,100" fill="var(--c2)"/>
-        <polygon points="16,64 26,66 32,100 20,100" fill="url(#g2)"/>
-        <polygon points="26,66 40,70 44,100 32,100" fill="var(--c1)"/>
-        <polygon points="40,70 56,68 58,100 44,100" fill="var(--c3)"/>
-        <polygon points="56,68 68,66 72,100 58,100" fill="var(--c4)"/>
-        <polygon points="68,66 82,68 86,100 72,100" fill="var(--c2)"/>
-        <polygon points="82,68 94,70 100,100 86,100" fill="url(#g1)"/>
+  <!-- Banderines (SVG multicolor, responsivo) -->
+  <div class="banners" aria-hidden="true">
+    <svg class="banner-wrap" viewBox="0 0 1200 200" preserveAspectRatio="none">
+      <!-- cuerda -->
+      <path d="M0,60 C300,120 900,0 1200,80" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="4" />
+      <!-- banderines -->
+      <g>
+        <!-- función visual: alternamos colores alegres -->
+        <defs>
+          <linearGradient id="flag1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#FFD166"/>
+            <stop offset="100%" stop-color="#FF9F1C"/>
+          </linearGradient>
+          <linearGradient id="flag2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#06D6A0"/>
+            <stop offset="100%" stop-color="#118AB2"/>
+          </linearGradient>
+          <linearGradient id="flag3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#F78DA7"/>
+            <stop offset="100%" stop-color="#C06CFF"/>
+          </linearGradient>
+        </defs>
+        <!-- generamos ~20 triángulos a lo largo del path -->
+        <g id="flags">
+          <!-- Usamos posiciones manuales para evitar scripts -->
+          <!-- (x,60) a (x+40,60) a centro inferior -->
+          <!-- fila 1 -->
+          <polygon points="40,60 80,60 60,120" fill="url(#flag1)"/>
+          <polygon points="110,60 150,60 130,120" fill="url(#flag2)"/>
+          <polygon points="180,60 220,60 200,120" fill="url(#flag3)"/>
+          <polygon points="250,60 290,60 270,120" fill="url(#flag1)"/>
+          <polygon points="320,60 360,60 340,120" fill="url(#flag2)"/>
+          <polygon points="390,60 430,60 410,120" fill="url(#flag3)"/>
+          <polygon points="460,60 500,60 480,120" fill="url(#flag1)"/>
+          <polygon points="530,60 570,60 550,120" fill="url(#flag2)"/>
+          <polygon points="600,60 640,60 620,120" fill="url(#flag3)"/>
+          <polygon points="670,60 710,60 690,120" fill="url(#flag1)"/>
+          <polygon points="740,60 780,60 760,120" fill="url(#flag2)"/>
+          <polygon points="810,60 850,60 830,120" fill="url(#flag3)"/>
+          <polygon points="880,60 920,60 900,120" fill="url(#flag1)"/>
+          <polygon points="950,60 990,60 970,120" fill="url(#flag2)"/>
+          <polygon points="1020,60 1060,60 1040,120" fill="url(#flag3)"/>
+          <polygon points="1090,60 1130,60 1110,120" fill="url(#flag1)"/>
+        </g>
       </g>
     </svg>
-  </div>
-  <div class="bg-bubbles" aria-hidden="true">
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
   </div>
 
   <header>
@@ -165,12 +161,11 @@
   </header>
 
   <main>
-    <p class="phrase" id="global-phrase">¡Cumpleaños = fiesta, kilómetros y alegría! 🎉🎽✨</p>
+    <p class="phrase">🎉 ¡Feliz cumpleaños a nuestros runners de la semana! 🎽✨</p>
 
     <div class="toolbar">
-      <button class="btn" id="btn-celebrate">🎉 Celebrar</button>
-      <button class="btn btn-ghost" id="btn-hoy">Ir a HOY</button>
-      <button class="btn btn-ghost" id="btn-refetch">Recargar datos</button>
+      <button class="btn" id="btn-hoy">Ir a HOY</button>
+      <button class="btn btn-ghost" id="btn-reload">Recargar</button>
     </div>
 
     <div id="vertical"></div>
@@ -178,21 +173,58 @@
 
   <footer>#RecorreToluca 🎽🔥🌄 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
 
-  <!-- libs -->
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // ========= DATOS DE EJEMPLO =========
+    /* ========= Estrellas (canvas) ========= */
+    (function stars(){
+      const c = document.getElementById('stars');
+      const ctx = c.getContext('2d');
+      let W, H, stars = [];
+      function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; spawn(); }
+      function spawn(){
+        const count = Math.min(180, Math.floor(W*H/9000));
+        stars = new Array(count).fill(0).map(()=>({
+          x: Math.random()*W,
+          y: Math.random()*H*0.7 + 10,
+          r: Math.random()*1.8 + 0.6,
+          a: Math.random()*0.5 + 0.4,
+          speed: Math.random()*0.003 + 0.0015,
+          phase: Math.random()*Math.PI*2
+        }));
+      }
+      function tick(t){
+        ctx.clearRect(0,0,W,H);
+        for(const s of stars){
+          s.phase += s.speed;
+          const alpha = s.a * (0.5 + 0.5*Math.sin(s.phase));
+          const grad = ctx.createRadialGradient(s.x,s.y,0, s.x,s.y,s.r*3);
+          grad.addColorStop(0, `rgba(255,255,255,${alpha})`);
+          grad.addColorStop(1, `rgba(255,255,255,0)`);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+          ctx.fill();
+        }
+        requestAnimationFrame(tick);
+      }
+      addEventListener('resize', resize);
+      resize(); requestAnimationFrame(tick);
+    })();
+
+    /* ========= Datos de ejemplo (runners) ========= */
     const BIRTHDAYS = [
-      { name: "Fernanda Sánchez",  date: "08-17", pace:"5:15/km", wish:"¡A volar esos tenis, Fer!" },
-      { name: "Luis Hernández",    date: "08-17", pace:"5:00/km", wish:"Que lleguen nuevos PRs, Luis" },
-      { name: "Ana Gómez",         date: "08-18", pace:"6:05/km", wish:"Más rutas y sonrisas, Ana" },
-      { name: "Jorge Pérez",       date: "08-20", pace:"4:55/km", wish:"Kilómetros felices, Jorge" },
-      { name: "María López",       date: "08-21", pace:"5:40/km", wish:"¡A romper marcas, María!" },
-      { name: "Carlos Ramírez",    date: "08-22", pace:"5:20/km", wish:"Salud y metas logradas, Carlos" },
-      { name: "Paola Ortega",      date: "08-23", pace:"5:50/km", wish:"¡Que sea un año épico, Pao!" },
+      { name: "Andrea Martínez",   date: "09-19", pace: "5:10/km", wish:"¡A volar en tus entrenos, Andrea!" },
+      { name: "Roberto Díaz",      date: "09-20", pace: "4:45/km", wish:"Más podios este año, Roberto" },
+      { name: "Claudia Fernández", date: "09-21", pace: "6:00/km", wish:"Kilómetros llenos de sonrisas, Claudia" },
+      { name: "Javier López",      date: "09-22", pace: "5:30/km", wish:"¡Sigue rompiendo marcas, Javier!" },
+      { name: "Paola Torres",      date: "09-23", pace: "5:50/km", wish:"Que nunca falte la energía, Paola" },
+
+      /* más ejemplos para ver semanas diferentes */
+      { name: "Sofía Ramírez",     date: "09-24", pace: "5:35/km", wish:"¡Un año de nuevos PRs!" },
+      { name: "Diego Gómez",       date: "09-25", pace: "4:58/km", wish:"¡A tope en las cuestas!" },
+      { name: "Mariana Cruz",      date: "09-26", pace: "5:20/km", wish:"¡Rutas y alegría sin fin!" }
     ];
 
-    // ========= UTILIDADES FECHA =========
+    /* ========= Utilidades de fecha y agrupación ========= */
     const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
     const fmtDM = (d)=> d.toLocaleDateString('es-MX',{day:'2-digit',month:'short'}).replace('.', '');
     const at0=d=>{ const x=new Date(d); x.setHours(0,0,0,0); return x };
@@ -202,13 +234,17 @@
     const isSameDay=(a,b)=> at0(a).getTime()===at0(b).getTime();
 
     function groupByWeek(list){
-      const today=new Date(); const start=mondayOfWeek(today), end=sundayOfWeek(today);
+      const today=new Date();
+      const start=mondayOfWeek(today), end=sundayOfWeek(today);
       document.getElementById('week-range').textContent = `${fmtDM(start)} – ${fmtDM(end)}`;
       const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d) }
       const year=today.getFullYear(); const map=new Map(days.map(d=>[at0(d).getTime(), []]));
       for(const p of list){ const dt=parseMD(p.date, year); if(at0(dt)>=at0(start)&&at0(dt)<=at0(end)){ map.get(at0(dt).getTime()).push(p) } }
       const out=[]; const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
-      for(const d of days){ const label=isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()]; out.push({label,date:d,items:map.get(at0(d).getTime())||[]}) }
+      for(const d of days){
+        const label=isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()];
+        out.push({label,date:d,items:map.get(at0(d).getTime())||[]})
+      }
       out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
       return out;
     }
@@ -217,11 +253,14 @@
       const container=document.getElementById('vertical'); container.innerHTML='';
       const blocks=groupByWeek(BIRTHDAYS);
       blocks.forEach((g,idx)=>{
-        const section=document.createElement('section'); section.className='section'; section.setAttribute('data-aos','fade-up'); if(idx>0) section.setAttribute('data-aos-delay', String(80*idx));
+        const section=document.createElement('section'); section.className='section';
         const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
         const cards=document.createElement('div'); cards.className='cards';
-        if(!g.items.length){ const empty=document.createElement('div'); empty.className='card'; const p=document.createElement('p'); p.className='wish'; p.textContent='— Sin cumpleañer@s —'; empty.appendChild(p); cards.appendChild(empty); }
-        else{
+        if(!g.items.length){
+          const empty=document.createElement('div'); empty.className='card';
+          const p=document.createElement('p'); p.className='wish'; p.textContent='— Sin cumpleañer@s —';
+          empty.appendChild(p); cards.appendChild(empty);
+        }else{
           g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
             const c=document.createElement('div'); c.className='card';
             const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
@@ -235,17 +274,12 @@
       })
     }
 
-    // ===== EFECTOS =====
-    AOS.init({ once:true });
-    function confettiBurst(){
-      // Usa las burbujas existentes como fondo festivo; si quieres confeti adicional puedo agregarlo.
-    }
-
-    document.getElementById('btn-celebrate').addEventListener('click', confettiBurst);
+    // Botones
     document.getElementById('btn-hoy').addEventListener('click', ()=>{
-      const hoy=[...document.querySelectorAll('.title-day')].find(n=> n.textContent.trim()==='HOY'); if(hoy) hoy.scrollIntoView({behavior:'smooth',block:'start'});
+      const hoy=[...document.querySelectorAll('.title-day')].find(n=> n.textContent.trim()==='HOY');
+      if(hoy) hoy.scrollIntoView({behavior:'smooth',block:'start'});
     });
-    document.getElementById('btn-refetch').addEventListener('click', render);
+    document.getElementById('btn-reload').addEventListener('click', render);
 
     // Init
     render();
