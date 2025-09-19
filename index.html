@@ -12,23 +12,17 @@
 
   <style>
     :root{
-      /* Paleta pastel festiva */
-      --ink:#0b0f18; 
-      --ink2:#12172a;
+      /* Paleta pastel súper festiva */
+      --p1:#ffd1dc; --p2:#ffe5b4; --p3:#fff6a5; --p4:#c7f9cc;
+      --p5:#bae1ff; --p6:#e6d2ff; --p7:#ffc8dd; --p8:#f8d7ff;
 
-      /* Pasteles (confeti/partículas) */
-      --p1:#ffd1dc;  /* rosita */
-      --p2:#ffe5b4;  /* durazno */
-      --p3:#fff6a5;  /* amarillo suave */
-      --p4:#c7f9cc;  /* verde menta */
-      --p5:#bae1ff;  /* celeste */
-      --p6:#e6d2ff;  /* lila */
-      --p7:#ffc8dd;  /* rosa pastel vivo */
+      --ink:#0e1224; 
+      --ink2:#10162e;
 
-      --text:#fbfdff; 
-      --muted:#dfe7ff;
+      --text:#ffffff;
+      --muted:#e9efff;
 
-      /* Puedes cambiar esta imagen, pero dejé el fondo en gradiente pastel */
+      /* Si quieres usar una imagen de fondo, reemplaza por url('TU_IMAGEN.jpg') */
       --bg-img:none;
     }
 
@@ -36,76 +30,98 @@
     body{
       margin:0; color:var(--text);
       font-family: Inter, system-ui, sans-serif;
-
-      /* Fondo: degradado pastel con ligero “glow” radial */
-      background-image:
-        radial-gradient(1200px 800px at 20% -10%, rgba(255, 208, 236, .35), transparent 60%),
-        radial-gradient(1000px 700px at 90% 0%, rgba(186, 225, 255, .35), transparent 60%),
-        linear-gradient(180deg, #1a1f35 0%, #141a2d 40%, #10172a 100%),
-        var(--bg-img);
-      background-blend-mode: screen, screen, normal, normal;
-      background-size: cover, cover, auto, cover;
-      background-position: center top, right top, center, center;
-      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-
       overflow-x:hidden;
+
+      /* Fondo animado pastel + halos */
+      background:
+        radial-gradient(900px 600px at 12% -8%, rgba(255,209,220,.45), transparent 60%),
+        radial-gradient(900px 600px at 88% 0%, rgba(186,225,255,.45), transparent 60%),
+        radial-gradient(1000px 800px at 50% 120%, rgba(199,249,204,.30), transparent 60%),
+        linear-gradient(120deg, #1a2040, #141b34 30%, #10172a 70%, #0d1426),
+        var(--bg-img);
+      background-blend-mode: screen, screen, screen, normal, normal;
+      background-attachment: fixed, fixed, fixed, fixed, fixed;
+      animation: hue 18s linear infinite;
+    }
+    @keyframes hue { 
+      0%{ filter:hue-rotate(0deg) } 
+      100%{ filter:hue-rotate(10deg) } 
     }
 
     /* Particles canvas */
     #particles-bg{position:fixed; inset:0; z-index:-1}
 
     /* Header */
-    header{padding:30px 18px; text-align:center; position:relative;}
+    header{padding:32px 18px 16px; text-align:center; position:relative;}
     .logo-big{
       width:160px; height:160px; object-fit:cover; border-radius:50%;
       border:2px solid rgba(255,255,255,.65);
       box-shadow:0 0 55px rgba(255, 214, 240, .55), 0 0 100px rgba(186,225,255,.45);
       margin-bottom:18px;
+      background: linear-gradient(145deg, rgba(255,255,255,.2), rgba(255,255,255,.05));
     }
     .title{
       font-family:Outfit; font-weight:900; font-size:clamp(32px,4.8vw,60px);
-      background:linear-gradient(90deg,var(--p1),var(--p5),var(--p6),var(--p2),var(--p4));
+      background:linear-gradient(90deg,var(--p1),var(--p5),var(--p6),var(--p2),var(--p4),var(--p7));
       -webkit-background-clip:text; background-clip:text; color:transparent;
       text-shadow:0 2px 8px rgba(0,0,0,.4)
     }
-    .subtitle{display:block; font-size:14px; color:var(--muted); margin-top:6px}
+    .subtitle{display:block; font-size:14px; color:var(--muted); margin-top:6px; letter-spacing:.4px}
 
     .fiesta-title{
       margin:12px auto 0; text-align:center; font-family:Outfit; font-weight:900;
       font-size:clamp(28px,4.4vw,56px); line-height:1.1;
-      text-shadow:0 2px 0 rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
+      text-shadow:0 2px 0 rgba(0,0,0,.28), 0 6px 18px rgba(0,0,0,.35);
       animation:popTitle 1s ease both
     }
     @keyframes popTitle{from{transform:scale(.8); opacity:0}to{transform:scale(1); opacity:1}}
 
     /* Layout */
     main{max-width:1200px; margin:20px auto 80px; padding:0 18px}
-    .week{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; margin-top:26px}
-    .day{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:22px; padding:18px; backdrop-filter:blur(14px)}
-    .dname{font-family:Outfit; font-weight:900; font-size:22px; margin-bottom:12px}
-    .card{
-      position:relative; text-align:center; padding:16px; border-radius:18px; background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.25); box-shadow:0 6px 28px rgba(0,0,0,.3)
+    .week{
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:20px; margin-top:26px
     }
+    .day{
+      background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.22);
+      border-radius:22px; padding:18px; backdrop-filter:blur(14px);
+      box-shadow:0 8px 36px rgba(0,0,0,.35)
+    }
+    .dname{
+      display:flex; align-items:center; gap:10px;
+      font-family:Outfit; font-weight:900; font-size:22px; margin-bottom:12px
+    }
+    .dname .pill{
+      font-size:12px; padding:4px 10px; border-radius:999px;
+      background:linear-gradient(90deg,var(--p6),var(--p3)); color:#1b1c2e;
+      font-weight:700; letter-spacing:.2px
+    }
+    .card{
+      position:relative; text-align:center; padding:16px; border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.28); box-shadow:0 6px 28px rgba(0,0,0,.28);
+      transition: transform .2s ease;
+    }
+    .card:hover{ transform: translateY(-2px) }
     .card::before{content:"🎂"; position:absolute; left:10px; top:8px; font-size:18px}
     .name{font-family:Outfit; font-weight:900; font-size:20px; margin:0 0 6px}
-    .wish{font-size:15px; color:var(--muted)}
+    .wish{font-size:15px; color:var(--muted); margin:0}
 
     footer{text-align:center; padding:30px 16px; color:var(--muted)}
 
-    /* Confeti (único efecto visual adicional) */
+    /* Confeti (único efecto) */
     .confetti{
-      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.95;
+      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.98;
       border-radius:2px; pointer-events:none; animation:fall linear forwards;
       will-change: transform, opacity;
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,.15));
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,.12));
       mix-blend-mode: screen;
     }
     @keyframes fall{
-      to{ transform:translateY(110vh) rotate(540deg); opacity:.98 }
+      to{ transform:translateY(110vh) rotate(540deg); opacity:1 }
     }
 
-    /* Preferencias de accesibilidad: reduce motion */
+    /* Preferencias de accesibilidad */
     @media (prefers-reduced-motion: reduce){
       .confetti{animation-duration:0s !important}
       *{animation:none !important; transition:none !important}
@@ -130,29 +146,7 @@
   </header>
 
   <main>
-    <div class="week">
-      <!-- HOY -->
-      <div class="day" data-aos="fade-up">
-        <div class="dname">Hoy</div>
-        <div class="card">
-          <p class="name">Edgar Runner</p>
-          <p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p>
-        </div>
-        <div class="card">
-          <p class="name">Liliana Romero</p>
-          <p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p>
-        </div>
-      </div>
-
-      <!-- MAÑANA -->
-      <div class="day" data-aos="fade-up" data-aos-delay="100">
-        <div class="dname">Mañana</div>
-        <div class="card">
-          <p class="name">Omar Francisco</p>
-          <p class="wish">Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre! 🎂✨</p>
-        </div>
-      </div>
-    </div>
+    <div id="week" class="week" aria-live="polite"></div>
   </main>
 
   <footer>
@@ -163,36 +157,53 @@
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // AOS
+    // =================== CONFIG DATOS ===================
+    // Opción A) Lista interna (MM-DD)
+    const BIRTHDAYS = [
+      { name: "Edgar Runner",   date: "08-17" },
+      { name: "Liliana Romero", date: "08-17" },
+      { name: "Omar Francisco", date: "08-18" },
+      { name: "María López",    date: "08-20" },
+      { name: "Carlos Pérez",   date: "08-21" },
+      { name: "Ana Gómez",      date: "08-23" },
+    ];
+
+    // Opción B) Google Sheets publicado como CSV
+    // - En tu Sheet usa columnas: name, date (MM-DD)
+    // - Archivo > Compartir > Publicar en la Web > CSV del sheet
+    // - Pega la URL abajo; si está vacía, se usa BIRTHDAYS.
+    const SHEETS_CSV_URL = ""; // <-- pega aquí tu URL CSV si la usas
+
+    // Mensaje de felicitación
+    const WISH_TEXT = (nombre)=>`Que este nuevo año esté lleno de kilómetros, salud y logros. ¡Te celebra la familia Recorre, ${nombre}! 🎂✨`;
+
+    // =================== UI / EFECTOS ===================
     AOS.init({ once:true });
 
-    // Partículas pastel
     particlesJS('particles-bg', {
       particles: {
-        number:{value:70},
-        color:{value:['#ffd1dc','#ffe5b4','#fff6a5','#c7f9cc','#bae1ff','#e6d2ff','#ffc8dd']},
+        number:{ value: 80 },
+        color:{ value:['#ffd1dc','#ffe5b4','#fff6a5','#c7f9cc','#bae1ff','#e6d2ff','#ffc8dd','#f8d7ff'] },
         opacity:{ value:0.7, random:true },
-        size:{value:3, random:true},
-        move:{enable:true, speed:1.1, random:true}
+        size:{ value:3, random:true },
+        move:{ enable:true, speed:1.2, random:true }
       },
-      interactivity:{ events:{ onhover:{enable:true,mode:'repulse'} } },
+      interactivity:{ events:{ onhover:{ enable:true, mode:'repulse' } } },
       retina_detect: true
     });
 
-    // ========= CONFETI (único efecto) =========
-    // Multi-forma/rotación para "sorpresa" visual
-    const CONFETTI_COLORS = ['#ffd1dc','#ffe5b4','#fff6a5','#c7f9cc','#bae1ff','#e6d2ff','#ffc8dd'];
-    const CONFETTI_SHAPES = ['rect', 'circle', 'tilt']; // tilt = rombo/triángulo estilizado
+    // Confeti
+    const CONFETTI_COLORS = ['#ffd1dc','#ffe5b4','#fff6a5','#c7f9cc','#bae1ff','#e6d2ff','#ffc8dd','#f8d7ff'];
+    const CONFETTI_SHAPES = ['rect', 'circle', 'tilt'];
 
-    function spawnConfetti(n=140, durationRange=[2.8, 4.2]){
+    function spawnConfetti(n=150, durationRange=[2.2, 3.4]){
       for(let i=0;i<n;i++){
-        const el=document.createElement('span'); 
+        const el=document.createElement('span');
         el.className='confetti';
-        // color
-        el.style.background=CONFETTI_COLORS[(Math.random()*CONFETTI_COLORS.length)|0];
-        // posición inicial horizontal
-        el.style.left=(Math.random()*100)+'vw';
-        // tamaño y forma
+
+        el.style.background = CONFETTI_COLORS[(Math.random()*CONFETTI_COLORS.length)|0];
+        el.style.left = (Math.random()*100)+'vw';
+
         const shape = CONFETTI_SHAPES[(Math.random()*CONFETTI_SHAPES.length)|0];
         if(shape==='circle'){
           const d = 6 + Math.random()*6;
@@ -206,31 +217,188 @@
           el.style.height = h+'px';
           el.style.transform = `rotate(${Math.random()*360}deg) skew(${10+Math.random()*20}deg)`;
         }else{
-          // rect por defecto
           el.style.width = (6+Math.random()*6)+'px';
           el.style.height = (10+Math.random()*10)+'px';
           el.style.borderRadius = '2px';
         }
-        // duración de la caída (más rápida para sensación de abundancia)
+
         const dur = (durationRange[0] + Math.random()*(durationRange[1]-durationRange[0]));
         el.style.animationDuration = dur+'s';
         document.body.appendChild(el);
         setTimeout(()=>el.remove(), (dur*1000)+1200);
       }
     }
-
-    // Disparos más frecuentes (cada 3.5s) y ráfaga inicial grande
     function startConfettiShow(){
-      spawnConfetti(180, [2.3, 3.6]);   // ráfaga inicial
-      setInterval(()=>spawnConfetti(120, [2.4, 3.8]), 3500);
+      spawnConfetti(220, [2.0, 3.2]);                    // ráfaga inicial
+      setInterval(()=>spawnConfetti(140, [2.2, 3.4]), 3000); // más frecuente
     }
 
-    // Inicio
-    startConfettiShow();
+    // =================== LÓGICA DE SEMANA ===================
+    const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
-    // ======= Limpieza: NO globos =======
-    // Se eliminaron estilos y funciones de "balloons" por petición.
+    function atMidnight(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
 
+    function mondayOfWeek(d){
+      const x = atMidnight(d);
+      const day = x.getDay(); // 0 dom, 1 lun...
+      const diff = (day === 0 ? -6 : 1 - day); // llevar a lunes
+      x.setDate(x.getDate()+diff);
+      return x;
+    }
+    function sundayOfWeek(d){
+      const mon = mondayOfWeek(d);
+      const sun = new Date(mon);
+      sun.setDate(mon.getDate()+6);
+      return sun;
+    }
+
+    function nextOccurrence(month, day){
+      const now = new Date();
+      let y = now.getFullYear();
+      let d = new Date(y, month-1, day);
+      // Si ya pasó este año, usar el siguiente
+      if(d < atMidnight(now)) d = new Date(y+1, month-1, day);
+      return d;
+    }
+
+    // Manejar 29 de Febrero (cae a 28 si no es bisiesto)
+    function safeDate(year, month, day){
+      const d = new Date(year, month-1, day);
+      if(month===2 && day===29 && d.getMonth()!==1){ // no bisiesto
+        return new Date(year, 1, 28);
+      }
+      return d;
+    }
+
+    function withinWeek(date, start, end){
+      const x = atMidnight(date);
+      return x >= start && x <= end;
+    }
+
+    function labelForDate(date, today){
+      const delta = atMidnight(date) - atMidnight(today);
+      const days = Math.round(delta / (1000*60*60*24));
+      if(days === 0) return 'Hoy';
+      if(days === 1) return 'Mañana';
+      return dayNames[date.getDay()];
+    }
+
+    function groupThisWeek(bdays){
+      const today = new Date();
+      const start = mondayOfWeek(today);
+      const end = sundayOfWeek(today);
+
+      // Semillas de 7 días
+      const groups = {};
+      for(let i=0;i<7;i++){
+        const d = new Date(start); d.setDate(start.getDate()+i);
+        const label = (i===0 && atMidnight(d).getTime()===atMidnight(today).getTime()) ? 'Hoy'
+                    : (i===1 && atMidnight(d).getTime()===atMidnight(new Date(today.getFullYear(), today.getMonth(), today.getDate()+1)).getTime()) ? 'Mañana'
+                    : dayNames[d.getDay()];
+        groups[label] = { date: d, items: [] };
+      }
+
+      const year = new Date().getFullYear();
+      for(const {name, date} of bdays){
+        const [mm, dd] = date.split('-').map(Number);
+        const d = safeDate(year, mm, dd);
+        // Si ya pasó dentro del año, considerar año+1 (para no traer semanas pasadas)
+        const occ = (atMidnight(d) < start) ? safeDate(year+1, mm, dd) : d;
+        if(withinWeek(occ, start, end)){
+          const label = labelForDate(occ, today);
+          const nice = { name, wish: WISH_TEXT(name), date: occ };
+          if(!groups[label]) groups[label] = {date:occ, items:[]};
+          groups[label].items.push(nice);
+        }
+      }
+
+      // Ordenar por fecha del grupo
+      return Object.entries(groups)
+        .sort((a,b)=>a[1].date - b[1].date)
+        .map(([label, data])=>({ label, date:data.date, items:data.items }));
+    }
+
+    function renderWeek(groups){
+      const container = document.getElementById('week');
+      container.innerHTML = '';
+      const hasBirthdays = groups.some(g => g.items.length);
+
+      for(const [idx, g] of groups.entries()){
+        const day = document.createElement('div');
+        day.className = 'day';
+        day.setAttribute('data-aos','fade-up');
+        if(idx>0) day.setAttribute('data-aos-delay', String(idx*80));
+
+        const h = document.createElement('div');
+        h.className = 'dname';
+        const label = document.createElement('span');
+        label.textContent = g.label;
+        const pill = document.createElement('span');
+        pill.className = 'pill';
+        pill.textContent = g.date.toLocaleDateString('es-MX', { day:'2-digit', month:'short' }).replace('.','');
+        h.appendChild(label); h.appendChild(pill);
+
+        day.appendChild(h);
+
+        if(g.items.length === 0){
+          const empty = document.createElement('div');
+          empty.className = 'wish';
+          empty.style.padding = '8px 4px 4px';
+          empty.textContent = '— Sin cumpleañeros —';
+          day.appendChild(empty);
+        }else{
+          g.items
+            .sort((a,b)=> a.name.localeCompare(b.name))
+            .forEach(item=>{
+              const card = document.createElement('div');
+              card.className = 'card';
+              const n = document.createElement('p'); n.className='name'; n.textContent = item.name;
+              const w = document.createElement('p'); w.className='wish'; w.textContent = item.wish;
+              card.appendChild(n); card.appendChild(w);
+              day.appendChild(card);
+            });
+        }
+
+        container.appendChild(day);
+      }
+
+      if(hasBirthdays){
+        // Ráfaga extra si sí hay cumple en la semana
+        spawnConfetti(260, [1.9, 3.0]);
+      }
+    }
+
+    // =================== CARGA DE DATOS ===================
+    async function loadBirthdays(){
+      if(SHEETS_CSV_URL){
+        try{
+          const res = await fetch(SHEETS_CSV_URL);
+          const csv = await res.text();
+          // Parse CSV simple: primera fila headers: name,date
+          const lines = csv.trim().split(/\r?\n/);
+          const headers = lines.shift().split(',').map(h=>h.trim().toLowerCase());
+          const nameIdx = headers.indexOf('name');
+          const dateIdx = headers.indexOf('date');
+          const rows = lines
+            .map(l=>l.split(','))
+            .filter(cols => cols[nameIdx] && cols[dateIdx])
+            .map(cols => ({ name: cols[nameIdx].trim(), date: cols[dateIdx].trim() }));
+          return rows.length ? rows : BIRTHDAYS;
+        }catch(e){
+          console.warn('No se pudo leer el CSV, usando lista interna.', e);
+          return BIRTHDAYS;
+        }
+      }
+      return BIRTHDAYS;
+    }
+
+    // =================== INICIO ===================
+    (async function init(){
+      startConfettiShow();
+      const data = await loadBirthdays();
+      const groups = groupThisWeek(data);
+      renderWeek(groups);
+    })();
   </script>
 </body>
 </html>
