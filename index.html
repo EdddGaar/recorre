@@ -219,7 +219,7 @@
     document.getElementById('btn-reload').addEventListener('click', ()=> boot(true));
 
     /* ===== Carga dinámica desde Apps Script ===== */
-    const JSON_URL = "https://script.google.com/macros/s/AKfycbzl9SeIr9by7aPCRR7E2Xje8C_fomba5tbk3kus5U10AjgSy9tbvxMr3my9wI5p4CoV9g/exec"; // <-- Pega aquí tu URL de la WebApp (si usas rutas, añade ?route=birthdays)
+    const JSON_URL = "https://script.google.com/macros/s/AKfycbyceBPPrttEUT_qUZDikTRky3GMSCn0cgMASg0Ccwjx7ExSXYBxgbsHecW-fmeMX00e/exec"; // <-- Pega aquí tu URL de la WebApp (si usas rutas, añade ?route=birthdays)
 
     async function loadBirthdaysJSON(){
       const res = await fetch(JSON_URL, { cache:'no-store' });
