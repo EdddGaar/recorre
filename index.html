@@ -219,14 +219,29 @@
     document.getElementById('btn-reload').addEventListener('click', ()=> boot(true));
 
     /* ===== Carga dinámica desde Apps Script ===== */
-    const JSON_URL = "https://script.google.com/macros/s/AKfycbyceBPPrttEUT_qUZDikTRky3GMSCn0cgMASg0Ccwjx7ExSXYBxgbsHecW-fmeMX00e/exec"; // <-- Pega aquí tu URL de la WebApp (si usas rutas, añade ?route=birthdays)
+     // Pon aquí tu URL de WebApp (la misma que ya usabas):
+  const JSON_URL = "https://script.google.com/macros/s/AKfycbyceBPPrttEUT_qUZDikTRky3GMSCn0cgMASg0Ccwjx7ExSXYBxgbsHecW-fmeMX00e/exec?route=birthdays";
 
-    async function loadBirthdaysJSON(){
-      const res = await fetch(JSON_URL, { cache:'no-store' });
-      const raw = await res.text(); // tolerante si el server no responde JSON
-      try { return JSON.parse(raw); }
-      catch { console.warn('Respuesta no-JSON:', raw); return []; }
-    }
+  function loadBirthdaysJSONP(){
+    return new Promise((resolve,reject)=>{
+      const cbName = 'jsonp_cb_' + Math.random().toString(36).slice(2);
+      window[cbName] = (data)=>{ try{ resolve(data||[]); } finally{ cleanup(); } };
+      const s = document.createElement('script');
+      s.src = JSON_URL + '&callback=' + cbName;
+      s.async = true;
+      s.onerror = ()=>{ cleanup(); reject(new Error('JSONP load error')); };
+      document.head.appendChild(s);
+      function cleanup(){
+        try{ delete window[cbName]; }catch(_){}
+        if (s && s.parentNode) s.parentNode.removeChild(s);
+      }
+    });
+  }
+
+  async function loadBirthdaysJSON(){
+    // Ahora usamos JSONP por CORS
+    return await loadBirthdaysJSONP();
+  }
 
     function groupByWeek(list){
       const today=new Date(); const start=mondayOfWeek(today), end=sundayOfWeek(today);
