@@ -3,109 +3,128 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Recorre | Cumpleaños de la Semana</title>
+  <title>Re-corre | Cumpleaños de la Semana</title>
 
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Favicon (evita 404 en consola) -->
+  <!-- Favicon -->
   <link rel="icon" href="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg">
 
   <style>
     :root{
       --text:#ffffff; --muted:#eef1ff;
-      /* paleta azul → violeta (sin rosa) */
-      --p1:#6faeff;
-      --p2:#5977ff;
-      --p3:#7a61ff;
-      --p4:#b4a8ff;
+      /* Paleta azul/verde pastel (sin rosa) */
+      --p1:#6FAEFF; /* azul cielo */
+      --p2:#A0C4FF; /* azul claro */
+      --p3:#7BDFF2; /* celeste */
+      --p4:#B2F7EF; /* menta muy claro */
+      --p5:#C6F6D5; /* verde pastel */
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{ margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text); overflow-x:hidden; background:#1a2040; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:Inter,system-ui,sans-serif;color:var(--text);overflow-x:hidden;background:#0f1a2b}
 
-    /* Fondo degradado animado */
+    /* Fondo degradado animado azul→verde */
     .gradient{
-      position:fixed; inset:0; z-index:-4;
+      position:fixed;inset:0;z-index:-4;
       background:
-        radial-gradient(110% 110% at 10% 10%, color-mix(in oklab, var(--p1) 90%, white 6%), transparent 60%),
-        radial-gradient(110% 110% at 90% 15%, color-mix(in oklab, var(--p2) 90%, white 6%), transparent 60%),
-        radial-gradient(110% 110% at 50% 90%, color-mix(in oklab, var(--p3) 90%, white 6%), transparent 60%),
-        linear-gradient(135deg, var(--p1) 0%, var(--p2) 45%, var(--p3) 80%);
-      background-size: 140% 140%;
-      animation: gradientShift 14s ease-in-out infinite alternate;
-      filter: saturate(1.12) contrast(1.05);
+        radial-gradient(110% 110% at 18% 28%, color-mix(in oklab, var(--p1) 92%, white 6%) 0%, transparent 55%),
+        radial-gradient(110% 110% at 82% 22%, color-mix(in oklab, var(--p3) 92%, white 6%) 0%, transparent 55%),
+        radial-gradient(110% 110% at 48% 88%, color-mix(in oklab, var(--p4) 92%, white 6%) 0%, transparent 55%),
+        radial-gradient(110% 110% at 30% 72%, color-mix(in oklab, var(--p5) 92%, white 6%) 0%, transparent 55%),
+        linear-gradient(135deg, var(--p1) 0%, var(--p2) 25%, var(--p3) 50%, var(--p4) 75%, var(--p5) 100%);
+      background-size:200% 200%;
+      animation:gradientShift 15s ease-in-out infinite alternate;
+      filter:saturate(1.12) contrast(1.06);
     }
-    @keyframes gradientShift{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 0%}100%{background-position:0% 100%}}
 
-    /* Banderines */
-    .banners{ position:fixed; inset:0 0 auto 0; height:120px; z-index:-3; pointer-events:none }
-    .banner-wrap{ width:100%; height:100% }
+    /* Banderines (conservados) */
+    .banners{position:fixed;inset:0 0 auto 0;height:120px;z-index:-3;pointer-events:none}
+    .banner-wrap{width:100%;height:100%}
+    .banners svg{filter:drop-shadow(0 0 8px rgba(255,255,255,.28));animation:bannerFloat 4s ease-in-out infinite}
+    @keyframes bannerFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
-    /* Estrellas */
-    #stars{ position:fixed; inset:0; z-index:-2; pointer-events:none; mix-blend-mode:screen; opacity:.9 }
+    /* Estrellas mejoradas */
+    #stars{position:fixed;inset:0;z-index:-2;pointer-events:none;mix-blend-mode:screen;opacity:.9}
 
-    /* Confeti */
+    /* Confeti (azules y verdes) */
     .confetti{
-      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.98;
-      border-radius:2px; pointer-events:none; animation:fall linear forwards;
-      will-change: transform, opacity; filter: drop-shadow(0 2px 2px rgba(0,0,0,.12));
-      mix-blend-mode: screen;
+      position:fixed;top:-10px;width:8px;height:14px;z-index:5;opacity:.98;
+      border-radius:2px;pointer-events:none;animation:fall linear forwards;
+      will-change:transform,opacity;filter:drop-shadow(0 2px 2px rgba(0,0,0,.12));
+      mix-blend-mode:screen;
     }
-    @keyframes fall{ to{ transform:translateY(110vh) rotate(520deg); opacity:1 } }
+    @keyframes fall{to{transform:translateY(110vh) rotate(520deg);opacity:1}}
 
-    header{ text-align:center; padding:28px 18px 8px }
+    header{text-align:center;padding:28px 18px 8px;position:relative;display:flex;flex-direction:column;align-items:center}
     .logo{
-      width:120px; height:120px; border-radius:50%; object-fit:cover;
-      border:2px solid rgba(255,255,255,.85); box-shadow:0 0 40px rgba(0,0,0,.35); margin-bottom:12px
+      width:120px;height:120px;border-radius:50%;object-fit:cover;
+      border:3px solid rgba(255,255,255,.85);box-shadow:0 0 40px rgba(111,174,255,.45),0 0 20px rgba(111,174,255,.28);
+      animation:float 3s ease-in-out infinite, glowLogo 2s ease-in-out infinite alternate;position:relative;z-index:2
     }
-    .brand{ font-family:Outfit; font-weight:900; font-size:clamp(28px,4.4vw,52px); color:#fff; text-shadow:0 3px 12px rgba(0,0,0,.45) }
+    .logo::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px dashed rgba(255,255,255,0.55);animation:rotate 8s linear infinite;z-index:-1}
+    @keyframes rotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    @keyframes float{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.05)}100%{transform:translateY(0) scale(1)}}
+    @keyframes glowLogo{from{box-shadow:0 0 40px rgba(111,174,255,.45),0 0 20px rgba(111,174,255,.28)}to{box-shadow:0 0 60px rgba(111,174,255,.7),0 0 30px rgba(123,223,242,.45),0 0 10px rgba(255,255,255,.5)}}
 
-    main{ max-width:980px; margin:0 auto 86px; padding:0 18px }
+    .brand{
+      font-family:Outfit;font-weight:900;font-size:clamp(28px,4.4vw,52px);margin:8px 0 0;letter-spacing:1px;
+      background:linear-gradient(45deg,var(--p1),var(--p2),var(--p3),var(--p5));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-size:300% 300%;animation:gradientText 4s ease infinite,bounceText 2s ease-in-out infinite;
+      text-shadow:0 3px 12px rgba(0,0,0,.45)
+    }
+    @keyframes gradientText{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes bounceText{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+    main{max-width:980px;margin:0 auto 86px;padding:0 18px}
+
     .phrase{
-      text-align:center; margin:10px auto 18px; max-width:880px; font-size:clamp(16px,2.4vw,20px);
-      color:#fff; background:rgba(0,0,0,.20); border:1px solid rgba(255,255,255,.25);
-      border-radius:16px; padding:12px 16px; backdrop-filter: blur(6px)
+      text-align:center;margin:10px auto 18px;max-width:880px;font-size:clamp(16px,2.4vw,20px);
+      color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);
+      border-radius:16px;padding:12px 16px;backdrop-filter:blur(6px);position:relative;overflow:hidden;
+      animation:pulse 2s ease-in-out infinite
     }
+    .phrase::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);animation:shine 3s infinite}
+    @keyframes shine{0%{left:-100%}100%{left:100%}}
+    @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:0.86;transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
 
-    .toolbar{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin:6px 0 14px }
-    .btn{
-      appearance:none; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; color:#1a2040; font-weight:800;
-      background:linear-gradient(180deg,#fff,#f2f5ff); box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 #fff; transition:.15s; font-family:Inter
-    }
-    .btn:hover{ transform: translateY(-1px); box-shadow:0 12px 30px rgba(0,0,0,.32), inset 0 1px 0 #fff }
-    .btn-ghost{ background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10)); color:#fff; border:1px solid rgba(255,255,255,.28) }
+    .toolbar{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
+    .btn{appearance:none;border:none;border-radius:999px;padding:10px 16px;cursor:pointer;color:#0f1a2b;font-weight:800;background:linear-gradient(180deg,#fff,#f2f5ff);box-shadow:0 8px 24px rgba(0,0,0,.25),inset 0 1px 0 #fff;transition:.15s;font-family:Inter;position:relative;overflow:hidden}
+    .btn::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);transition:.5s}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 12px 30px rgba(0,0,0,.32),inset 0 1px 0 #fff}
+    .btn:hover::before{left:100%}
+    .btn-ghost{background:linear-gradient(45deg,rgba(111,174,255,0.28),rgba(123,223,242,0.28),rgba(182,246,239,0.28));color:#fff;border:1px solid rgba(255,255,255,.28)}
 
-    .section{ margin:22px auto; padding:16px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26);
-      border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35) }
-    .title-day{ text-align:center; font-family:Outfit; font-weight:900; margin:0 0 14px; font-size:clamp(28px,6.5vw,64px); line-height:1.05; text-shadow:0 3px 10px rgba(0,0,0,.4) }
-    .title-day.small{ font-size:clamp(22px,4.6vw,40px) }
+    .section{margin:22px auto;padding:16px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);border-radius:22px;backdrop-filter:blur(14px);box-shadow:0 10px 36px rgba(0,0,0,.25),0 0 30px rgba(111,174,255,0.12);position:relative;overflow:hidden}
+    .section::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3),var(--p5));background-size:200% 100%;animation:gradientShift 3s ease-in-out infinite}
 
-    .cards{ display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto }
-    .card{
-      position:relative; text-align:center; padding:18px 16px; border-radius:18px;
-      background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10));
-      box-shadow:0 6px 28px rgba(0,0,0,.30); transition:transform .18s ease, box-shadow .18s ease; overflow:hidden
-    }
-    .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.40) }
-    .card::before{content:"🎂"; position:absolute; left:10px; top:10px; font-size:18px}
-    .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px; color:#fff}
-    .meta{font-size:14px; opacity:.95; margin:0 0 8px; color:#eef1ff}
-    .wish{font-size:15px; color:#fff; margin:0}
-    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900 }
+    .title-day{ text-align:center;font-family:Outfit;font-weight:900;margin:0 0 14px;font-size:clamp(28px,6.5vw,64px);line-height:1.05;
+      background:linear-gradient(45deg,var(--p1),var(--p2),var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:gradientText 3s ease infinite }
+    .title-day.small{font-size:clamp(22px,4.6vw,40px)}
 
-    footer{text-align:center; padding:24px 16px; color:#fff}
+    .cards{display:grid;grid-template-columns:1fr;gap:14px;max-width:760px;margin:0 auto}
+    .card{position:relative;text-align:center;padding:18px 16px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.15),rgba(255,255,255,.05));box-shadow:0 6px 28px rgba(0,0,0,.20),0 0 15px rgba(111,174,255,0.12);transition:transform .18s ease,box-shadow .18s ease;overflow:hidden;border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(5px)}
+    .card:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 36px rgba(0,0,0,.30),0 0 20px rgba(123,223,242,0.18);background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,.10))}
+    .card::before{content:"🎂";position:absolute;left:10px;top:10px;font-size:18px;text-shadow:0 0 5px rgba(255,255,255,0.5)}
 
-    @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
-    @media (prefers-reduced-motion: reduce){
-      .gradient{animation:none} .confetti{animation-duration:0s !important} *{transition:none !important}
-    }
+    .name{font-family:Outfit;font-weight:900;font-size:clamp(18px,3.5vw,24px);margin:0 0 6px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3);background:linear-gradient(45deg,var(--p1),var(--p2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradientText 4s ease infinite}
+    .meta{font-size:14px;opacity:.95;margin:0 0 8px;color:#eef1ff;text-shadow:0 1px 2px rgba(0,0,0,0.2)}
+    .wish{font-size:15px;color:#fff;margin:0;line-height:1.4;text-shadow:0 1px 3px rgba(0,0,0,0.2)}
+
+    .badge{position:absolute;right:10px;top:10px;font-size:12px;padding:.2rem .5rem;border-radius:999px;background:linear-gradient(45deg,var(--p1),var(--p3));color:#0f1a2b;font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,0.2);border:2px solid rgba(255,255,255,0.3)}
+
+    footer{text-align:center;padding:24px 16px;color:#fff;background:rgba(0,0,0,0.22);backdrop-filter:blur(5px);border-top:1px solid rgba(255,255,255,0.1)}
+
+    @media (min-width:720px){.cards{grid-template-columns:repeat(2,1fr)}}
+    @media (prefers-reduced-motion:reduce){.gradient,.confetti,*{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
   <div class="gradient" aria-hidden="true"></div>
 
-  <!-- Banderines -->
+  <!-- Banderines conservados -->
   <div class="banners" aria-hidden="true">
     <svg class="banner-wrap" viewBox="0 0 1200 200" preserveAspectRatio="none">
       <path d="M0,60 C300,120 900,0 1200,80" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="4" />
@@ -139,8 +158,8 @@
   <canvas id="stars"></canvas>
 
   <header>
-    <img class="logo" src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Recorre" />
-    <div class="brand">Recorre</div>
+    <img class="logo" src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Re-corre" />
+    <h1 class="brand">Re-corre</h1>
   </header>
 
   <main>
@@ -155,36 +174,37 @@
     <div id="vertical"></div>
   </main>
 
-  <footer>#RecorreToluca 💙💜 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
+  <footer>#Re-correToluca 💙💜 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
 
   <!-- PapaParse para leer CSV publicado -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
   <script>
-    /* ===== Estrellas ===== */
+    /* ===== Estrellas mejoradas (twinkle) ===== */
     (function stars(){
       const c = document.getElementById('stars');
       const ctx = c.getContext('2d');
       let W, H, stars = [];
       function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; spawn(); }
       function spawn(){
-        const count = Math.min(180, Math.floor(W*H/9000));
+        const count = Math.min(200, Math.floor(W*H/8000));
         stars = new Array(count).fill(0).map(()=>({
           x: Math.random()*W,
           y: Math.random()*H*0.7 + 10,
-          r: Math.random()*1.8 + 0.6,
-          a: Math.random()*0.5 + 0.4,
-          speed: Math.random()*0.003 + 0.0015,
-          phase: Math.random()*Math.PI*2
+          r: Math.random()*2 + 0.5,
+          a: Math.random()*0.6 + 0.3,
+          tw: Math.random()*0.02 + 0.01,
+          ph: Math.random()*Math.PI*2
         }));
       }
       function tick(){
         ctx.clearRect(0,0,W,H);
         for(const s of stars){
-          s.phase += s.speed;
-          const alpha = s.a * (0.5 + 0.5*Math.sin(s.phase));
-          const grad = ctx.createRadialGradient(s.x,s.y,0, s.x,s.y,s.r*3);
+          s.ph += s.tw;
+          const alpha = s.a * (0.5 + 0.5*Math.sin(s.ph));
+          const grad = ctx.createRadialGradient(s.x,s.y,0, s.x,s.y,s.r*4);
           grad.addColorStop(0, `rgba(255,255,255,${alpha})`);
+          grad.addColorStop(0.7, `rgba(255,255,255,${alpha*0.6})`);
           grad.addColorStop(1, `rgba(255,255,255,0)`);
           ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
         }
@@ -193,7 +213,7 @@
       addEventListener('resize', resize); resize(); requestAnimationFrame(tick);
     })();
 
-    /* ===== Fecha utils ===== */
+    /* ===== Fecha utils (semana L-D) ===== */
     const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
     const fmtDM = (d)=> d.toLocaleDateString('es-MX',{day:'2-digit',month:'short'}).replace('.', '');
     const at0=d=>{ const x=new Date(d); x.setHours(0,0,0,0); return x };
@@ -202,22 +222,27 @@
     function parseMD(md, year){ const [m, d]=md.split('-').map(Number); return new Date(year, m-1, d) }
     const isSameDay=(a,b)=> at0(a).getTime()===at0(b).getTime();
 
-    /* ===== Confeti ===== */
-    const CONFETTI_COLORS = ['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
-    const CONFETTI_SHAPES = ['rect','circle','tilt'];
-    function confettiBurst(n=240, dur=[1.8, 3.0]){
+    /* ===== Confeti (formas + flash) ===== */
+    const CONFETTI_COLORS = ['#6FAEFF','#7BDFF2','#A0C4FF','#B2F7EF','#C6F6D5','#00D1FF','#14E0A1','#E6FFFA','#E0F2FE','#CCFBF1'];
+    const CONFETTI_SHAPES = ['rect','circle','tilt','star'];
+    function confettiBurst(n=260, dur=[1.5,3.0]){
       for(let i=0;i<n;i++){
         const el = document.createElement('span'); el.className = 'confetti';
         el.style.left = (Math.random()*100)+'vw';
         el.style.background = CONFETTI_COLORS[(Math.random()*CONFETTI_COLORS.length)|0];
         const shape = CONFETTI_SHAPES[(Math.random()*CONFETTI_SHAPES.length)|0];
-        if(shape==='circle'){ const d=5+Math.random()*7; el.style.width=d+'px'; el.style.height=d+'px'; el.style.borderRadius='50%'; }
-        else if(shape==='tilt'){ const w=7+Math.random()*9, h=9+Math.random()*11; el.style.width=w+'px'; el.style.height=h+'px'; el.style.transform=`rotate(${Math.random()*360}deg) skew(${10+Math.random()*20}deg)`; }
-        else{ el.style.width=(6+Math.random()*6)+'px'; el.style.height=(10+Math.random()*10)+'px'; el.style.borderRadius='2px'; }
+        if(shape==='circle'){ const d=5+Math.random()*8; el.style.width=d+'px'; el.style.height=d+'px'; el.style.borderRadius='50%'; }
+        else if(shape==='tilt'){ const w=7+Math.random()*10, h=9+Math.random()*12; el.style.width=w+'px'; el.style.height=h+'px'; el.style.transform=`rotate(${Math.random()*360}deg) skew(${10+Math.random()*20}deg)`; }
+        else if(shape==='star'){ const size = 8 + Math.random() * 6; el.style.width = size + 'px'; el.style.height = size + 'px'; el.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'; }
+        else{ el.style.width=(6+Math.random()*8)+'px'; el.style.height=(10+Math.random()*12)+'px'; el.style.borderRadius='2px'; }
         const t = dur[0] + Math.random()*(dur[1]-dur[0]); el.style.animationDuration = t+'s';
-        document.body.appendChild(el); setTimeout(()=>el.remove(), t*1000 + 1200);
+        document.body.appendChild(el); setTimeout(()=>{ if(el.parentNode) el.remove(); }, t*1000 + 1400);
       }
+      document.body.style.animation = 'flash 0.5s ease-out'; setTimeout(()=>{ document.body.style.animation=''; }, 500);
     }
+
+    // inyectar keyframes flash si no existen
+    (function ensureFlashKF(){ const id='flash-kf'; if(!document.getElementById(id)){ const s=document.createElement('style'); s.id=id; s.textContent='@keyframes flash{0%{opacity:1}50%{opacity:.85}100%{opacity:1}}'; document.head.appendChild(s); } })();
 
     /* ===== Botones ===== */
     document.getElementById('btn-celebrar').addEventListener('click', ()=> confettiBurst());
@@ -227,7 +252,7 @@
     });
     document.getElementById('btn-reload').addEventListener('click', ()=> boot(true));
 
-    /* ===== Fuente de datos: Google Sheets publicado como CSV ===== */
+    /* ===== Fuente de datos: Google Sheets publicado como CSV (mismo link) ===== */
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN-lWu2WBwCmFHqb8aI6ObDNvuGYjSoHdNE62eP4Gp7PXhgsOBRvN3h7uXRQWQNTcD7mttS5mjEouW/pub?output=csv";
 
     async function fetchBirthdaysFromCSV(){
@@ -243,7 +268,7 @@
       // Mapear columnas flexibles
       const normalize = s => (s||'').toString().trim();
       const findKey = (obj, candidates) => {
-        const keys = Object.keys(obj).map(k => [k, k.toLowerCase()]);
+        const keys = Object.keys(obj||{}).map(k => [k, k.toLowerCase()]);
         for(const c of candidates){
           const i = keys.findIndex(([orig,low]) => low.includes(c));
           if(i>=0) return keys[i][0];
@@ -289,7 +314,7 @@
       return out;
     }
 
-    /* ===== Lógica de UI ===== */
+    /* ===== Lógica de UI: semana L-D (con HOY/Mañana) ===== */
     function groupByWeek(list){
       const today=new Date(); const start=mondayOfWeek(today), end=sundayOfWeek(today);
       document.getElementById('week-range').textContent = `${fmtDM(start)} – ${fmtDM(end)}`;
@@ -308,16 +333,9 @@
 
       const blocks=groupByWeek(window.BIRTHDAYS || []);
       blocks.forEach((g)=>{
-        const section=document.createElement('section'); 
-        section.className='section';
-
-        const h=document.createElement('h2'); 
-        h.className='title-day'+(g.label==='HOY'?'':' small'); 
-        h.textContent=g.label; 
-        section.appendChild(h);
-
-        const cards=document.createElement('div'); 
-        cards.className='cards';
+        const section=document.createElement('section'); section.className='section';
+        const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
+        const cards=document.createElement('div'); cards.className='cards';
 
         if(!g.items.length){
           const frasesDivertidas = [
@@ -328,48 +346,27 @@
             "Semana libre de velitas 🎂… aprovecha para bajar el tiempo en 10k",
             "Los cumpleañeros hicieron trampa y se escondieron… 🤔🎁"
           ];
-          const empty=document.createElement('div'); 
-          empty.className='card';
-          const p=document.createElement('p'); 
-          p.className='wish'; 
-          p.textContent=frasesDivertidas[Math.floor(Math.random()*frasesDivertidas.length)];
-          empty.appendChild(p); 
-          cards.appendChild(empty);
+          const empty=document.createElement('div'); empty.className='card';
+          const p=document.createElement('p'); p.className='wish'; p.textContent=frasesDivertidas[Math.floor(Math.random()*frasesDivertidas.length)];
+          empty.appendChild(p); cards.appendChild(empty);
         } else {
           g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
-            const c=document.createElement('div'); 
-            c.className='card';
-            const n=document.createElement('p'); 
-            n.className='name'; 
-            n.textContent=p.name;
-            const m=document.createElement('p'); 
-            m.className='meta'; 
-            m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
-            const w=document.createElement('p'); 
-            w.className='wish'; 
-            w.textContent=p.wish || '¡Muchas felicidades!';
-            const badge=document.createElement('span'); 
-            badge.className='badge'; 
-            badge.textContent='🎽 Recorre';
-            c.appendChild(badge); 
-            c.appendChild(n); 
-            c.appendChild(m); 
-            c.appendChild(w); 
-            cards.appendChild(c);
+            const c=document.createElement('div'); c.className='card';
+            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='🎽 Re-corre';
+            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
+            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
+            c.appendChild(badge); c.appendChild(n); c.appendChild(m); c.appendChild(w); cards.appendChild(c);
           });
         }
 
-        section.appendChild(cards); 
-        container.appendChild(section);
+        section.appendChild(cards); container.appendChild(section);
       });
 
-      // confeti auto:
+      // confeti auto
       const hasToday = blocks.some(b=> b.label==='HOY' && b.items.length);
-      if (hasToday) {
-        confettiBurst(160, [1.6, 2.6]);
-      } else {
-        confettiBurst(60, [1.2, 1.8]);
-      }
+      if (hasToday) setTimeout(()=> confettiBurst(160,[1.6,2.6]), 500);
+      else setTimeout(()=> confettiBurst(70,[1.2,1.8]), 800);
     }
 
     async function boot(forceReload=false){
@@ -393,7 +390,6 @@
       setTimeout(()=>{ boot(true); scheduleMidnightReload(); }, midnight-now);
     }
 
-    // Iniciar
     document.addEventListener('DOMContentLoaded', ()=>{ boot(); scheduleMidnightReload(); });
   </script>
 </body>
