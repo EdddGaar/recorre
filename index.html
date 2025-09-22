@@ -402,18 +402,33 @@
           cards.appendChild(empty);
         } else {
           g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
-            const c=document.createElement('div'); c.className='card';
-            const bg=document.createElement('div'); bg.className='bg';
-            const blob=document.createElement('div'); blob.className='blob';
-            const content=document.createElement('div'); content.className='content';
-            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='Re-corre';
-            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
-            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
-            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
-            content.appendChild(badge); content.appendChild(n); content.appendChild(m); content.appendChild(w);
-            c.appendChild(blob); c.appendChild(bg); c.appendChild(content);
-            cards.appendChild(c);
-          });
+  const c=document.createElement('div'); c.className='card';
+  const bg=document.createElement('div'); bg.className='bg';
+  const blob=document.createElement('div'); blob.className='blob';
+  const content=document.createElement('div'); content.className='content';
+
+  const n=document.createElement('p'); 
+  n.className='name'; 
+  n.textContent=p.name;
+
+  const m=document.createElement('p'); 
+  m.className='meta'; 
+  m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+
+  const w=document.createElement('p'); 
+  w.className='wish'; 
+  w.textContent=p.wish || '¡Muchas felicidades!';
+
+  content.appendChild(n); 
+  content.appendChild(m); 
+  content.appendChild(w);
+
+  c.appendChild(blob); 
+  c.appendChild(bg); 
+  c.appendChild(content);
+
+  cards.appendChild(c);
+});
         }
 
         section.appendChild(cards); container.appendChild(section);
