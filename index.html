@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Recorre | Cumpleaños de la Semana</title>
+  <title>Re-corre | Cumpleaños de la Semana</title>
 
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -24,7 +24,19 @@
     html,body{height:100%}
     body{ margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text); overflow-x:hidden; background:#1a2040; }
 
-    /* Fondo degradado animado */
+    /* ===== Fondo: carrusel de wallpapers ===== */
+    .wallpapers{
+      position:fixed; inset:0; z-index:-5; overflow:hidden;
+      background:#000;
+    }
+    .wallpapers img{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; opacity:0; transition:opacity 1s ease-in-out;
+      will-change: opacity;
+    }
+    .wallpapers img.show{ opacity:1; }
+
+    /* Fondo degradado animado (ligeramente translúcido para ver el wallpaper) */
     .gradient{
       position:fixed; inset:0; z-index:-4;
       background:
@@ -35,6 +47,7 @@
       background-size: 140% 140%;
       animation: gradientShift 14s ease-in-out infinite alternate;
       filter: saturate(1.12) contrast(1.05);
+      opacity:.78; /* ajusta si quieres más/menos del degradado */
     }
     @keyframes gradientShift{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
 
@@ -82,27 +95,63 @@
     .title-day.small{ font-size:clamp(22px,4.6vw,40px) }
 
     .cards{ display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto }
+    @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
+
+    /* ===== Card base: conserva tu layout + efecto Uiverse ===== */
     .card{
       position:relative; text-align:center; padding:18px 16px; border-radius:18px;
       background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10));
-      box-shadow:0 6px 28px rgba(0,0,0,.30); transition:transform .18s ease, box-shadow .18s ease; overflow:hidden
+      box-shadow:0 6px 28px rgba(0,0,0,.30);
+      transition:transform .18s ease, box-shadow .18s ease; overflow:hidden;
     }
     .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.40) }
-    .card::before{content:"🎂"; position:absolute; left:10px; top:10px; font-size:18px}
-    .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px; color:#fff}
-    .meta{font-size:14px; opacity:.95; margin:0 0 8px; color:#eef1ff}
-    .wish{font-size:15px; color:#fff; margin:0}
-    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900 }
+    .card::before{content:"🎂"; position:absolute; left:10px; top:10px; font-size:18px; z-index:4}
+
+    /* ===== Capas del efecto Uiverse dentro de .card ===== */
+    .card .bg{
+      position:absolute; top:5px; left:5px; right:5px; bottom:5px;
+      z-index:1; background: rgba(255, 255, 255, .95);
+      backdrop-filter: blur(24px); border-radius: 14px; overflow:hidden; outline:2px solid #fff2;
+    }
+    .card .blob{
+      position:absolute; z-index:0; top:50%; left:50%;
+      width:220px; height:220px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #ff7aa2, #7a61ff 60%, #00d1ff 100%);
+      opacity:.9; filter: blur(14px); animation: blob-bounce 5s infinite ease;
+    }
+    @keyframes blob-bounce {
+      0%   { transform: translate(-100%, -100%) translate3d(0, 0, 0); }
+      25%  { transform: translate(-100%, -100%) translate3d(100%, 0, 0); }
+      50%  { transform: translate(-100%, -100%) translate3d(100%, 100%, 0); }
+      75%  { transform: translate(-100%, -100%) translate3d(0, 100%, 0); }
+      100% { transform: translate(-100%, -100%) translate3d(0, 0, 0); }
+    }
+    /* Contenido de la card por encima del efecto */
+    .card .content{ position:relative; z-index:3 }
+
+    .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px; color:#1a2040}
+    .meta{font-size:14px; opacity:.95; margin:0 0 8px; color:#344}
+    .wish{font-size:15px; color:#1d1d1d; margin:0}
+    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900; z-index:4 }
+
+    /* ===== Empty state: centrar el "cuadro de diálogo" ===== */
+    .empty-card{
+      width:min(520px, 92%);
+      margin: 0 auto;
+    }
 
     footer{text-align:center; padding:24px 16px; color:#fff}
 
-    @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
     @media (prefers-reduced-motion: reduce){
       .gradient{animation:none} .confetti{animation-duration:0s !important} *{transition:none !important}
+      .blob{ animation: none !important; }
     }
   </style>
 </head>
 <body>
+  <!-- Carrusel de wallpapers -->
+  <div class="wallpapers" aria-hidden="true"></div>
+
   <div class="gradient" aria-hidden="true"></div>
 
   <!-- Banderines -->
@@ -139,8 +188,8 @@
   <canvas id="stars"></canvas>
 
   <header>
-    <img class="logo" src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Recorre" />
-    <div class="brand">Recorre</div>
+    <img class="logo" src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Re-corre" />
+    <div class="brand">Re-corre</div>
   </header>
 
   <main>
@@ -155,7 +204,7 @@
     <div id="vertical"></div>
   </main>
 
-  <footer>#RecorreToluca 💙💜 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
+  <footer>#Re-corre Toluca 💙💜 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
 
   <!-- PapaParse para leer CSV publicado -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -230,32 +279,46 @@
     /* ===== Fuente de datos: Google Sheets publicado como CSV ===== */
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN-lWu2WBwCmFHqb8aI6ObDNvuGYjSoHdNE62eP4Gp7PXhgsOBRvN3h7uXRQWQNTcD7mttS5mjEouW/pub?output=csv";
 
+    // Versión robusta: detecta columnas ignorando acentos y variantes
     async function fetchBirthdaysFromCSV(){
       const url = CSV_URL + "&_cb=" + Date.now(); // cache-bust
       const res = await fetch(url, {cache:'no-store'});
-      if(!res.ok) throw new Error("CSV fetch failed: " + res.status);
+      if(!res.ok) throw new Error("CSV fetch failed: " + res.status + " " + res.statusText);
       const csvText = await res.text();
 
-      // Parsear CSV con encabezados
       const parsed = Papa.parse(csvText, { header:true, skipEmptyLines:true });
-      const rows = parsed.data;
+      const rows = parsed.data || [];
+      const headers = (parsed.meta && parsed.meta.fields) ? parsed.meta.fields : Object.keys(rows[0] || {});
+      if (!headers || headers.length === 0) {
+        console.warn("No headers detected in CSV", { parsed });
+        return [];
+      }
 
-      // Mapear columnas flexibles
-      const normalize = s => (s||'').toString().trim();
-      const findKey = (obj, candidates) => {
-        const keys = Object.keys(obj).map(k => [k, k.toLowerCase()]);
-        for(const c of candidates){
-          const i = keys.findIndex(([orig,low]) => low.includes(c));
-          if(i>=0) return keys[i][0];
+      const normalize = (s) => (s ?? '').toString().trim();
+      const stripAccents = (s) => normalize(s)
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase();
+
+      function findHeader(candidates){
+        let chosen = null;
+        const cleanedHeaders = headers.map(h => ({ orig: h, clean: stripAccents(h) }));
+        for(const h of cleanedHeaders){
+          for(const c of candidates){
+            if (h.clean.includes(c)) { chosen = h.orig; break; }
+          }
+          if (chosen) break;
         }
-        return null;
-      };
+        return chosen;
+      }
 
-      // Detectar llaves en la primera fila
-      const first = rows[0] || {};
-      const keyName  = findKey(first, ['nombre','✍️','name']);
-      const keyBirth = findKey(first, ['edad','nacimiento','cumple','cumpleaños','birth']);
-      const keyPace  = findKey(first, ['ritmo','pace']);
+      const keyName  = findHeader(['nombre','name']);
+      const keyBirth = findHeader(['cumple','cumpleanos','cumpleaños','fecha','nacimiento','birth','birthday','date']);
+      const keyPace  = findHeader(['ritmo','pace']);
+
+      if (!keyName || !keyBirth) {
+        console.warn("No se detectaron columnas requeridas.", { headers, keyName, keyBirth, keyPace });
+      }
 
       function toMMDD(val){
         if(!val) return '';
@@ -264,28 +327,36 @@
           const d=String(val.getDate()).padStart(2,'0');
           return `${m}-${d}`;
         }
-        const s = String(val).trim().replace(/\./g,'/').replace(/-/g,'/');
-        const p = s.split('/');
-        if(p.length>=2){
-          let a=parseInt(p[0],10), b=parseInt(p[1],10);
-          if(a>12 && b<=12) return `${String(b).padStart(2,'0')}-${String(a).padStart(2,'0')}`;  // DD/MM
-          if(a>=1 && a<=12 && b>=1 && b<=31) return `${String(a).padStart(2,'0')}-${String(b).padStart(2,'0')}`; // MM/DD
+        const s = String(val).trim();
+
+        const iso = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/); // YYYY-MM-DD
+        if (iso) return `${iso[2].padStart(2,'0')}-${iso[3].padStart(2,'0')}`;
+
+        const parts = s.replace(/\./g,'/').replace(/-/g,'/').split('/');
+        if (parts.length >= 2) {
+          let a = parseInt(parts[0],10), b = parseInt(parts[1],10);
+          if (a>12 && b<=12) return `${String(b).padStart(2,'0')}-${String(a).padStart(2,'0')}`; // DD/MM
+          if (a>=1 && a<=12 && b>=1 && b<=31) return `${String(a).padStart(2,'0')}-${String(b).padStart(2,'0')}`; // MM/DD
         }
-        const m = String(val).match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/); // YYYY-MM-DD
-        if(m) return `${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+
+        const dash = s.match(/^(\d{1,2})[\/\-](\d{1,2})$/); // M-D / MM-DD
+        if (dash) return `${dash[1].padStart(2,'0')}-${dash[2].padStart(2,'0')}`;
+
         return '';
       }
 
       const out = [];
       for(const r of rows){
-        const name = normalize(r[keyName]);
-        const birth = r[keyBirth];
+        const name  = keyName  ? normalize(r[keyName])  : '';
+        const birth = keyBirth ? r[keyBirth] : '';
         if(!name || !birth) continue;
         const mmdd = toMMDD(birth);
-        if(!mmdd) continue;
-        const pace = normalize(r[keyPace]);
+        if(!mmdd) { console.warn("Fecha no reconocida:", birth, "→ fila:", r); continue; }
+        const pace = keyPace ? normalize(r[keyPace]) : '';
         out.push({ name, date:mmdd, pace, wish:'' });
       }
+
+      console.log(`CSV cargado: ${out.length} registros`, { headers, keyName, keyBirth, keyPace });
       return out;
     }
 
@@ -329,32 +400,57 @@
             "Los cumpleañeros hicieron trampa y se escondieron… 🤔🎁"
           ];
           const empty=document.createElement('div'); 
-          empty.className='card';
+          empty.className='card empty-card';
+
+          // capas del efecto
+          const bg=document.createElement('div'); bg.className='bg';
+          const blob=document.createElement('div'); blob.className='blob';
+          const content=document.createElement('div'); content.className='content';
+
           const p=document.createElement('p'); 
           p.className='wish'; 
           p.textContent=frasesDivertidas[Math.floor(Math.random()*frasesDivertidas.length)];
-          empty.appendChild(p); 
+          content.appendChild(p);
+
+          empty.appendChild(blob);
+          empty.appendChild(bg);
+          empty.appendChild(content);
           cards.appendChild(empty);
         } else {
           g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
             const c=document.createElement('div'); 
             c.className='card';
+
+            // capas del efecto
+            const bg=document.createElement('div'); bg.className='bg';
+            const blob=document.createElement('div'); blob.className='blob';
+            const content=document.createElement('div'); content.className='content';
+
+            const badge=document.createElement('span'); 
+            badge.className='badge'; 
+            badge.textContent='🎽 Re-corre';
+
             const n=document.createElement('p'); 
             n.className='name'; 
             n.textContent=p.name;
+
             const m=document.createElement('p'); 
             m.className='meta'; 
             m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+
             const w=document.createElement('p'); 
             w.className='wish'; 
             w.textContent=p.wish || '¡Muchas felicidades!';
-            const badge=document.createElement('span'); 
-            badge.className='badge'; 
-            badge.textContent='🎽 Recorre';
-            c.appendChild(badge); 
-            c.appendChild(n); 
-            c.appendChild(m); 
-            c.appendChild(w); 
+
+            content.appendChild(badge); 
+            content.appendChild(n); 
+            content.appendChild(m); 
+            content.appendChild(w); 
+
+            c.appendChild(blob);
+            c.appendChild(bg);
+            c.appendChild(content);
+
             cards.appendChild(c);
           });
         }
@@ -377,11 +473,17 @@
       try{
         if (forceReload) status.textContent = '🔄 Actualizando…';
         window.BIRTHDAYS = await fetchBirthdaysFromCSV();
-        status.textContent = '🎉 ¡Feliz cumpleaños a nuestros runners de la semana! 🎽✨';
+
+        if (!window.BIRTHDAYS || window.BIRTHDAYS.length === 0) {
+          status.textContent = 'ℹ️ No se encontraron cumpleañer@s para la semana (o no se reconocieron las columnas). Revisa encabezados en el Sheet.';
+        } else {
+          status.textContent = '🎉 ¡Feliz cumpleaños a nuestros runners de la semana! 🎽✨';
+        }
+
         render();
       }catch(err){
         console.error(err);
-        status.textContent = '⚠️ No se pudo cargar la lista de cumpleaños.';
+        status.textContent = '⚠️ No se pudo cargar la lista de cumpleaños. Revisa la consola (F12).';
         window.BIRTHDAYS = [];
         render();
       }
@@ -393,8 +495,40 @@
       setTimeout(()=>{ boot(true); scheduleMidnightReload(); }, midnight-now);
     }
 
+    /* ===== Carrusel: inicializar con tus 3 wallpapers ===== */
+    const WALLPAPER_URLS = [
+      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/cumple.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/wallpaper%20cumple%20morado.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/wallpaper%20de%20globos.jpg"
+    ];
+
+    function initWallpapers(){
+      const wrap = document.querySelector('.wallpapers');
+      WALLPAPER_URLS.forEach((src,i)=>{
+        const img = document.createElement('img');
+        img.alt = `Wallpaper ${i+1}`;
+        img.decoding = "async";
+        img.loading = "eager";
+        img.src = src;
+        if(i===0) img.classList.add('show');
+        wrap.appendChild(img);
+      });
+
+      const imgs = [...wrap.querySelectorAll('img')];
+      let idx = 0;
+      setInterval(()=>{
+        imgs[idx].classList.remove('show');
+        idx = (idx + 1) % imgs.length;
+        imgs[idx].classList.add('show');
+      }, 3000); // cambia cada 3s
+    }
+
     // Iniciar
-    document.addEventListener('DOMContentLoaded', ()=>{ boot(); scheduleMidnightReload(); });
+    document.addEventListener('DOMContentLoaded', ()=>{
+      initWallpapers();
+      boot();
+      scheduleMidnightReload();
+    });
   </script>
 </body>
 </html>
