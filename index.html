@@ -86,14 +86,12 @@
     .cards{ display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto; justify-items:center }
     @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
 
-    /* Tarjetas normales */
     .card{
       position:relative; text-align:center; padding:18px 16px; border-radius:18px;
       background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10));
       box-shadow:0 6px 28px rgba(0,0,0,.30); transition:transform .18s ease, box-shadow .18s ease; overflow:hidden
     }
     .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.40) }
-    .card::before{ content:none; }
     .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900; z-index:4 }
     .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px; color:#1a2040}
     .meta{font-size:14px; opacity:.95; margin:0 0 8px; color:#344}
@@ -109,7 +107,6 @@
       100%{ transform: translate(-100%, -100%) translate3d(0,0,0) }
     }
 
-    /* Recuadro vacío centrado con degradado */
     .empty-card{
       width:min(520px, 92%);
       margin: 0 auto;
@@ -133,7 +130,31 @@
       margin:0;
     }
 
-    footer{text-align:center; padding:24px 16px; color:#fff}
+    footer{text-align:center; padding:24px 16px; color:#fff; font-size:18px }
+
+    /* 🎉 Contador festivo */
+    #countdown{
+      margin-top:12px;
+      font-family:"Outfit",sans-serif;
+      font-weight:900;
+      font-size:clamp(24px,4vw,40px);
+      background:linear-gradient(90deg,#ff7aa2,#ffe066,#7a61ff,#00d1ff,#14e0a1);
+      background-size:300% 300%;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation: gradientFlow 5s ease infinite, glowPulse 1.6s ease-in-out infinite;
+      text-shadow:0 0 10px rgba(255,255,255,0.4), 0 0 20px rgba(255,200,255,0.3);
+      letter-spacing:1px;
+    }
+    @keyframes gradientFlow{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    @keyframes glowPulse{
+      0%,100%{transform:scale(1); text-shadow:0 0 12px rgba(255,255,255,.5), 0 0 28px rgba(255,200,255,.4);}
+      50%{transform:scale(1.08); text-shadow:0 0 22px rgba(255,255,255,.9), 0 0 38px rgba(255,150,255,.6);}
+    }
 
     @media (prefers-reduced-motion: reduce){
       .gradient{animation:none} .confetti{animation-duration:0s !important} *{transition:none !important}
@@ -144,7 +165,6 @@
 <body>
   <!-- Carrusel de wallpapers -->
   <div class="wallpapers" aria-hidden="true"></div>
-
   <div class="gradient" aria-hidden="true"></div>
 
   <!-- Banderines -->
@@ -187,18 +207,19 @@
 
   <main>
     <p class="phrase" id="status">Cargando cumpleañer@s…</p>
-
     <div class="toolbar">
       <button class="btn" id="btn-celebrar">Celebrar</button>
       <button class="btn btn-ghost" id="btn-hoy">Ir a HOY</button>
       <button class="btn btn-ghost" id="btn-reload">Recargar</button>
     </div>
-
     <div id="vertical"></div>
   </main>
 
-  <footer>🏃‍♀️ #Re-corre Toluca · Creado de Runners para Runners 🎂🎈🎊 · <span id="week-range"></span></footer>
-
+  <footer>
+    🏃‍♀️ #Re-corre Toluca · Creado de Runners para Runners 🎂🎈🎊 · <span id="week-range"></span>
+    <div id="next-birthday"></div>
+    <div id="countdown"></div>
+  </footer>
 
   <!-- PapaParse -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -403,33 +424,33 @@
           cards.appendChild(empty);
         } else {
           g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
-  const c=document.createElement('div'); c.className='card';
-  const bg=document.createElement('div'); bg.className='bg';
-  const blob=document.createElement('div'); blob.className='blob';
-  const content=document.createElement('div'); content.className='content';
+            const c=document.createElement('div'); c.className='card';
+            const bg=document.createElement('div'); bg.className='bg';
+            const blob=document.createElement('div'); blob.className='blob';
+            const content=document.createElement('div'); content.className='content';
 
-  const n=document.createElement('p'); 
-  n.className='name'; 
-  n.textContent=p.name;
+            const n=document.createElement('p'); 
+            n.className='name'; 
+            n.textContent=p.name;
 
-  const m=document.createElement('p'); 
-  m.className='meta'; 
-  m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+            const m=document.createElement('p'); 
+            m.className='meta'; 
+            m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
 
-  const w=document.createElement('p'); 
-  w.className='wish'; 
-  w.textContent=p.wish || '¡Muchas felicidades!';
+            const w=document.createElement('p'); 
+            w.className='wish'; 
+            w.textContent=p.wish || '¡Muchas felicidades!';
 
-  content.appendChild(n); 
-  content.appendChild(m); 
-  content.appendChild(w);
+            content.appendChild(n); 
+            content.appendChild(m); 
+            content.appendChild(w);
 
-  c.appendChild(blob); 
-  c.appendChild(bg); 
-  c.appendChild(content);
+            c.appendChild(blob); 
+            c.appendChild(bg); 
+            c.appendChild(content);
 
-  cards.appendChild(c);
-});
+            cards.appendChild(c);
+          });
         }
 
         section.appendChild(cards); container.appendChild(section);
@@ -439,6 +460,52 @@
       confettiBurst(hasToday ? 160 : 60, hasToday ? [1.6,2.6] : [1.2,1.8]);
     }
 
+    /* ===== Contador al próximo cumpleaños ===== */
+    function getNextBirthday(birthdays){
+      const today=new Date(); today.setHours(0,0,0,0);
+      const upcoming=birthdays.map(p=>{
+        const [m,d]=p.date.split('-').map(Number);
+        let next=new Date(today.getFullYear(),m-1,d,0,0,0);
+        if(next<today) next.setFullYear(next.getFullYear()+1);
+        const diffDays=Math.ceil((next-today)/(1000*60*60*24));
+        return {...p,next,diffDays};
+      }).sort((a,b)=>a.diffDays-b.diffDays);
+      return upcoming.length?upcoming[0]:null;
+    }
+
+    function startCountdown(date){
+      const el=document.getElementById('countdown');
+      function tick(){
+        const now=new Date();
+        const diff=date-now;
+        if(diff<=0){ el.textContent="🎉 ¡Es hoy!"; return; }
+        const d=Math.floor(diff/(1000*60*60*24));
+        const h=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+        const m=Math.floor((diff%(1000*60*60))/(1000*60));
+        const s=Math.floor((diff%(1000*60))/1000);
+        el.textContent=`⏳ ${d}d ${h}h ${m}m ${s}s`;
+        requestAnimationFrame(tick);
+      }
+      tick();
+    }
+
+    function renderCountdown(){
+      const next=getNextBirthday(window.BIRTHDAYS||[]);
+      const el=document.getElementById('next-birthday');
+      if(next){
+        if(next.diffDays===0){
+          el.innerHTML=`🎉 Hoy cumple <strong>${next.name}</strong>!`;
+          document.getElementById('countdown').textContent="🎂 ¡Festejando!";
+        } else {
+          el.innerHTML=`🎂 El próximo cumple es de <strong>${next.name}</strong> (${fmtDM(next.next)})`;
+          startCountdown(next.next);
+        }
+      } else {
+        el.textContent='Sin cumpleañeros próximos 💤';
+        document.getElementById('countdown').textContent='';
+      }
+    }
+
     async function boot(forceReload=false){
       const status = document.getElementById('status');
       try{
@@ -446,13 +513,15 @@
         window.BIRTHDAYS = await fetchBirthdaysFromCSV();
         status.textContent = (window.BIRTHDAYS && window.BIRTHDAYS.length)
           ? '¡Feliz cumpleaños a nuestros runners de la semana!'
-          : 'No se encontraron cumpleañer@s (revisa que haya datos en Nombre y la columna D con DD/MM/YYYY).';
+          : 'No se encontraron cumpleañer@s (revisa que haya datos en Nombre y la columna D).';
         render();
+        renderCountdown(); // 🔹 actualizar contador
       }catch(err){
         console.error(err);
-        status.textContent = 'No se pudo cargar la lista de cumpleaños. Revisa la consola (F12).';
+        status.textContent = 'No se pudo cargar la lista de cumpleaños.';
         window.BIRTHDAYS = [];
         render();
+        renderCountdown();
       }
     }
 
