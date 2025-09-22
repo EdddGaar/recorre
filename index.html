@@ -25,6 +25,194 @@
     .wallpapers img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1s ease-in-out; }
     .wallpapers img.show{ opacity:1; }
 
+    /* Fondo degradado animado */
+    .gradient{
+      position:fixed; inset:0; z-index:-4;
+      background:
+        radial-gradient(110% 110% at 10% 10%, color-mix(in oklab, var(--p1) 90%, white 6%), transparent 60%),
+        radial-gradient(110% 110% at 90% 15%, color-mix(in oklab, var(--p2) 90%, white 6%), transparent 60%),
+        radial-gradient(110% 110% at 50% 90%, color-mix(in oklab, var(--p3) 90%, white 6%), transparent 60%),
+        linear-gradient(135deg, var(--p1) 0%, var(--p2) 45%, var(--p3) 80%);
+      background-size: 140% 140%;
+      animation: gradientShift 14s ease-in-out infinite alternate;
+      filter: saturate(1.12) contrast(1.05);
+      opacity:.78;
+    }
+    @keyframes gradientShift{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+
+    /* Banderines */
+    .banners{ position:fixed; inset:0 0 auto 0; height:120px; z-index:-3; pointer-events:none }
+    .banner-wrap{ width:100%; height:100% }
+
+    /* Estrellas */
+    #stars{ position:fixed; inset:0; z-index:-2; pointer-events:none; mix-blend-mode:screen; opacity:.9 }
+
+    /* Confeti */
+    .confetti{
+      position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.98;
+      border-radius:2px; pointer-events:none; animation:fall linear forwards;
+      will-change: transform, opacity; filter: drop-shadow(0 2px 2px rgba(0,0,0,.12));
+      mix-blend-mode: screen;
+    }
+    @keyframes fall{ to{ transform:translateY(110vh) rotate(520deg); opacity:1 } }
+
+    header{ text-align:center; padding:28px 18px 8px }
+    .logo{
+      width:120px; height:120px; border-radius:50%; object-fit:cover;
+      border:2px solid rgba(255,255,255,.85); box-shadow:0 0 40px rgba(0,0,0,.35); margin-bottom:12px
+    }
+    .brand{ font-family:Outfit; font-weight:900; font-size:clamp(28px,4.4vw,52px); color:#fff; text-shadow:0 3px 12px rgba(0,0,0,.45) }
+
+    main{ max-width:980px; margin:0 auto 86px; padding:0 18px }
+    .phrase{
+      text-align:center; margin:10px auto 18px; max-width:880px; font-size:clamp(16px,2.4vw,20px);
+      color:#fff; background:rgba(0,0,0,.20); border:1px solid rgba(255,255,255,.25);
+      border-radius:16px; padding:12px 16px; backdrop-filter: blur(6px)
+    }
+
+    .toolbar{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin:6px 0 14px }
+    .btn{
+      appearance:none; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; color:#1a2040; font-weight:800;
+      background:linear-gradient(180deg,#fff,#f2f5ff); box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 #fff; transition:.15s; font-family:Inter
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow:0 12px 30px rgba(0,0,0,.32), inset 0 1px 0 #fff }
+    .btn-ghost{ background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10)); color:#fff; border:1px solid rgba(255,255,255,.28) }
+
+    .section{ margin:22px auto; padding:16px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26);
+      border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35) }
+    .title-day{ text-align:center; font-family:Outfit; font-weight:900; margin:0 0 14px; font-size:clamp(28px,6.5vw,64px); line-height:1.05; text-shadow:0 3px 10px rgba(0,0,0,.4) }
+    .title-day.small{ font-size:clamp(22px,4.6vw,40px) }
+
+    .cards{ display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto }
+    @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
+
+    /* Tarjetas */
+    .card{
+      position:relative; text-align:center; padding:18px 16px; border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10));
+      box-shadow:0 6px 28px rgba(0,0,0,.30); transition:transform .18s ease, box-shadow .18s ease; overflow:hidden
+    }
+    .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.40) }
+    .card::before{content:"🎂"; position:absolute; left:10px; top:10px; font-size:18px; z-index:4}
+    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900; z-index:4 }
+    .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px; color:#1a2040}
+    .meta{font-size:14px; opacity:.95; margin:0 0 8px; color:#344}
+    .wish{font-size:15px; color:#1d1d1d; margin:0}
+    .card .bg{ position:absolute; top:5px; left:5px; right:5px; bottom:5px; z-index:1; background:rgba(255,255,255,.95); border-radius:14px; backdrop-filter:blur(24px); outline:2px solid #fff2; overflow:hidden }
+    .card .blob{ position:absolute; z-index:0; top:50%; left:50%; width:220px; height:220px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #ff7aa2, #7a61ff 60%, #00d1ff 100%); opacity:.9; filter:blur(14px); animation:blob-bounce 5s infinite ease }
+    .card .content{ position:relative; z-index:3 }
+    @keyframes blob-bounce {
+      0%{ transform: translate(-100%, -100%) translate3d(0,0,0) }
+      25%{ transform: translate(-100%, -100%) translate3d(100%,0,0) }
+      50%{ transform: translate(-100%, -100%) translate3d(100%,100%,0) }
+      75%{ transform: translate(-100%, -100%) translate3d(0,100%,0) }
+      100%{ transform: translate(-100%, -100%) translate3d(0,0,0) }
+    }
+
+    /* ✅ Cambios: centrar recuadro vacío + texto degradado sin emojis */
+    .empty-card{
+      width:min(520px, 92%);
+      margin: 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:32px 20px;
+      border-radius:22px;
+      background:linear-gradient(160deg, rgba(255,255,255,.25), rgba(255,255,255,.12));
+      border:2px dashed rgba(255,255,255,.5);
+      box-shadow:0 8px 28px rgba(0,0,0,.35);
+    }
+    .empty-card .wish{
+      font-size:clamp(18px,2.4vw,24px);
+      font-weight:700;
+      margin:0;
+      background:linear-gradient(270deg,#ff9f1c,#06d6a0,#118ab2,#7a61ff,#ff7aa2);
+      background-size:600% 600%;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation: gradientFlow 8s ease infinite;
+    }
+    @keyframes gradientFlow {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    footer{text-align:center; padding:24px 16px; color:#fff}
+
+    @media (prefers-reduced-motion: reduce){
+      .gradient{animation:none} .confetti{animation-duration:0s !important} *{transition:none !important}
+      .blob{animation:none!important}
+      .empty-card .wish{animation:none!important}
+    }
+  </style>
+</head>
+<body>
+  <!-- Carrusel de wallpapers -->
+  <div class="wallpapers" aria-hidden="true"></div>
+
+  <div class="gradient" aria-hidden="true"></div>
+
+  <!-- Banderines -->
+  <div class="banners" aria-hidden="true">
+    <!-- (SVG de banderines igual que tu versión original) -->
+  </div>
+
+  <!-- Estrellas -->
+  <canvas id="stars"></canvas>
+
+  <header>
+    <img class="logo" src="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg" alt="Logo Re-corre" />
+    <div class="brand">Re-corre</div>
+  </header>
+
+  <main>
+    <p class="phrase" id="status">🎉 Cargando cumpleañer@s…</p>
+
+    <div class="toolbar">
+      <button class="btn" id="btn-celebrar">🎊 Celebrar</button>
+      <button class="btn btn-ghost" id="btn-hoy">Ir a HOY</button>
+      <button class="btn btn-ghost" id="btn-reload">Recargar</button>
+    </div>
+
+    <div id="vertical"></div>
+  </main>
+
+  <footer>#Re-corre Toluca 💙💜 · Creado de Runners para Runners ❤️ · <span id="week-range"></span></footer>
+
+  <!-- PapaParse para leer CSV publicado -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <script>
+    /* ===== TODO TU SCRIPT ORIGINAL ===== */
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Re-corre | Cumpleaños de la Semana</title>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg">
+
+  <style>
+    :root{
+      --text:#ffffff; --muted:#eef1ff;
+      --p1:#6faeff; --p2:#5977ff; --p3:#7a61ff; --p4:#b4a8ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{ margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text); overflow-x:hidden; background:#1a2040; }
+
+    /* ===== Fondo: carrusel de wallpapers ===== */
+    .wallpapers{ position:fixed; inset:0; z-index:-5; overflow:hidden; background:#000; }
+    .wallpapers img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1s ease-in-out; }
+    .wallpapers img.show{ opacity:1; }
+
     /* Fondo degradado animado (ligeramente translúcido para ver el wallpaper) */
     .gradient{
       position:fixed; inset:0; z-index:-4;
@@ -469,5 +657,8 @@
       scheduleMidnightReload();
     });
   </script>
+</body>
+</html>
+
 </body>
 </html>
