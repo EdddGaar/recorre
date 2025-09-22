@@ -8,32 +8,21 @@
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Favicon (evita 404 en consola) -->
+  <!-- Favicon -->
   <link rel="icon" href="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg">
 
   <style>
     :root{
       --text:#ffffff; --muted:#eef1ff;
-      /* paleta azul → violeta (sin rosa) */
-      --p1:#6faeff;
-      --p2:#5977ff;
-      --p3:#7a61ff;
-      --p4:#b4a8ff;
+      --p1:#6faeff; --p2:#5977ff; --p3:#7a61ff; --p4:#b4a8ff;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{ margin:0; font-family: Inter, system-ui, sans-serif; color:var(--text); overflow-x:hidden; background:#1a2040; }
 
     /* ===== Fondo: carrusel de wallpapers ===== */
-    .wallpapers{
-      position:fixed; inset:0; z-index:-5; overflow:hidden;
-      background:#000;
-    }
-    .wallpapers img{
-      position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover; opacity:0; transition:opacity 1s ease-in-out;
-      will-change: opacity;
-    }
+    .wallpapers{ position:fixed; inset:0; z-index:-5; overflow:hidden; background:#000; }
+    .wallpapers img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1s ease-in-out; will-change: opacity; }
     .wallpapers img.show{ opacity:1; }
 
     /* Fondo degradado animado (ligeramente translúcido para ver el wallpaper) */
@@ -47,7 +36,7 @@
       background-size: 140% 140%;
       animation: gradientShift 14s ease-in-out infinite alternate;
       filter: saturate(1.12) contrast(1.05);
-      opacity:.78; /* ajusta si quieres más/menos del degradado */
+      opacity:.78;
     }
     @keyframes gradientShift{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
 
@@ -97,54 +86,35 @@
     .cards{ display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto }
     @media (min-width:720px){ .cards{ grid-template-columns:repeat(2,1fr) } }
 
-    /* ===== Card base: conserva tu layout + efecto Uiverse ===== */
+    /* Tarjetas (con efecto y capas internas) */
     .card{
       position:relative; text-align:center; padding:18px 16px; border-radius:18px;
       background:linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.10));
-      box-shadow:0 6px 28px rgba(0,0,0,.30);
-      transition:transform .18s ease, box-shadow .18s ease; overflow:hidden;
+      box-shadow:0 6px 28px rgba(0,0,0,.30); transition:transform .18s ease, box-shadow .18s ease; overflow:hidden
     }
     .card:hover{ transform: translateY(-2px); box-shadow:0 12px 36px rgba(0,0,0,.40) }
     .card::before{content:"🎂"; position:absolute; left:10px; top:10px; font-size:18px; z-index:4}
-
-    /* ===== Capas del efecto Uiverse dentro de .card ===== */
-    .card .bg{
-      position:absolute; top:5px; left:5px; right:5px; bottom:5px;
-      z-index:1; background: rgba(255, 255, 255, .95);
-      backdrop-filter: blur(24px); border-radius: 14px; overflow:hidden; outline:2px solid #fff2;
-    }
-    .card .blob{
-      position:absolute; z-index:0; top:50%; left:50%;
-      width:220px; height:220px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, #ff7aa2, #7a61ff 60%, #00d1ff 100%);
-      opacity:.9; filter: blur(14px); animation: blob-bounce 5s infinite ease;
-    }
-    @keyframes blob-bounce {
-      0%   { transform: translate(-100%, -100%) translate3d(0, 0, 0); }
-      25%  { transform: translate(-100%, -100%) translate3d(100%, 0, 0); }
-      50%  { transform: translate(-100%, -100%) translate3d(100%, 100%, 0); }
-      75%  { transform: translate(-100%, -100%) translate3d(0, 100%, 0); }
-      100% { transform: translate(-100%, -100%) translate3d(0, 0, 0); }
-    }
-    /* Contenido de la card por encima del efecto */
-    .card .content{ position:relative; z-index:3 }
-
+    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900; z-index:4 }
     .name{font-family:Outfit; font-weight:900; font-size:clamp(18px,3.5vw,24px); margin:0 0 6px; color:#1a2040}
     .meta{font-size:14px; opacity:.95; margin:0 0 8px; color:#344}
     .wish{font-size:15px; color:#1d1d1d; margin:0}
-    .badge{ position:absolute; right:10px; top:10px; font-size:12px; padding:.2rem .5rem; border-radius:999px; background:#fff; color:#333; font-weight:900; z-index:4 }
-
-    /* ===== Empty state: centrar el "cuadro de diálogo" ===== */
-    .empty-card{
-      width:min(520px, 92%);
-      margin: 0 auto;
+    .card .bg{ position:absolute; top:5px; left:5px; right:5px; bottom:5px; z-index:1; background:rgba(255,255,255,.95); border-radius:14px; backdrop-filter:blur(24px); outline:2px solid #fff2; overflow:hidden }
+    .card .blob{ position:absolute; z-index:0; top:50%; left:50%; width:220px; height:220px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #ff7aa2, #7a61ff 60%, #00d1ff 100%); opacity:.9; filter:blur(14px); animation:blob-bounce 5s infinite ease }
+    .card .content{ position:relative; z-index:3 }
+    @keyframes blob-bounce {
+      0%{ transform: translate(-100%, -100%) translate3d(0,0,0) }
+      25%{ transform: translate(-100%, -100%) translate3d(100%,0,0) }
+      50%{ transform: translate(-100%, -100%) translate3d(100%,100%,0) }
+      75%{ transform: translate(-100%, -100%) translate3d(0,100%,0) }
+      100%{ transform: translate(-100%, -100%) translate3d(0,0,0) }
     }
+    .empty-card{ width:min(520px, 92%); margin: 0 auto; }
 
     footer{text-align:center; padding:24px 16px; color:#fff}
 
     @media (prefers-reduced-motion: reduce){
       .gradient{animation:none} .confetti{animation-duration:0s !important} *{transition:none !important}
-      .blob{ animation: none !important; }
+      .blob{animation:none!important}
     }
   </style>
 </head>
@@ -248,8 +218,13 @@
     const at0=d=>{ const x=new Date(d); x.setHours(0,0,0,0); return x };
     function mondayOfWeek(d){ const x=at0(d); const w=x.getDay(); const diff=(w===0?-6:1-w); x.setDate(x.getDate()+diff); return x }
     function sundayOfWeek(d){ const m=mondayOfWeek(d); const s=new Date(m); s.setDate(m.getDate()+6); return s }
-    function parseMD(md, year){ const [m, d]=md.split('-').map(Number); return new Date(year, m-1, d) }
     const isSameDay=(a,b)=> at0(a).getTime()===at0(b).getTime();
+
+    // Meses (para strings tipo "5 feb")
+    const MONTHS = {
+      'ene':1,'feb':2,'mar':3,'abr':4,'may':5,'jun':6,'jul':7,'ago':8,'sep':9,'oct':10,'nov':11,'dic':12,
+      'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12
+    };
 
     /* ===== Confeti ===== */
     const CONFETTI_COLORS = ['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
@@ -279,96 +254,119 @@
     /* ===== Fuente de datos: Google Sheets publicado como CSV ===== */
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN-lWu2WBwCmFHqb8aI6ObDNvuGYjSoHdNE62eP4Gp7PXhgsOBRvN3h7uXRQWQNTcD7mttS5mjEouW/pub?output=csv";
 
-    // Versión robusta: detecta columnas ignorando acentos y variantes
+    // Helpers para encabezados
+    const normalize = s => (s ?? '').toString().trim();
+    const stripAccentsLower = s => normalize(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
+    // Detecta columna por encabezado (ignora acentos y mayúsculas)
+    function findHeader(headers, candidates){
+      const cleaned = headers.map(h => ({orig:h, clean:stripAccentsLower(h)}));
+      for(const cand of candidates){
+        for(const h of cleaned){
+          if(h.clean.includes(cand)) return h.orig;
+        }
+      }
+      return null;
+    }
+
+    // Parseo robusto de cumpleaños → devuelve {m,d} o null
+    function parseBirthdayToMD(value){
+      if(!value) return null;
+      const s = normalize(value);
+
+      // YYYY-MM-DD
+      let m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if(m) return {m:parseInt(m[2],10), d:parseInt(m[3],10)};
+
+      // MM-DD o M-D
+      m = s.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+      if(m) return {m:parseInt(m[1],10), d:parseInt(m[2],10)};
+
+      // DD/MM[/YYYY]  o  MM/DD[/YYYY]  → heurística: si el primer número >12, es DD/MM
+      const parts = s.replace(/\./g,'/').replace(/-/g,'/').split('/');
+      if(parts.length>=2 && /^\d+$/.test(parts[0]) && /^\d+$/.test(parts[1])){
+        const a = parseInt(parts[0],10), b = parseInt(parts[1],10);
+        if(a>12 && b<=12) return {m:b, d:a};     // DD/MM
+        if(a>=1 && a<=12 && b>=1 && b<=31) return {m:a, d:b}; // MM/DD
+      }
+
+      // Formatos tipo "5 feb" / "05-ene" / "15 agosto"
+      const txt = stripAccentsLower(s).replace(/[\.\-]/g,' ');
+      const m2 = txt.match(/(\d{1,2})\s+([a-zñ]+)/);
+      if(m2 && MONTHS[m2[2]]) return {m:MONTHS[m2[2]], d:parseInt(m2[1],10)};
+
+      return null;
+    }
+
     async function fetchBirthdaysFromCSV(){
-      const url = CSV_URL + "&_cb=" + Date.now(); // cache-bust
-      const res = await fetch(url, {cache:'no-store'});
-      if(!res.ok) throw new Error("CSV fetch failed: " + res.status + " " + res.statusText);
+      const res = await fetch(CSV_URL + "&_cb=" + Date.now(), {cache:'no-store'});
+      if(!res.ok) throw new Error("CSV fetch failed: " + res.status);
       const csvText = await res.text();
 
       const parsed = Papa.parse(csvText, { header:true, skipEmptyLines:true });
       const rows = parsed.data || [];
       const headers = (parsed.meta && parsed.meta.fields) ? parsed.meta.fields : Object.keys(rows[0] || {});
-      if (!headers || headers.length === 0) {
-        console.warn("No headers detected in CSV", { parsed });
-        return [];
-      }
 
-      const normalize = (s) => (s ?? '').toString().trim();
-      const stripAccents = (s) => normalize(s)
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toLowerCase();
+      // Columnas requeridas (NO usamos 'edad' para evitar falsos positivos)
+      const keyName  = findHeader(headers, ['nombre','name']);
+      const keyBirth = findHeader(headers, ['cumpleanos','cumpleaños','cumple','fecha de nacimiento','nacimiento','birth','birthday','date','fecha']);
 
-      function findHeader(candidates){
-        let chosen = null;
-        const cleanedHeaders = headers.map(h => ({ orig: h, clean: stripAccents(h) }));
-        for(const h of cleanedHeaders){
-          for(const c of candidates){
-            if (h.clean.includes(c)) { chosen = h.orig; break; }
-          }
-          if (chosen) break;
-        }
-        return chosen;
-      }
+      const keyPace  = findHeader(headers, ['ritmo','pace']); // opcional
 
-      const keyName  = findHeader(['nombre','name']);
-      const keyBirth = findHeader(['cumple','cumpleanos','cumpleaños','fecha','nacimiento','birth','birthday','date']);
-      const keyPace  = findHeader(['ritmo','pace']);
-
-      if (!keyName || !keyBirth) {
-        console.warn("No se detectaron columnas requeridas.", { headers, keyName, keyBirth, keyPace });
-      }
-
-      function toMMDD(val){
-        if(!val) return '';
-        if(val instanceof Date && !isNaN(val)) {
-          const m=String(val.getMonth()+1).padStart(2,'0');
-          const d=String(val.getDate()).padStart(2,'0');
-          return `${m}-${d}`;
-        }
-        const s = String(val).trim();
-
-        const iso = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/); // YYYY-MM-DD
-        if (iso) return `${iso[2].padStart(2,'0')}-${iso[3].padStart(2,'0')}`;
-
-        const parts = s.replace(/\./g,'/').replace(/-/g,'/').split('/');
-        if (parts.length >= 2) {
-          let a = parseInt(parts[0],10), b = parseInt(parts[1],10);
-          if (a>12 && b<=12) return `${String(b).padStart(2,'0')}-${String(a).padStart(2,'0')}`; // DD/MM
-          if (a>=1 && a<=12 && b>=1 && b<=31) return `${String(a).padStart(2,'0')}-${String(b).padStart(2,'0')}`; // MM/DD
-        }
-
-        const dash = s.match(/^(\d{1,2})[\/\-](\d{1,2})$/); // M-D / MM-DD
-        if (dash) return `${dash[1].padStart(2,'0')}-${dash[2].padStart(2,'0')}`;
-
-        return '';
+      if(!keyName || !keyBirth){
+        console.warn('Encabezados detectados:', headers);
+        throw new Error('No se encontró columna de nombre o cumpleaños en el CSV publicado.');
       }
 
       const out = [];
       for(const r of rows){
-        const name  = keyName  ? normalize(r[keyName])  : '';
-        const birth = keyBirth ? r[keyBirth] : '';
-        if(!name || !birth) continue;
-        const mmdd = toMMDD(birth);
-        if(!mmdd) { console.warn("Fecha no reconocida:", birth, "→ fila:", r); continue; }
-        const pace = keyPace ? normalize(r[keyPace]) : '';
-        out.push({ name, date:mmdd, pace, wish:'' });
-      }
+        const name = normalize(r[keyName]);
+        const birthRaw = r[keyBirth];
+        if(!name || !birthRaw) continue;
 
-      console.log(`CSV cargado: ${out.length} registros`, { headers, keyName, keyBirth, keyPace });
+        const md = parseBirthdayToMD(birthRaw);
+        if(!md || !(md.m>=1 && md.m<=12) || !(md.d>=1 && md.d<=31)){
+          console.warn('Fecha de cumpleaños no reconocida:', birthRaw, '→ fila:', r);
+          continue;
+        }
+        const mm = String(md.m).padStart(2,'0');
+        const dd = String(md.d).padStart(2,'0');
+
+        const pace = keyPace ? normalize(r[keyPace]) : '';
+        out.push({ name, date:`${mm}-${dd}`, pace, wish:'' });
+      }
+      console.log(`CSV cargado: ${out.length} registros`, {keyName, keyBirth, keyPace, headers});
       return out;
     }
 
-    /* ===== Lógica de UI ===== */
+    // Convierte "MM-DD" + año a Date
+    function parseMD(mmdd, year){
+      const [m,d] = mmdd.split('-').map(Number);
+      return new Date(year, m-1, d);
+    }
+
+    // Coloca cada cumple en la semana mostrada (cruce dic→ene soportado)
     function groupByWeek(list){
-      const today=new Date(); const start=mondayOfWeek(today), end=sundayOfWeek(today);
+      const today = new Date();
+      const start = mondayOfWeek(today), end = sundayOfWeek(today);
       document.getElementById('week-range').textContent = `${fmtDM(start)} – ${fmtDM(end)}`;
-      const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d) }
-      const year=today.getFullYear(); const map=new Map(days.map(d=>[at0(d).getTime(), []]));
-      for(const p of list){ const dt=parseMD(p.date, year); if(at0(dt)>=at0(start)&&at0(dt)<=at0(end)){ map.get(at0(dt).getTime()).push(p) } }
+
+      const days = [];
+      for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d) }
+      const map = new Map(days.map(d=>[at0(d).getTime(), []]));
+
+      for(const p of list){
+        // genera candidatos en año actual, anterior y siguiente; si cae en la semana, úsalo
+        const candidates = [0,-1,1].map(off => parseMD(p.date, today.getFullYear()+off));
+        const hit = candidates.find(dt => at0(dt) >= at0(start) && at0(dt) <= at0(end));
+        if(hit){ map.get(at0(hit).getTime()).push(p); }
+      }
+
       const out=[]; const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
-      for(const d of days){ const label=isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()]; out.push({label,date:d,items:map.get(at0(d).getTime())||[]}) }
+      for(const d of days){
+        const label = isSameDay(d,today)?'HOY':isSameDay(d,tomorrow)?'Mañana':dayNames[d.getDay()];
+        out.push({label,date:d,items:map.get(at0(d).getTime())||[]});
+      }
       out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
       return out;
     }
@@ -401,56 +399,26 @@
           ];
           const empty=document.createElement('div'); 
           empty.className='card empty-card';
-
-          // capas del efecto
           const bg=document.createElement('div'); bg.className='bg';
           const blob=document.createElement('div'); blob.className='blob';
           const content=document.createElement('div'); content.className='content';
-
-          const p=document.createElement('p'); 
-          p.className='wish'; 
+          const p=document.createElement('p'); p.className='wish'; 
           p.textContent=frasesDivertidas[Math.floor(Math.random()*frasesDivertidas.length)];
           content.appendChild(p);
-
-          empty.appendChild(blob);
-          empty.appendChild(bg);
-          empty.appendChild(content);
+          empty.appendChild(blob); empty.appendChild(bg); empty.appendChild(content);
           cards.appendChild(empty);
         } else {
           g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
-            const c=document.createElement('div'); 
-            c.className='card';
-
-            // capas del efecto
+            const c=document.createElement('div'); c.className='card';
             const bg=document.createElement('div'); bg.className='bg';
             const blob=document.createElement('div'); blob.className='blob';
             const content=document.createElement('div'); content.className='content';
-
-            const badge=document.createElement('span'); 
-            badge.className='badge'; 
-            badge.textContent='🎽 Re-corre';
-
-            const n=document.createElement('p'); 
-            n.className='name'; 
-            n.textContent=p.name;
-
-            const m=document.createElement('p'); 
-            m.className='meta'; 
-            m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
-
-            const w=document.createElement('p'); 
-            w.className='wish'; 
-            w.textContent=p.wish || '¡Muchas felicidades!';
-
-            content.appendChild(badge); 
-            content.appendChild(n); 
-            content.appendChild(m); 
-            content.appendChild(w); 
-
-            c.appendChild(blob);
-            c.appendChild(bg);
-            c.appendChild(content);
-
+            const badge=document.createElement('span'); badge.className='badge'; badge.textContent='🎽 Re-corre';
+            const n=document.createElement('p'); n.className='name'; n.textContent=p.name;
+            const m=document.createElement('p'); m.className='meta'; m.textContent=`${fmtDM(g.date)} · ${p.pace||'Runner'}`;
+            const w=document.createElement('p'); w.className='wish'; w.textContent=p.wish || '¡Muchas felicidades!';
+            content.appendChild(badge); content.appendChild(n); content.appendChild(m); content.appendChild(w);
+            c.appendChild(blob); c.appendChild(bg); c.appendChild(content);
             cards.appendChild(c);
           });
         }
@@ -461,11 +429,7 @@
 
       // confeti auto:
       const hasToday = blocks.some(b=> b.label==='HOY' && b.items.length);
-      if (hasToday) {
-        confettiBurst(160, [1.6, 2.6]);
-      } else {
-        confettiBurst(60, [1.2, 1.8]);
-      }
+      confettiBurst(hasToday ? 160 : 60, hasToday ? [1.6,2.6] : [1.2,1.8]);
     }
 
     async function boot(forceReload=false){
@@ -473,13 +437,9 @@
       try{
         if (forceReload) status.textContent = '🔄 Actualizando…';
         window.BIRTHDAYS = await fetchBirthdaysFromCSV();
-
-        if (!window.BIRTHDAYS || window.BIRTHDAYS.length === 0) {
-          status.textContent = 'ℹ️ No se encontraron cumpleañer@s para la semana (o no se reconocieron las columnas). Revisa encabezados en el Sheet.';
-        } else {
-          status.textContent = '🎉 ¡Feliz cumpleaños a nuestros runners de la semana! 🎽✨';
-        }
-
+        status.textContent = (window.BIRTHDAYS && window.BIRTHDAYS.length) 
+          ? '🎉 ¡Feliz cumpleaños a nuestros runners de la semana! 🎽✨'
+          : 'ℹ️ No se encontraron cumpleañer@s (revisa encabezados y formatos en el Sheet).';
         render();
       }catch(err){
         console.error(err);
@@ -495,7 +455,7 @@
       setTimeout(()=>{ boot(true); scheduleMidnightReload(); }, midnight-now);
     }
 
-    /* ===== Carrusel: inicializar con tus 3 wallpapers ===== */
+    /* ===== Carrusel: tus 3 wallpapers ===== */
     const WALLPAPER_URLS = [
       "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/cumple.jpg",
       "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/wallpaper%20cumple%20morado.jpg",
@@ -507,20 +467,17 @@
       WALLPAPER_URLS.forEach((src,i)=>{
         const img = document.createElement('img');
         img.alt = `Wallpaper ${i+1}`;
-        img.decoding = "async";
-        img.loading = "eager";
-        img.src = src;
+        img.decoding = "async"; img.loading = "eager"; img.src = src;
         if(i===0) img.classList.add('show');
         wrap.appendChild(img);
       });
-
       const imgs = [...wrap.querySelectorAll('img')];
       let idx = 0;
       setInterval(()=>{
         imgs[idx].classList.remove('show');
         idx = (idx + 1) % imgs.length;
         imgs[idx].classList.add('show');
-      }, 3000); // cambia cada 3s
+      }, 3000);
     }
 
     // Iniciar
