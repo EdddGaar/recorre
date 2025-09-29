@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Medalla La Terca - Re-Corre</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background:#f4f4f4; }
+    canvas { border:1px solid #ccc; margin:20px auto; display:block; }
+    .btn { padding:10px 16px; border:none; border-radius:8px; background:#0077ff; color:#fff; cursor:pointer; margin:8px; }
+    input { margin:5px; padding:6px; }
+  </style>
+</head>
+<body>
+  <h2>🏅 Medalla LA TERCA</h2>
+  
+  <div>
+    <label>Nombre: <input type="text" id="nombre" value="Ed García"></label><br>
+    <label>Mes: <input type="text" id="mes" value="Enero 2025"></label><br>
+    <button class="btn" onclick="generarMedalla()">Generar</button>
+    <button class="btn" onclick="descargarMedalla()">Descargar</button>
+  </div>
+
+  <canvas id="medalla" width="600" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById("medalla");
+    const ctx = canvas.getContext("2d");
+    const base = new Image();
+    base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/La%20terca.png"; // link crudo
+
+    function generarMedalla(){
+      const nombre = document.getElementById("nombre").value;
+      const mes = document.getElementById("mes").value;
+
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
+
+      // Nombre
+      ctx.font = "bold 32px Arial";
+      ctx.fillStyle = "#222";
+      ctx.textAlign = "center";
+      ctx.fillText(nombre.toUpperCase(), canvas.width/2, 500);
+
+      // Mes
+      ctx.font = "24px Arial";
+      ctx.fillStyle = "#444";
+      ctx.fillText(mes, canvas.width/2, 540);
+    }
+
+    function descargarMedalla(){
+      const enlace = document.createElement("a");
+      enlace.download = "medalla_la_terca.png";
+      enlace.href = canvas.toDataURL("image/png");
+      enlace.click();
+    }
+
+    base.onload = generarMedalla;
+  </script>
+</body>
+</html>
