@@ -19,6 +19,10 @@
       overflow: hidden;
       text-align: center;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     #tsparticles {
@@ -27,55 +31,24 @@
       z-index: -2;
     }
 
-    .glow {
-      filter: drop-shadow(0 0 15px rgba(0, 200, 255, 0.6));
-      animation: pulse-blue 4s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulse-blue {
-      0%   { filter: drop-shadow(0 0 10px rgba(0, 200, 255, 0.5)); }
-      100% { filter: drop-shadow(0 0 25px rgba(0, 220, 255, 0.9)); }
-    }
-
     h1 {
-      font-size: 2.8rem;
-      margin: 25px 0;
+      font-size: 2.5rem;
+      margin-bottom: 15px;
       color: white;
       text-shadow: 
         0 0 10px #00e5ff,
         0 0 20px #00e5ff,
         0 0 30px #0077ff;
-      animation: neon-flicker 2.5s infinite alternate;
-    }
-
-    @keyframes neon-flicker {
-      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-        text-shadow: 
-          0 0 10px #00e5ff,
-          0 0 20px #00e5ff,
-          0 0 30px #0077ff;
-      }
-      20%, 24%, 55% {
-        text-shadow: none;
-      }
     }
 
     canvas {
-      margin: 25px auto;
-      display: block;
-      max-width: 90%;
+      width: 90%;
+      max-width: 500px;
+      height: auto;
       border-radius: 16px;
       background: #f9f9f9;
-      box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.3),
-        0 0 20px rgba(0, 180, 255, 0.4);
-      animation: fadeIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      opacity: 0;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to   { opacity: 1; transform: scale(1); }
+      box-shadow: 0 0 25px rgba(0, 180, 255, 0.6);
+      margin-top: 15px;
     }
 
     .btn-download {
@@ -83,12 +56,11 @@
       color: white;
       font-weight: bold;
       border: none;
-      padding: 16px 40px;
-      font-size: 1.3rem;
+      padding: 14px 36px;
+      font-size: 1.1rem;
       border-radius: 50px;
       cursor: pointer;
-      margin: 20px auto;
-      display: block;
+      margin-top: 20px;
       transition: all 0.3s ease;
       box-shadow: 0 0 20px rgba(0, 150, 255, 0.6);
     }
@@ -103,12 +75,12 @@
   <div id="tsparticles"></div>
 
   <h1>🏅 Medalla LA TERCA</h1>
-  <canvas id="medalla" width="600" height="600" class="glow"></canvas>
+  <canvas id="medalla" width="600" height="600"></canvas>
 
   <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
 
   <script>
-    // Partículas suaves en azul y blanco
+    // Partículas suaves
     tsParticles.load("tsparticles", {
       particles: {
         number: { value: 60 },
@@ -116,121 +88,49 @@
         shape: { type: "circle" },
         opacity: { value: { min: 0.2, max: 0.7 } },
         size: { value: { min: 1, max: 3 } },
-        move: {
-          enable: true,
-          speed: 0.7,
-          direction: "none",
-          random: true
-        }
-      },
-      interactivity: {
-        events: {
-          onhover: { enable: true, mode: "repulse" }
-        }
+        move: { enable: true, speed: 0.7, direction: "none", random: true }
       }
     });
 
     const canvas = document.getElementById("medalla");
     const ctx = canvas.getContext("2d");
 
-    // ✅ URL CORREGIDA: sin espacios al final
+    // ✅ Link RAW correcto de tu imagen en GitHub
     const base = new Image();
-    base.crossOrigin = "anonymous"; // ayuda con CORS
-    base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/La%20terca.png";
+    base.crossOrigin = "anonymous";
+    base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Laterca.png";
 
     const nombre = "LAURA ALEJANDRA";
     const mes = "ENERO 2025";
 
+    base.onload = () => {
+      generarMedalla();
+    };
+
     function generarMedalla() {
-      // Limpiar
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Si la imagen no carga, mostrar fondo alternativo
-      if (base.complete && base.naturalHeight !== 0) {
-        ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
-      } else {
-        // Fondo de respaldo elegante
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, "#e0f7fa");
-        gradient.addColorStop(1, "#b3e5fc");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "bold 36px Arial";
-        ctx.fillStyle = "#0077aa";
-        ctx.textAlign = "center";
-        ctx.fillText("⚠️ Imagen no cargada", canvas.width / 2, canvas.height / 2);
-      }
+      // Dibujar la medalla
+      ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-      // ✨ TEXTO EN AZUL ELÉCTRICO CON NEÓN
-      ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
+      // Texto del nombre
+      ctx.font = "bold 28px 'Segoe UI'";
+      ctx.fillStyle = "#003366";
       ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.fillText(nombre, canvas.width/2, 490);
 
-      // Sombra neón azul
-      ctx.shadowColor = "#00e5ff";
-      ctx.shadowBlur = 15;
-      ctx.fillStyle = "#003366"; // Azul muy oscuro (casi negro, pero azul)
-      ctx.fillText(nombre, canvas.width / 2, 490);
-
-      ctx.font = "24px 'Segoe UI', Arial, sans-serif";
-      ctx.shadowBlur = 10;
+      // Texto del mes
+      ctx.font = "22px 'Segoe UI'";
       ctx.fillStyle = "#005588";
-      ctx.fillText(mes, canvas.width / 2, 540);
-
-      // Reset sombra
-      ctx.shadowBlur = 0;
-
-      lanzarConfeti();
+      ctx.fillText(mes, canvas.width/2, 540);
     }
 
     function descargarMedalla() {
       const link = document.createElement("a");
       link.download = `medalla_la_terca_${Date.now()}.png`;
       link.href = canvas.toDataURL("image/png");
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
     }
-
-    function lanzarConfeti() {
-      const emojis = ["⚡", "💙", "✨", "🏆", "🏅", "🌟", "🏃‍♀️"];
-      for (let i = 0; i < 80; i++) {
-        setTimeout(() => {
-          const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-          const el = document.createElement("div");
-          el.textContent = emoji;
-          el.style.position = "fixed";
-          el.style.left = Math.random() * 100 + "vw";
-          el.style.top = "-3vh";
-          el.style.fontSize = (16 + Math.random() * 12) + "px";
-          el.style.color = ["#00e5ff", "#0077ff", "#ffffff"][Math.floor(Math.random() * 3)];
-          el.style.zIndex = "1000";
-          el.style.pointerEvents = "none";
-          el.style.animation = `fall ${2 + Math.random() * 2}s linear forwards`;
-          document.body.appendChild(el);
-          setTimeout(() => el.remove(), 4000);
-        }, i * 20);
-      }
-    }
-
-    // Animación de caída
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes fall {
-        to {
-          transform: translateY(105vh) rotate(${Math.random() > 0.5 ? '' : '-'}360deg);
-          opacity: 0;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Intentar cargar la imagen
-    base.onload = generarMedalla;
-    base.onerror = () => {
-      console.warn("⚠️ No se pudo cargar la imagen de la medalla. Mostrando fondo alternativo.");
-      generarMedalla(); // aún así muestra el canvas con texto
-    };
   </script>
 </body>
 </html>
