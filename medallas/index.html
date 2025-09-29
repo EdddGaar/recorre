@@ -1,58 +1,171 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Medalla La Terca - Re-Corre</title>
+
+  <!-- Partículas -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; background:#f4f4f4; }
-    canvas { border:1px solid #ccc; margin:20px auto; display:block; }
-    .btn { padding:10px 16px; border:none; border-radius:8px; background:#0077ff; color:#fff; cursor:pointer; margin:8px; }
-    input { margin:5px; padding:6px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    #tsparticles {
+      position: fixed; inset: 0;
+      z-index: -2;
+    }
+
+    .glow {
+      filter: drop-shadow(0 0 20px gold) drop-shadow(0 0 40px #ffd700);
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { filter: drop-shadow(0 0 15px gold); }
+      to   { filter: drop-shadow(0 0 35px gold) drop-shadow(0 0 60px #ffd700); }
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin: 20px 0;
+      background: linear-gradient(90deg,#ffd700,#ff9900,#ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 3s linear infinite;
+    }
+
+    @keyframes shine {
+      from { background-position: 0%; }
+      to { background-position: 200%; }
+    }
+
+    canvas {
+      margin: 20px auto;
+      display: block;
+      max-width: 90%;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .btn-download {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px #28a745, 0 0 30px #28a745;
+    }
+
+    .btn-download:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 25px #00ff6a, 0 0 50px #00ff6a;
+    }
   </style>
 </head>
 <body>
-  <h2>🏅 Medalla LA TERCA</h2>
-  
-  <div>
-    <label>Nombre: <input type="text" id="nombre" value="Ed García"></label><br>
-    <label>Mes: <input type="text" id="mes" value="Enero 2025"></label><br>
-    <button class="btn" onclick="generarMedalla()">Generar</button>
-    <button class="btn" onclick="descargarMedalla()">Descargar</button>
-  </div>
+  <div id="tsparticles"></div>
 
-  <canvas id="medalla" width="600" height="600"></canvas>
+  <h1>🏅 Medalla LA TERCA</h1>
+  <canvas id="medalla" width="600" height="600" class="glow"></canvas>
+
+  <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
 
   <script>
+    // Fondo partículas épico
+    tsParticles.load("tsparticles", {
+      particles: {
+        number: { value: 90 },
+        color: { value: ["#ffffff", "#ffd700"] },
+        shape: { type: "star" },
+        opacity: { value: 0.7 },
+        size: { value: { min: 1, max: 3 } },
+        move: { enable: true, speed: 1, direction: "none", random: true }
+      },
+      interactivity: {
+        events: { onhover: { enable: true, mode: "repulse" } }
+      }
+    });
+
+    // Canvas
     const canvas = document.getElementById("medalla");
     const ctx = canvas.getContext("2d");
     const base = new Image();
-    base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/La%20terca.png"; // 👈 enlace raw
+    base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/La%20terca.png";
 
-    function generarMedalla(){
-      const nombre = document.getElementById("nombre").value;
-      const mes = document.getElementById("mes").value;
+    const nombre = "ED GARCÍA";
+    const mes = "ENERO 2025";
 
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+    function generarMedalla() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-      // Nombre
-      ctx.font = "bold 32px Arial";
-      ctx.fillStyle = "#222";
+      ctx.font = "bold 36px 'Segoe UI'";
+      ctx.fillStyle = "#111";
       ctx.textAlign = "center";
-      ctx.fillText(nombre.toUpperCase(), canvas.width/2, 500);
+      ctx.fillText(nombre, canvas.width/2, 490);
 
-      // Mes
-      ctx.font = "24px Arial";
+      ctx.font = "24px 'Segoe UI'";
       ctx.fillStyle = "#444";
       ctx.fillText(mes, canvas.width/2, 540);
+
+      lanzarConfeti();
     }
 
-    function descargarMedalla(){
-      const enlace = document.createElement("a");
-      enlace.download = "medalla_la_terca.png";
-      enlace.href = canvas.toDataURL("image/png");
-      enlace.click();
+    function descargarMedalla() {
+      const link = document.createElement("a");
+      link.download = `medalla_la_terca_${Date.now()}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
     }
+
+    // 🎉 Confeti digital
+    function lanzarConfeti() {
+      for (let i=0; i<100; i++) {
+        setTimeout(()=>{
+          const emoji = ["🎉","✨","🥇","🏃‍♂️","🏃‍♀️"][Math.floor(Math.random()*5)];
+          const el = document.createElement("div");
+          el.textContent = emoji;
+          el.style.position="fixed";
+          el.style.left=Math.random()*100+"vw";
+          el.style.top="-2vh";
+          el.style.fontSize="24px";
+          el.style.animation=`fall ${2+Math.random()*3}s linear forwards`;
+          document.body.appendChild(el);
+          setTimeout(()=>el.remove(),5000);
+        }, i*20);
+      }
+    }
+
+    // Animación caída confeti
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes fall {
+        to { transform: translateY(105vh) rotate(360deg); opacity:0; }
+      }
+    `;
+    document.head.appendChild(style);
 
     base.onload = generarMedalla;
   </script>
