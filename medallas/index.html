@@ -7,6 +7,9 @@
 
   <!-- Partículas -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+  <!-- AOS Animations -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,14 +18,16 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      background-attachment: fixed;
       color: white;
-      overflow: hidden;
+      overflow-x: hidden;
       text-align: center;
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
     }
 
     #tsparticles {
@@ -32,8 +37,8 @@
     }
 
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 25px;
       color: white;
       text-shadow: 
         0 0 10px #00e5ff,
@@ -41,14 +46,25 @@
         0 0 30px #0077ff;
     }
 
+    .medalla-container {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 25px rgba(0,180,255,0.4);
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
     canvas {
-      width: 90%;
+      width: 100%;
       max-width: 500px;
       height: auto;
       border-radius: 16px;
-      background: #f9f9f9;
-      box-shadow: 0 0 25px rgba(0, 180, 255, 0.6);
-      margin-top: 15px;
+      background: transparent; /* ✅ transparente */
+      margin: 0 auto;
+      display: block;
     }
 
     .btn-download {
@@ -74,13 +90,18 @@
 <body>
   <div id="tsparticles"></div>
 
-  <h1>🏅 Medalla LA TERCA</h1>
-  <canvas id="medalla" width="600" height="600"></canvas>
+  <h1 data-aos="fade-down" data-aos-duration="1200">🏅 Medalla LA TERCA</h1>
 
-  <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
+  <div class="medalla-container" data-aos="zoom-in" data-aos-duration="1400">
+    <canvas id="medalla" width="600" height="600"></canvas>
+    <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
+  </div>
 
   <script>
-    // Partículas suaves
+    // Inicializar AOS
+    AOS.init();
+
+    // Partículas
     tsParticles.load("tsparticles", {
       particles: {
         number: { value: 60 },
@@ -95,13 +116,13 @@
     const canvas = document.getElementById("medalla");
     const ctx = canvas.getContext("2d");
 
-    // ✅ Link RAW correcto de tu imagen en GitHub
+    // ✅ Link RAW de la medalla
     const base = new Image();
     base.crossOrigin = "anonymous";
     base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Laterca.png";
 
     const nombre = "LAURA ALEJANDRA";
-    const mes = "ENERO 2025";
+    const mes = "OCTUBRE 2025";
 
     base.onload = () => {
       generarMedalla();
@@ -109,8 +130,6 @@
 
     function generarMedalla() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Dibujar la medalla
       ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
       // Texto del nombre
