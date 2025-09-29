@@ -14,7 +14,8 @@
     body {
       font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      background-size: cover;
+      background-position: center;
       background-attachment: fixed;
       color: white;
       overflow-x: hidden;
@@ -25,6 +26,7 @@
       align-items: center;
       justify-content: flex-start;
       padding: 30px 20px;
+      transition: background-image 1s ease-in-out;
     }
 
     #tsparticles {
@@ -129,20 +131,20 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-      // Texto nombre con efecto NEÓN azul
-      ctx.font = "bold 30px 'Segoe UI'";
+      // Texto nombre (más abajo para no invadir la medalla)
+      ctx.font = "bold 28px 'Segoe UI'";
       ctx.textAlign = "center";
       ctx.shadowColor = "#00e5ff";
       ctx.shadowBlur = 20;
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(nombre, canvas.width / 2, 490);
+      ctx.fillText(nombre, canvas.width / 2, 570);
 
-      // Texto mes con efecto NEÓN azul
-      ctx.font = "22px 'Segoe UI'";
+      // Texto mes justo debajo del nombre
+      ctx.font = "20px 'Segoe UI'";
       ctx.shadowColor = "#00e5ff";
       ctx.shadowBlur = 15;
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(mes, canvas.width / 2, 540);
+      ctx.fillText(mes, canvas.width / 2, 610);
 
       ctx.shadowBlur = 0;
 
@@ -188,6 +190,20 @@
       }
     `;
     document.head.appendChild(style);
+
+    // Fondo tipo carrusel
+    const fondos = [
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Fondo1.png",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Fondo%202.png",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Fondo%203%20.png"
+    ];
+    let idxFondo = 0;
+    function cambiarFondo() {
+      document.body.style.backgroundImage = `url('${fondos[idxFondo]}')`;
+      idxFondo = (idxFondo + 1) % fondos.length;
+    }
+    setInterval(cambiarFondo, 6000);
+    cambiarFondo();
 
     base.onload = generarMedalla;
   </script>
