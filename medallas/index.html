@@ -59,10 +59,7 @@
     canvas {
       margin: 20px auto;
       display: block;
-      max-width: 95%;
-      width: 100%;
-      max-height: 70vh;
-      height: auto;
+      max-width: 90%;
       border-radius: 16px;
       background: transparent;
       box-shadow: 
@@ -114,55 +111,40 @@
         opacity: { value: { min: 0.2, max: 0.7 } },
         size: { value: { min: 1, max: 3 } },
         move: { enable: true, speed: 0.8, random: true }
-      },
-      interactivity: {
-        events: { onhover: { enable: true, mode: "repulse" } }
       }
     });
 
     const canvas = document.getElementById("medalla");
     const ctx = canvas.getContext("2d");
 
-    // ✅ URL CORREGIDA: nombre exacto con espacio codificado y SIN ESPACIOS AL FINAL
+    // Imagen RAW desde GitHub
     const base = new Image();
     base.crossOrigin = "anonymous";
-    base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/La%20terca.png"; // ← ¡sin espacios!
+    base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Laterca.png";
 
     const nombre = "LAURA ALEJANDRA";
-    const mes = "ENERO 2025";
+    const mes = "OCTUBRE 2025";
 
     function generarMedalla() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-      if (base.complete && base.naturalHeight > 0) {
-        ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
-      } else {
-        // Fallback si falla la imagen
-        ctx.fillStyle = "#f0f8ff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "20px Arial";
-        ctx.fillStyle = "#003366";
-        ctx.textAlign = "center";
-        ctx.fillText("⚠️ Imagen no disponible", canvas.width / 2, canvas.height / 2);
-      }
-
-      // ✨ Texto con NEÓN AZUL (¡sorprendente!)
-      ctx.font = "bold 28px 'Segoe UI', Arial, sans-serif";
+      // Texto nombre con efecto dorado
+      ctx.font = "bold 30px 'Segoe UI'";
       ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      // Sombra neón
-      ctx.shadowColor = "#00e5ff";
+      ctx.shadowColor = "#b8860b";
       ctx.shadowBlur = 12;
-      ctx.fillStyle = "#002244"; // Azul muy oscuro
+      ctx.fillStyle = "#3b2f2f";
       ctx.fillText(nombre, canvas.width / 2, 490);
 
-      ctx.font = "22px 'Segoe UI', Arial, sans-serif";
-      ctx.shadowBlur = 8;
-      ctx.fillStyle = "#004466";
+      // Texto mes con efecto dorado
+      ctx.font = "22px 'Segoe UI'";
+      ctx.shadowColor = "#daa520";
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = "#2f2f2f";
       ctx.fillText(mes, canvas.width / 2, 540);
 
-      ctx.shadowBlur = 0; // reset
+      ctx.shadowBlur = 0;
 
       lanzarConfeti();
     }
@@ -171,65 +153,43 @@
       const link = document.createElement("a");
       link.download = `medalla_la_terca_${Date.now()}.png`;
       link.href = canvas.toDataURL("image/png");
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
     }
 
-    // 🎉 Confeti 100% RESPONSIVO
+    // 🎉 Confeti de Emojis
     function lanzarConfeti() {
       const emojis = ["⚡", "💙", "✨", "🏆", "🏅", "🌟", "🏃‍♀️", "🔥"];
-      const total = 80;
-      for (let i = 0; i < total; i++) {
+      for (let i = 0; i < 80; i++) {
         setTimeout(() => {
           const emoji = emojis[Math.floor(Math.random() * emojis.length)];
           const el = document.createElement("div");
           el.textContent = emoji;
           el.style.position = "fixed";
-          el.style.left = Math.random() * window.innerWidth + "px";
-          el.style.top = "-50px";
-          el.style.fontSize = (16 + Math.random() * 16) + "px";
-          el.style.zIndex = "10000";
+          el.style.left = Math.random() * 100 + "vw";
+          el.style.top = "-3vh";
+          el.style.fontSize = (18 + Math.random() * 14) + "px";
+          el.style.zIndex = "1000";
           el.style.pointerEvents = "none";
-          el.style.opacity = "0";
-          el.style.animation = `fall ${1.5 + Math.random() * 2}s ease-out forwards`;
+          el.style.animation = `fall ${2 + Math.random() * 3}s linear forwards`;
           document.body.appendChild(el);
-
-          // Fade in suave
-          setTimeout(() => {
-            if (el) el.style.opacity = "1";
-          }, 10);
-
-          // Eliminar después
-          setTimeout(() => {
-            if (el.parentNode) el.parentNode.removeChild(el);
-          }, 4000);
-        }, i * 25);
+          setTimeout(() => el.remove(), 5000);
+        }, i * 20);
       }
     }
 
-    // Inyectar animación de caída
+    // Animación de caída
     const style = document.createElement("style");
     style.innerHTML = `
       @keyframes fall {
-        0% {
-          transform: translateY(0) rotate(0deg);
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(${window.innerHeight + 100}px) rotate(${(Math.random() > 0.5 ? '' : '-') + (360 + Math.random() * 720)}deg);
+        to {
+          transform: translateY(105vh) rotate(${Math.random() > 0.5 ? '' : '-'}360deg);
           opacity: 0;
         }
       }
     `;
     document.head.appendChild(style);
 
-    // Manejo de carga
     base.onload = generarMedalla;
-    base.onerror = () => {
-      console.error("❌ No se pudo cargar la imagen de la medalla.");
-      generarMedalla(); // muestra fallback
-    };
   </script>
 </body>
 </html>
