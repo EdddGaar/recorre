@@ -100,7 +100,7 @@
   <div id="tsparticles"></div>
 
   <h1>🏅 Medalla LA TERCA</h1>
-  <canvas id="medalla" width="600" height="600"></canvas>
+  <canvas id="medalla" width="600" height="700"></canvas>
   <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
 
   <script>
@@ -129,22 +129,22 @@
 
     function generarMedalla() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(base, 0, 0, canvas.width, 600);
 
-      // Texto nombre (más abajo para no invadir la medalla)
+      // Texto nombre (abajo de la medalla)
       ctx.font = "bold 28px 'Segoe UI'";
       ctx.textAlign = "center";
       ctx.shadowColor = "#00e5ff";
       ctx.shadowBlur = 20;
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(nombre, canvas.width / 2, 570);
+      ctx.fillText(nombre, canvas.width / 2, 640);
 
-      // Texto mes justo debajo del nombre
+      // Texto mes (más abajo aún)
       ctx.font = "20px 'Segoe UI'";
       ctx.shadowColor = "#00e5ff";
       ctx.shadowBlur = 15;
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(mes, canvas.width / 2, 610);
+      ctx.fillText(mes, canvas.width / 2, 680);
 
       ctx.shadowBlur = 0;
 
