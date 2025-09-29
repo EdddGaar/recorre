@@ -12,94 +12,72 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #0b0f19, #1a2a4a, #2c1e5d);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0d0d0d, #0a2342, #1b3b6f);
+      background-size: 400% 400%;
+      animation: bgShift 18s ease infinite;
       color: #fff;
       overflow: hidden;
       text-align: center;
-      position: relative;
+    }
+
+    @keyframes bgShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     #tsparticles {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       z-index: -2;
     }
 
-    .glow {
-      filter: drop-shadow(0 0 25px #ffd700) drop-shadow(0 0 50px #ffaa00);
-      animation: pulse-gold 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulse-gold {
-      0%   { filter: drop-shadow(0 0 20px #ffd700); }
-      100% { filter: drop-shadow(0 0 35px #ffd700) drop-shadow(0 0 70px #ffaa00); }
-    }
-
     h1 {
-      font-size: 2.8rem;
-      margin: 25px 0;
-      background: linear-gradient(90deg, #ffd700, #ffaa00, #ff8c00, #ffd700, #ffaa00);
-      background-size: 300% 100%;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      margin-bottom: 20px;
+      background: linear-gradient(90deg,#4fc3f7,#bbdefb,#4fc3f7);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shine-gold 4s linear infinite;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    @keyframes shine-gold {
-      0%   { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
+      text-shadow: 0 0 15px rgba(0,0,0,0.6);
     }
 
     canvas {
-      margin: 25px auto;
-      display: block;
-      max-width: 90%;
+      width: 90%;
+      max-width: 500px;
+      height: auto;
       border-radius: 16px;
       background: white;
-      box-shadow: 
-        0 0 30px rgba(255, 215, 0, 0.5),
-        0 0 60px rgba(255, 170, 0, 0.4);
-      animation: fadeIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      opacity: 0;
+      box-shadow: 0 0 40px rgba(0, 102, 255, 0.6);
+      animation: fadeIn 1.2s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.92) rotate(-1deg); }
-      to   { opacity: 1; transform: scale(1) rotate(0); }
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
     .btn-download {
-      background: linear-gradient(135deg, #ffd700, #ffaa00, #ff8c00);
-      color: #1a1a1a;
-      font-weight: bold;
+      background: #0d47a1;
+      color: white;
       border: none;
-      padding: 16px 40px;
-      font-size: 1.3rem;
+      padding: 14px 36px;
+      font-size: 1.1rem;
+      font-weight: bold;
       border-radius: 50px;
       cursor: pointer;
-      margin: 20px auto;
-      display: block;
-      transition: all 0.4s ease;
-      box-shadow: 
-        0 4px 20px rgba(255, 215, 0, 0.5),
-        0 0 0 0 rgba(255, 215, 0, 0.7);
-      position: relative;
-      overflow: hidden;
+      margin-top: 25px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px #1565c0, 0 0 30px #1e88e5;
     }
 
     .btn-download:hover {
-      transform: scale(1.1) rotate(1deg);
-      box-shadow: 
-        0 6px 30px rgba(255, 215, 0, 0.8),
-        0 0 0 15px rgba(255, 215, 0, 0.3);
-      color: #000;
-    }
-
-    .btn-download:active {
-      transform: scale(1.05);
+      transform: scale(1.08);
+      box-shadow: 0 0 25px #2196f3, 0 0 50px #64b5f6;
     }
   </style>
 </head>
@@ -107,48 +85,28 @@
   <div id="tsparticles"></div>
 
   <h1>🏅 Medalla LA TERCA</h1>
-  <canvas id="medalla" width="600" height="600" class="glow"></canvas>
+  <canvas id="medalla" width="600" height="600"></canvas>
 
   <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
 
   <script>
-    // Partículas doradas y plateadas con forma de estrella
+    // Fondo partículas
     tsParticles.load("tsparticles", {
-      fpsLimit: 60,
       particles: {
         number: { value: 70 },
-        color: { value: ["#ffd700", "#c0c0c0", "#ffffff"] },
-        shape: { type: "star" },
-        opacity: { value: { min: 0.4, max: 0.9 } },
-        size: { value: { min: 1, max: 4 } },
-        move: {
-          enable: true,
-          speed: 0.8,
-          direction: "none",
-          random: true,
-          straight: false,
-          outModes: { default: "out" }
-        }
-      },
-      interactivity: {
-        detectsOn: "canvas",
-        events: {
-          onhover: { enable: true, mode: "repulse" },
-          onclick: { enable: true, mode: "push" }
-        },
-        modes: {
-          repulse: { distance: 100, duration: 0.4 },
-          push: { quantity: 3 }
-        }
-      },
-      detectRetina: true
+        color: { value: ["#bbdefb", "#64b5f6", "#ffffff"] },
+        shape: { type: "circle" },
+        opacity: { value: 0.4 },
+        size: { value: { min: 1, max: 3 } },
+        move: { enable: true, speed: 1, direction: "none", random: true }
+      }
     });
 
     // Canvas
     const canvas = document.getElementById("medalla");
     const ctx = canvas.getContext("2d");
     const base = new Image();
-    // Corregido: eliminado espacio al final del URL
+    base.crossOrigin = "anonymous"; // evitar problemas de CORS
     base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/La%20terca.png";
 
     const nombre = "LAURA ALEJANDRA";
@@ -158,68 +116,22 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-      // Nombre
-      ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
-      ctx.fillStyle = "#222";
+      ctx.font = "bold 28px 'Segoe UI'";
+      ctx.fillStyle = "#111";
       ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(nombre, canvas.width / 2, 490);
+      ctx.fillText(nombre, canvas.width/2, 500);
 
-      // Mes
-      ctx.font = "24px 'Segoe UI', Arial, sans-serif";
-      ctx.fillStyle = "#444";
-      ctx.fillText(mes, canvas.width / 2, 540);
-
-      lanzarConfeti();
+      ctx.font = "22px 'Segoe UI'";
+      ctx.fillStyle = "#333";
+      ctx.fillText(mes, canvas.width/2, 540);
     }
 
     function descargarMedalla() {
       const link = document.createElement("a");
       link.download = `medalla_la_terca_${Date.now()}.png`;
       link.href = canvas.toDataURL("image/png");
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
     }
-
-    // 🎉 Confeti dorado y brillante
-    function lanzarConfeti() {
-      const emojis = ["🥇", "✨", "🌟", "🎉", "🏆", "🏅", "💫"];
-      for (let i = 0; i < 120; i++) {
-        setTimeout(() => {
-          const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-          const el = document.createElement("div");
-          el.textContent = emoji;
-          el.style.position = "fixed";
-          el.style.left = Math.random() * 100 + "vw";
-          el.style.top = "-3vh";
-          el.style.fontSize = (18 + Math.random() * 16) + "px";
-          el.style.zIndex = "1000";
-          el.style.pointerEvents = "none";
-          el.style.animation = `fall ${2 + Math.random() * 3}s linear forwards`;
-          document.body.appendChild(el);
-          setTimeout(() => {
-            if (el.parentNode) el.parentNode.removeChild(el);
-          }, 5000);
-        }, i * 15);
-      }
-    }
-
-    // Animación de caída para confeti
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes fall {
-        0% {
-          transform: translateY(0) rotate(0deg);
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(105vh) rotate(${360 + Math.random() * 720}deg);
-          opacity: 0;
-        }
-      }
-    `;
-    document.head.appendChild(style);
 
     base.onload = generarMedalla;
   </script>
