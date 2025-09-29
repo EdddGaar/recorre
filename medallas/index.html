@@ -129,19 +129,19 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-      // Texto nombre con efecto dorado
+      // Texto nombre con efecto NEÓN azul
       ctx.font = "bold 30px 'Segoe UI'";
       ctx.textAlign = "center";
-      ctx.shadowColor = "#b8860b";
-      ctx.shadowBlur = 12;
-      ctx.fillStyle = "#3b2f2f";
+      ctx.shadowColor = "#00e5ff";
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = "#ffffff";
       ctx.fillText(nombre, canvas.width / 2, 490);
 
-      // Texto mes con efecto dorado
+      // Texto mes con efecto NEÓN azul
       ctx.font = "22px 'Segoe UI'";
-      ctx.shadowColor = "#daa520";
-      ctx.shadowBlur = 10;
-      ctx.fillStyle = "#2f2f2f";
+      ctx.shadowColor = "#00e5ff";
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = "#ffffff";
       ctx.fillText(mes, canvas.width / 2, 540);
 
       ctx.shadowBlur = 0;
