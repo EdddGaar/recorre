@@ -7,15 +7,12 @@
 
   <!-- Partículas -->
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
-  <!-- AOS Animations -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
       min-height: 100vh;
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       background-attachment: fixed;
@@ -27,7 +24,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 40px 20px;
+      padding: 30px 20px;
     }
 
     #tsparticles {
@@ -44,27 +41,37 @@
         0 0 10px #00e5ff,
         0 0 20px #00e5ff,
         0 0 30px #0077ff;
+      animation: neon-flicker 2.5s infinite alternate;
     }
 
-    .medalla-container {
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 25px rgba(0,180,255,0.4);
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
+    @keyframes neon-flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 
+          0 0 10px #00e5ff,
+          0 0 20px #00e5ff,
+          0 0 30px #0077ff;
+      }
+      20%, 24%, 55% {
+        text-shadow: none;
+      }
     }
 
     canvas {
-      width: 100%;
-      max-width: 500px;
-      height: auto;
-      border-radius: 16px;
-      background: transparent; /* ✅ transparente */
-      margin: 0 auto;
+      margin: 20px auto;
       display: block;
+      max-width: 90%;
+      border-radius: 16px;
+      background: transparent; /* ✅ canvas sin fondo */
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(0, 180, 255, 0.4);
+      animation: fadeIn 1s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
     .btn-download {
@@ -90,58 +97,50 @@
 <body>
   <div id="tsparticles"></div>
 
-  <h1 data-aos="fade-down" data-aos-duration="1200">🏅 Medalla LA TERCA</h1>
-
-  <div class="medalla-container" data-aos="zoom-in" data-aos-duration="1400">
-    <canvas id="medalla" width="600" height="600"></canvas>
-    <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
-  </div>
+  <h1>🏅 Medalla LA TERCA</h1>
+  <canvas id="medalla" width="600" height="600"></canvas>
+  <button class="btn-download" onclick="descargarMedalla()">⬇ Descargar Medalla</button>
 
   <script>
-    // Inicializar AOS
-    AOS.init();
-
     // Partículas
     tsParticles.load("tsparticles", {
       particles: {
-        number: { value: 60 },
+        number: { value: 70 },
         color: { value: ["#00e5ff", "#ffffff", "#0077ff"] },
         shape: { type: "circle" },
         opacity: { value: { min: 0.2, max: 0.7 } },
         size: { value: { min: 1, max: 3 } },
-        move: { enable: true, speed: 0.7, direction: "none", random: true }
+        move: { enable: true, speed: 0.8, random: true }
       }
     });
 
     const canvas = document.getElementById("medalla");
     const ctx = canvas.getContext("2d");
 
-    // ✅ Link RAW de la medalla
+    // ✅ Imagen RAW desde GitHub
     const base = new Image();
     base.crossOrigin = "anonymous";
     base.src = "https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Laterca.png";
 
     const nombre = "LAURA ALEJANDRA";
-    const mes = "OCTUBRE 2025";
-
-    base.onload = () => {
-      generarMedalla();
-    };
+    const mes = "ENERO 2025";
 
     function generarMedalla() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
 
-      // Texto del nombre
+      // Texto nombre
       ctx.font = "bold 28px 'Segoe UI'";
       ctx.fillStyle = "#003366";
       ctx.textAlign = "center";
-      ctx.fillText(nombre, canvas.width/2, 490);
+      ctx.fillText(nombre, canvas.width / 2, 490);
 
-      // Texto del mes
+      // Texto mes
       ctx.font = "22px 'Segoe UI'";
       ctx.fillStyle = "#005588";
-      ctx.fillText(mes, canvas.width/2, 540);
+      ctx.fillText(mes, canvas.width / 2, 540);
+
+      lanzarConfeti();
     }
 
     function descargarMedalla() {
@@ -150,6 +149,41 @@
       link.href = canvas.toDataURL("image/png");
       link.click();
     }
+
+    // 🎉 Confeti de Emojis
+    function lanzarConfeti() {
+      const emojis = ["⚡", "💙", "✨", "🏆", "🏅", "🌟", "🏃‍♀️", "🔥"];
+      for (let i = 0; i < 80; i++) {
+        setTimeout(() => {
+          const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+          const el = document.createElement("div");
+          el.textContent = emoji;
+          el.style.position = "fixed";
+          el.style.left = Math.random() * 100 + "vw";
+          el.style.top = "-3vh";
+          el.style.fontSize = (18 + Math.random() * 14) + "px";
+          el.style.zIndex = "1000";
+          el.style.pointerEvents = "none";
+          el.style.animation = `fall ${2 + Math.random() * 3}s linear forwards`;
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 5000);
+        }, i * 20);
+      }
+    }
+
+    // Animación de caída
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes fall {
+        to {
+          transform: translateY(105vh) rotate(${Math.random() > 0.5 ? '' : '-'}360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    base.onload = generarMedalla;
   </script>
 </body>
 </html>
