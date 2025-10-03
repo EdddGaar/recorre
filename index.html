@@ -90,7 +90,6 @@
     <p class="phrase" id="status">Cargando cumpleañer@s…</p>
     <div class="toolbar">
       <button class="btn" id="btn-celebrar">Celebrar</button>
-      <button class="btn" id="btn-hoy">Ir a HOY</button>
       <button class="btn active" id="btn-week">Semana</button>
       <button class="btn" id="btn-month">Mes</button>
       <button class="btn" id="btn-year">Año</button>
@@ -123,140 +122,140 @@
   <script>
     /* ====== CONFIG ====== */
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN-lWu2WBwCmFHqb8aI6ObDNvuGYjSoHdNE62eP4Gp7PXhgsOBRvN3h7uXRQWQNTcD7mttS5mjEouW/pub?output=csv";
-    const TZ = 'America/Mexico_City';
 
-    /* ====== UTILS DE FECHA ====== */
-    const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    const at0 = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
-    const fmtDM = d => d.toLocaleDateString('es-MX', { day:'2-digit', month:'short' }).replace('.', '');
-    const fmtLongDM = d => d.toLocaleDateString('es-MX', { day:'2-digit', month:'long' });
+    const dayNames=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-    /* ====== CSV PARSE & MAPEO ====== */
-    function stripAccentsLower(s){ return (s ?? '').toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
-    function findHeaderIndex(headers, candidates){
-      const cleaned = headers.map(h=> stripAccentsLower(h));
+    const at0=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x;};
+    const fmtDM=d=>d.toLocaleDateString('es-MX',{day:'2-digit',month:'short'}).replace('.', '');
+    const fmtLongDM=d=>d.toLocaleDateString('es-MX',{day:'2-digit',month:'long'});
+
+    /* ====== EFFECTS ====== */
+    function confettiBurst(n=160,dur=[1.8,3.0]){
+      const colors=['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
+      for(let i=0;i<n;i++){
+        const el=document.createElement('span'); el.className='confetti';
+        el.style.left=(Math.random()*100)+'vw';
+        el.style.background=colors[(Math.random()*colors.length)|0];
+        el.style.animationDuration=(dur[0]+Math.random()*(dur[1]-dur[0]))+'s';
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),4000);
+      }
+    }
+
+    // Estrellas
+    (function stars(){
+      const c=document.getElementById('stars'); const ctx=c.getContext('2d'); let W,H,stars=[];
+      function resize(){W=c.width=innerWidth;H=c.height=innerHeight;spawn();}
+      function spawn(){stars=new Array(100).fill(0).map(()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+0.6,a:Math.random()*0.5+0.4,speed:Math.random()*0.003+0.0015,phase:Math.random()*Math.PI*2}));}
+      function tick(){ctx.clearRect(0,0,W,H);for(const s of stars){s.phase+=s.speed;const alpha=s.a*(0.5+0.5*Math.sin(s.phase));const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3);g.addColorStop(0,`rgba(255,255,255,${alpha})`);g.addColorStop(1,`rgba(255,255,255,0)`);ctx.fillStyle=g;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();}requestAnimationFrame(tick);}
+      addEventListener('resize',resize);resize();tick();
+    })();
+
+    // Wallpapers carrusel
+    const WALLPAPER_URLS=[
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/cumple.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20cumple%20morado.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20de%20globos.jpg"
+    ];
+    function initWallpapers(){
+      const wrap=document.querySelector('.wallpapers');
+      WALLPAPER_URLS.forEach((src,i)=>{
+        const img=document.createElement('img');
+        img.src=src; img.alt="Wallpaper "+(i+1);
+        if(i===0) img.classList.add('show');
+        wrap.appendChild(img);
+      });
+      const imgs=[...wrap.querySelectorAll('img')];
+      let idx=0;
+      setInterval(()=>{
+        imgs[idx].classList.remove('show');
+        idx=(idx+1)%imgs.length;
+        imgs[idx].classList.add('show');
+      },5000);
+    }
+
+    /* ====== CSV PARSE ====== */
+    function stripAccentsLower(s){return (s??'').toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+    function findHeaderIndex(headers,candidates){
+      const cleaned=headers.map(h=>stripAccentsLower(h));
       for(const cand of candidates){
-        const c = stripAccentsLower(cand);
+        const c=stripAccentsLower(cand);
         for(let i=0;i<cleaned.length;i++){ if(cleaned[i].includes(c)) return i; }
       }
       return -1;
     }
 
     async function fetchBirthdaysFromCSV(){
-      const res = await fetch(CSV_URL + "&_cb=" + Date.now(), {cache:'no-store'});
-      if(!res.ok) throw new Error("CSV fetch failed: " + res.status);
-      const csvText = await res.text();
-      const parsed = Papa.parse(csvText, { header:false, skipEmptyLines:true });
-      const rows = parsed.data || [];
-      if(rows.length === 0) return [];
+      const res=await fetch(CSV_URL+"&_cb="+Date.now(),{cache:'no-store'});
+      if(!res.ok) throw new Error("CSV fetch failed: "+res.status);
+      const csvText=await res.text();
+      const parsed=Papa.parse(csvText,{header:false,skipEmptyLines:true});
+      const rows=parsed.data||[]; if(rows.length===0) return [];
+      const headers=rows[0].map(v=>(v??'').toString().trim());
+      const data=rows.slice(1);
 
-      const headers = rows[0].map(v => (v ?? '').toString().trim());
-      const data = rows.slice(1);
-
-      // Columnas a buscar
-      const NAME_COL  = findHeaderIndex(headers, ['nombre','✍️ nombre completo','name']);
-      const PACE_COL  = findHeaderIndex(headers, ['ritmo','pace']);
-      let BIRTH_COL   = findHeaderIndex(headers, [
-        'cumpleaños normalizado',   // ✅ Columna X limpia
-        'wa cumpleaños',
-        'fecha cumpleaños',
-        'edad',
-        'fecha de nacimiento',
-        'cumple',
-        'cumpleaños'
-      ]);
-
-      if(NAME_COL === -1 || BIRTH_COL === -1) return [];
+      const NAME_COL=findHeaderIndex(headers,['nombre','✍️ nombre completo','name']);
+      const PACE_COL=findHeaderIndex(headers,['ritmo','pace']);
+      let BIRTH_COL=findHeaderIndex(headers,['cumple normalizado','wa cumpleaños','edad','fecha de nacimiento','cumple']);
+      if(NAME_COL===-1||BIRTH_COL===-1) return [];
 
       const out=[];
       for(const row of data){
-        const name = (row[NAME_COL] ?? '').toString().trim();
-        const birthRaw = row[BIRTH_COL] != null ? String(row[BIRTH_COL]).trim() : '';
-        if(!name || !birthRaw) continue;
-
-        // La columna "cumpleaños normalizado" ya viene en formato MM-DD
-        let mmdd = '';
-        if(/^\d{2}-\d{2}$/.test(birthRaw)){
-          mmdd = birthRaw;
-        } else {
-          // fallback por si viniera fecha distinta
-          const parts = birthRaw.split(/[-\/]/).map(Number);
-          if(parts.length >= 2){
-            const m = String(parts[0]).padStart(2,'0');
-            const d = String(parts[1]).padStart(2,'0');
-            mmdd = `${m}-${d}`;
-          }
+        const name=(row[NAME_COL]??'').toString().trim();
+        const birth=(row[BIRTH_COL]??'').toString().trim();
+        if(!name||!birth) continue;
+        let mmdd='';
+        if(/^\d{2}-\d{2}$/.test(birth)){mmdd=birth;}
+        else{
+          const parts=birth.split(/[-\/]/).map(Number);
+          if(parts.length>=2){mmdd=`${String(parts[0]).padStart(2,'0')}-${String(parts[1]).padStart(2,'0')}`;}
         }
-
         if(!mmdd) continue;
-        const pace = (PACE_COL !== -1) ? (row[PACE_COL] ?? '').toString().trim() : '';
-
-        out.push({ name, date:mmdd, pace, wish:'' });
+        const pace=(PACE_COL!==-1)?(row[PACE_COL]??'').toString().trim():'';
+        out.push({name,date:mmdd,pace});
       }
       return out;
     }
-    /* ====== AGRUPACIONES Y RENDER ====== */
-    const toDateInYear = (mmdd, year) => { const [m,d] = mmdd.split('-').map(Number); return new Date(year, m-1, d); };
 
+    /* ====== RENDER ====== */
     function renderEmpty(container){
-      container.innerHTML='';
-      const empty=document.createElement('div'); empty.className='card empty-card';
-      const p=document.createElement('p'); p.className='wish';
-      p.textContent="🎂 No hay cumpleañeros en este periodo";
-      empty.appendChild(p); container.appendChild(empty);
+      container.innerHTML='<div class="card empty-card"><p class="wish">🎂 Sin cumpleañeros</p></div>';
     }
 
     function renderWeek(list){
-      const wrap = document.getElementById('week-view');
-      wrap.innerHTML = '';
-
-      const today=new Date(); const monday=new Date(today); monday.setDate(today.getDate() - (today.getDay()||7) + 1);
-      const sunday=new Date(monday); sunday.setDate(monday.getDate()+6);
-      const days=[]; for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);days.push(d);}
-
-      days.forEach(d=>{
-        const mmdd = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const items = list.filter(p=>p.date===mmdd);
-
-        const section=document.createElement('section'); section.className='section';
-        const h=document.createElement('h2'); h.className='title-day'; 
-        h.textContent = (d.toDateString()===today.toDateString()?"HOY":"") || dayNames[d.getDay()];
-        section.appendChild(h);
-
-        const cards=document.createElement('div'); cards.className='cards';
-        if(items.length===0){ renderEmpty(cards); }
-        else{
-          items.forEach(p=>{
-            const c=document.createElement('div'); c.className='card';
-            c.innerHTML = `
-              <p class="name">${p.name}</p>
-              <p class="meta">${fmtDM(toDateInYear(p.date, today.getFullYear()))} · ${p.pace||'Runner'}</p>
-              <p class="wish">🎉 ¡Muchas felicidades!</p>`;
-            cards.appendChild(c);
-          });
-        }
+      const wrap=document.getElementById('week-view'); wrap.innerHTML='';
+      const today=new Date();
+      const monday=new Date(today); monday.setDate(today.getDate()-(today.getDay()||7)+1);
+      for(let i=0;i<7;i++){
+        const d=new Date(monday);d.setDate(monday.getDate()+i);
+        const mmdd=`${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const items=list.filter(p=>p.date===mmdd);
+        const section=document.createElement('div'); section.className='section';
+        section.innerHTML=`<h2 class="title-day">${d.toDateString()===today.toDateString()?'HOY':dayNames[d.getDay()]}</h2>`;
+        const cards=document.createElement('div');cards.className='cards';
+        if(!items.length) renderEmpty(cards);
+        else items.forEach(p=>{
+          const c=document.createElement('div'); c.className='card';
+          c.innerHTML=`<p class="name">${p.name}</p><p class="meta">${fmtDM(toDateInYear(p.date,new Date().getFullYear()))} · ${p.pace||'Runner'}</p><p class="wish">🎉 ¡Muchas felicidades!</p>`;
+          cards.appendChild(c);
+        });
         section.appendChild(cards); wrap.appendChild(section);
-      });
+        if(section.querySelectorAll('.card').length>0 && section.querySelector('.title-day').textContent==='HOY'){confettiBurst();}
+      }
     }
 
     function renderMonth(list){
-      const now=new Date(); const curM=now.getMonth()+1;
-      const thisMonth=list.filter(p=>parseInt(p.date.split('-')[0],10)===curM);
-      const wrap=document.getElementById('month-view');
-      wrap.innerHTML='';
-
-      if(!thisMonth.length){ renderEmpty(wrap); return; }
-
-      const cards=document.createElement('div'); cards.className='cards';
-      thisMonth.forEach(p=>{
+      const now=new Date(),curM=now.getMonth()+1;
+      const items=list.filter(p=>parseInt(p.date.split('-')[0])===curM);
+      const wrap=document.getElementById('month-view'); wrap.innerHTML='';
+      if(!items.length) return renderEmpty(wrap);
+      const cards=document.createElement('div');cards.className='cards';
+      items.forEach(p=>{
         const [m,d]=p.date.split('-').map(Number);
         const dt=new Date(now.getFullYear(),m-1,d);
-        const c=document.createElement('div'); c.className='card';
-        c.innerHTML=`
-          <p class="name">${p.name}</p>
-          <p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p>
-          <p class="wish">🎂 ¡Muchas felicidades!</p>`;
+        const c=document.createElement('div');c.className='card';
+        c.innerHTML=`<p class="name">${p.name}</p><p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p><p class="wish">🎂 ¡Feliz cumple!</p>`;
         cards.appendChild(c);
       });
       wrap.appendChild(cards);
@@ -264,30 +263,25 @@
 
     function renderYear(list){
       const wrap=document.getElementById('year-view'); wrap.innerHTML='';
-      const groups=Array.from({length:12},()=>[]);
-      list.forEach(p=>{const m=parseInt(p.date.split('-')[0],10); groups[m-1].push(p);});
-
-      groups.forEach((arr,i)=>{
-        if(!arr.length) return;
-        const section=document.createElement('section'); section.className='section';
-        const h=document.createElement('h2'); h.className='title-day'; h.textContent=monthNames[i]; section.appendChild(h);
-
-        const cards=document.createElement('div'); cards.className='cards';
-        arr.forEach(p=>{
-          const [m,d]=p.date.split('-').map(Number);
-          const dt=new Date(new Date().getFullYear(),m-1,d);
-          const c=document.createElement('div'); c.className='card';
-          c.innerHTML=`
-            <p class="name">${p.name}</p>
-            <p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p>
-            <p class="wish">🎉 ¡Muchas felicidades!</p>`;
+      for(let m=1;m<=12;m++){
+        const items=list.filter(p=>parseInt(p.date.split('-')[0])===m);
+        if(!items.length) continue;
+        const section=document.createElement('div');section.className='section';
+        section.innerHTML=`<h2 class="title-day">${monthNames[m-1]}</h2>`;
+        const cards=document.createElement('div');cards.className='cards';
+        items.forEach(p=>{
+          const [mm,dd]=p.date.split('-').map(Number);
+          const dt=new Date(new Date().getFullYear(),mm-1,dd);
+          const c=document.createElement('div');c.className='card';
+          c.innerHTML=`<p class="name">${p.name}</p><p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p><p class="wish">🎉 ¡Muchas felicidades!</p>`;
           cards.appendChild(c);
         });
         section.appendChild(cards); wrap.appendChild(section);
-      });
+      }
     }
 
     /* ====== COUNTDOWN ====== */
+    function toDateInYear(mmdd,year){const[m,d]=mmdd.split('-').map(Number);return new Date(year,m-1,d);}
     function getNextBirthday(list){
       const today=at0(new Date());
       const upcoming=list.map(p=>{
@@ -337,28 +331,25 @@
       const status=document.getElementById('status');
       try{
         status.textContent=force?'Actualizando…':'Cargando cumpleañer@s…';
-        const list=await fetchBirthdaysFromCSV();
-        window.BIRTHDAYS=list;
+        const list=await fetchBirthdaysFromCSV(); window.BIRTHDAYS=list;
         renderWeek(list); renderMonth(list); renderYear(list); renderCountdown();
         status.textContent=list.length?'🎉 Lista cargada':'No se encontraron cumpleañer@s';
       }catch(err){
         console.error(err);
-        window.BIRTHDAYS=[];
-        renderEmpty(document.getElementById('week-view'));
-        renderEmpty(document.getElementById('month-view'));
-        renderEmpty(document.getElementById('year-view'));
+        window.BIRTHDAYS=[]; renderEmpty(document.getElementById('week-view'));
+        renderEmpty(document.getElementById('month-view')); renderEmpty(document.getElementById('year-view'));
         status.textContent='No se pudo cargar la lista.';
       }
     }
 
     /* ====== EVENTOS ====== */
+    document.getElementById('btn-celebrar').addEventListener('click',()=>confettiBurst());
     document.getElementById('btn-week').addEventListener('click',()=>{document.getElementById('week-section').style.display='';document.getElementById('month-section').style.display='none';document.getElementById('year-section').style.display='none';});
     document.getElementById('btn-month').addEventListener('click',()=>{document.getElementById('week-section').style.display='none';document.getElementById('month-section').style.display='';document.getElementById('year-section').style.display='none';});
     document.getElementById('btn-year').addEventListener('click',()=>{document.getElementById('week-section').style.display='none';document.getElementById('month-section').style.display='none';document.getElementById('year-section').style.display='';});
     document.getElementById('btn-reload').addEventListener('click',()=>boot(true));
-    document.getElementById('btn-celebrar').addEventListener('click',()=>alert("🎉 Confeti! (puedes animar más aquí)"));
 
-    document.addEventListener('DOMContentLoaded',()=>boot());
+    document.addEventListener('DOMContentLoaded',()=>{initWallpapers();boot();});
   </script>
 </body>
 </html>
