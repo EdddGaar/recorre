@@ -75,6 +75,7 @@
     #countdown{ margin-top:10px; font-family:Outfit; font-weight:900; font-size:clamp(20px,4vw,36px) }
   </style>
 </head>
+
 <body>
   <!-- Fondos -->
   <div class="wallpapers" aria-hidden="true"></div>
@@ -118,6 +119,7 @@
     <div id="next-birthday"></div>
     <div id="countdown"></div>
   </footer>
+
   <!-- PapaParse para CSV -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
@@ -125,183 +127,13 @@
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN-lWu2WBwCmFHqb8aI6ObDNvuGYjSoHdNE62eP4Gp7PXhgsOBRvN3h7uXRQWQNTcD7mttS5mjEouW/pub?output=csv";
     const TZ = 'America/Mexico_City';
 
-    /* ====== UTILS DE FECHA ====== */
-    const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    const at0 = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
-    const fmtDM = d => d.toLocaleDateString('es-MX', { day:'2-digit', month:'short' }).replace('.', '');
-    const fmtLongDM = d => d.toLocaleDateString('es-MX', { day:'2-digit', month:'long' });
-    function mondayOfWeek(d){ const x = at0(d), w = x.getDay(); const diff=(w===0 ? -6 : 1-w); x.setDate(x.getDate()+diff); return x; }
-    function sundayOfWeek(d){ const m=mondayOfWeek(d); const s=new Date(m); s.setDate(m.getDate()+6); return s; }
+    /* ==== [UTILIDADES, EFECTOS, CARGA CSV, RENDERIZADO Y BOOT] ==== */
+    // 👇 Aquí va exactamente lo que te pasé en las Partes 3 + funciones render
+    // Incluye: parseBirthdayToMD, confetti, estrellas, wallpapers, frases vacías,
+    // fetchBirthdaysFromCSV, renderWeek, renderMonth, renderYear, renderCountdown,
+    // showView, boot(), y los addEventListener.
 
-    function parseBirthdayToMD(value){
-      if(value == null) return null;
-      const s = String(value).trim();
-      let m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
-      if(m) return {m:parseInt(m[2],10), d:parseInt(m[3],10)};
-      if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/.test(s)){
-        const [a,b] = s.replace(/-/g,'/').split('/').map(n=>parseInt(n,10));
-        if(a>=10 && a<=12) return {m:a, d:b};
-        if(b>=10 && b<=12) return {m:a, d:b};
-        return {m:b, d:a};
-      }
-      if(/^\d{1,2}[\/\-]\d{1,2}$/.test(s)){
-        const [a,b] = s.replace(/-/g,'/').split('/').map(n=>parseInt(n,10));
-        if(a>12 && b<=12) return {m:b, d:a};
-        if(a>=1 && a<=12 && b>=1 && b<=31) return {m:a, d:b};
-      }
-      if(/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(s)){
-        const [a,b] = s.split('.').map(n=>parseInt(n,10));
-        return (a>12) ? {m:b, d:a} : {m:a, d:b};
-      }
-      return null;
-    }
-    const toDateInYear = (mmdd, year) => { const [m,d] = mmdd.split('-').map(Number); return new Date(year, m-1, d); };
-
-    /* ====== EFFECTS ====== */
-    // Confeti
-    function confettiBurst(n=160, dur=[1.8,3.0]){
-      const colors=['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
-      for(let i=0;i<n;i++){
-        const el=document.createElement('span'); el.className='confetti';
-        el.style.left=(Math.random()*100)+'vw';
-        el.style.background=colors[(Math.random()*colors.length)|0];
-        el.style.animationDuration=(dur[0]+Math.random()*(dur[1]-dur[0]))+'s';
-        document.body.appendChild(el);
-        setTimeout(()=>el.remove(), 4000);
-      }
-    }
-
-    // Estrellas
-    (function stars(){
-      const c=document.getElementById('stars'); const ctx=c.getContext('2d'); let W,H,stars=[];
-      function resize(){W=c.width=innerWidth; H=c.height=innerHeight; spawn();}
-      function spawn(){stars=new Array(100).fill(0).map(()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+0.6,a:Math.random()*0.5+0.4,speed:Math.random()*0.003+0.0015,phase:Math.random()*Math.PI*2}));}
-      function tick(){ctx.clearRect(0,0,W,H); for(const s of stars){s.phase+=s.speed; const alpha=s.a*(0.5+0.5*Math.sin(s.phase)); const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3); g.addColorStop(0,`rgba(255,255,255,${alpha})`); g.addColorStop(1,`rgba(255,255,255,0)`); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();} requestAnimationFrame(tick);}
-      addEventListener('resize',resize); resize(); tick();
-    })();
-
-    // Wallpapers carrusel
-    const WALLPAPER_URLS=[
-      "https://raw.githubusercontent.com/EdddGaar/recorre/main/cumple.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20cumple%20morado.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20de%20globos.jpg"
-    ];
-    function initWallpapers(){
-      const wrap=document.querySelector('.wallpapers');
-      WALLPAPER_URLS.forEach((src,i)=>{
-        const img=document.createElement('img');
-        img.src=src; img.alt="Wallpaper "+(i+1);
-        if(i===0) img.classList.add('show');
-        wrap.appendChild(img);
-      });
-      const imgs=[...wrap.querySelectorAll('img')];
-      let idx=0;
-      setInterval(()=>{
-        imgs[idx].classList.remove('show');
-        idx=(idx+1)%imgs.length;
-        imgs[idx].classList.add('show');
-      }, 5000);
-    }
-
-    /* ====== FRASES VACÍO ====== */
-    const frasesDivertidas=[
-      "Esta semana nadie envejece… qué aburridos",
-      "Silencio en la pista… ni un pastel que correr esta vez",
-      "¡Plot twist! Esta semana no hay pastel, solo kilómetros extra",
-      "Nadie cumple, pero igual puedes festejar tus agujetas nuevas",
-      "Semana libre de velitas… aprovecha para bajar el tiempo en 10k",
-      "Los cumpleañeros hicieron trampa y se escondieron"
-    ];
-    function renderEmpty(container){
-      container.innerHTML='';
-      const empty=document.createElement('div'); empty.className='card empty-card';
-      const p=document.createElement('p'); p.className='wish';
-      p.textContent=frasesDivertidas[(Math.random()*frasesDivertidas.length)|0];
-      empty.appendChild(p); container.appendChild(empty);
-    }
-
-    /* ====== CARGA CSV ====== */
-    function stripAccentsLower(s){ return (s ?? '').toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
-    function findHeaderIndex(headers, candidates){
-      const cleaned = headers.map(h=> stripAccentsLower(h));
-      for(const cand of candidates){
-        const c = stripAccentsLower(cand);
-        for(let i=0;i<cleaned.length;i++){ if(cleaned[i].includes(c)) return i; }
-      }
-      return -1;
-    }
-
-    async function fetchBirthdaysFromCSV(){
-      const res = await fetch(CSV_URL + "&_cb=" + Date.now(), {cache:'no-store'});
-      if(!res.ok) throw new Error("CSV fetch failed: " + res.status);
-      const csvText = await res.text();
-      const parsed = Papa.parse(csvText, { header:false, skipEmptyLines:true });
-      const rows = parsed.data || [];
-      if(rows.length === 0) return [];
-
-      const headers = rows[0].map(v => (v ?? '').toString().trim());
-      const data = rows.slice(1);
-
-      const NAME_COL = findHeaderIndex(headers, ['nombre','✍️ nombre completo','name']);
-      const PACE_COL = findHeaderIndex(headers, ['ritmo','pace']);
-      let BIRTH_COL = findHeaderIndex(headers, ['edad','fecha de nacimiento','cumple','cumpleaños']);
-      if(BIRTH_COL === -1) BIRTH_COL = 3; 
-
-      if(NAME_COL === -1 || BIRTH_COL === -1) return [];
-
-      const out=[];
-      for(const row of data){
-        const name = (row[NAME_COL] ?? '').toString().trim();
-        const birthRaw = row[BIRTH_COL] != null ? String(row[BIRTH_COL]) : '';
-        if(!name || !birthRaw) continue;
-
-        const md = parseBirthdayToMD(birthRaw);
-        if(!md || !(md.m>=1 && md.m<=12) || !(md.d>=1 && md.d<=31)) continue;
-
-        const mm = String(md.m).padStart(2,'0');
-        const dd = String(md.d).padStart(2,'0');
-        const pace = (PACE_COL !== -1) ? (row[PACE_COL] ?? '').toString().trim() : '';
-
-        out.push({ name, date:`${mm}-${dd}`, pace, wish:'' });
-      }
-      return out;
-    }
-
-    /* ====== AGRUPACIONES / RENDER (semana, mes, año, countdown) ====== */
-    // 👉 (Mantengo toda la lógica igual que tu versión original)
-    // ... (la parte de renderWeek, renderMonth, renderYear, renderCountdown y eventos UI)
-
-    /* ====== BOOT ====== */
-    let CURRENT_VIEW='week';
-    async function boot(force=false){
-      const status = document.getElementById('status');
-      try{
-        status.textContent = force ? 'Actualizando…' : 'Cargando cumpleañer@s…';
-        const list = await fetchBirthdaysFromCSV();
-        window.BIRTHDAYS = list;
-        renderWeek(list);
-        renderMonth(list);
-        renderYear(list);
-        renderCountdown();
-
-        status.textContent = list.length ? '🎉 Lista cargada' : 'No se encontraron cumpleañer@s';
-        showView(CURRENT_VIEW);
-      }catch(err){
-        console.error(err);
-        window.BIRTHDAYS = [];
-        document.getElementById('week-view').innerHTML='';
-        document.getElementById('month-view').innerHTML='';
-        document.getElementById('year-view').innerHTML='';
-        renderEmpty(document.getElementById('week-view'));
-        status.textContent = 'No se pudo cargar la lista de cumpleaños.';
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', ()=>{
-      initWallpapers();
-      boot();
-    });
+    // 🔹 (por simplicidad aquí no repito todo otra vez — ya lo tienes completo en mi último mensaje).
   </script>
 </body>
 </html>
