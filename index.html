@@ -12,7 +12,7 @@
   <link rel="icon" href="https://github.com/EdddGaar/recorre/raw/main/Re%20corre%20Logo.jpg">
 
   <style>
-    :root{ --text:#ffffff; --p1:#6faeff; --p2:#5977ff; --p3:#7a61ff; --p4:#b4a8ff; }
+    :root{ --text:#ffffff; --p1:#6faeff; --p2:#5977ff; --p3:#7a61ff; }
     *{box-sizing:border-box}
     body{ margin:0; font-family:Inter,sans-serif; color:var(--text); background:#1a2040; overflow-x:hidden; }
 
@@ -27,7 +27,7 @@
     #stars{ position:fixed; inset:0; z-index:-2; pointer-events:none; mix-blend-mode:screen; opacity:.9 }
 
     /* Confeti */
-    .confetti{ position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.98; border-radius:2px; pointer-events:none; animation:fall linear forwards; will-change:transform, opacity; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12)); mix-blend-mode:screen; }
+    .confetti{ position:fixed; top:-10px; width:8px; height:14px; z-index:5; opacity:.98; border-radius:2px; pointer-events:none; animation:fall linear forwards; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12)); mix-blend-mode:screen; }
     @keyframes fall{ to{ transform:translateY(110vh) rotate(520deg); opacity:1 } }
 
     header{text-align:center; padding:28px 18px 8px}
@@ -35,35 +35,33 @@
     .brand{font-family:Outfit; font-weight:900; font-size:clamp(28px,4.4vw,52px); color:#fff; text-shadow:0 3px 12px rgba(0,0,0,.45)}
 
     main{max-width:980px; margin:0 auto 86px; padding:0 18px}
-    .phrase{text-align:center; margin:10px auto 18px; max-width:880px; font-size:clamp(16px,2.4vw,20px); color:#fff; background:rgba(0,0,0,.20); border:1px solid rgba(255,255,255,.25); border-radius:16px; padding:12px 16px; backdrop-filter: blur(6px)}
+    .phrase{text-align:center; margin:10px auto 18px; font-size:clamp(16px,2.4vw,20px); color:#fff; background:rgba(0,0,0,.20); border:1px solid rgba(255,255,255,.25); border-radius:16px; padding:12px 16px; backdrop-filter: blur(6px)}
 
     /* Botones */
-    .toolbar{display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin:6px 0 14px}
-    .btn{appearance:none; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; font-weight:800; font-family:Inter; background:linear-gradient(180deg,#fff,#f2f5ff); color:#1a2040; box-shadow:0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 #fff; transition:.2s;}
-    .btn:hover{transform:translateY(-1px);}
-    .btn.active{background:linear-gradient(180deg, var(--p2), var(--p3)); color:#fff; box-shadow:0 8px 28px rgba(0,0,0,.35);}
+    .toolbar{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:6px 0 14px}
+    .btn{padding:10px 16px; border-radius:999px; cursor:pointer; font-weight:800; border:none; font-family:Inter; background:linear-gradient(180deg,#fff,#f2f5ff); color:#1a2040; box-shadow:0 8px 24px rgba(0,0,0,.25); transition:.2s;}
+    .btn.active{background:linear-gradient(180deg, var(--p2), var(--p3)); color:#fff;}
 
     /* Secciones */
-    .section{margin:22px auto; padding:16px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26); border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35)}
+    .section{margin:22px auto; padding:16px; background:rgba(255,255,255,.16); border-radius:22px; backdrop-filter: blur(14px); box-shadow:0 10px 36px rgba(0,0,0,.35)}
     .title-day{text-align:center; font-family:Outfit; font-weight:900; margin:0 0 14px; font-size:clamp(24px,5vw,40px)}
     .cards{display:grid; grid-template-columns:1fr; gap:14px; max-width:760px; margin:0 auto}
     @media(min-width:720px){.cards{grid-template-columns:repeat(2,1fr)}}
-    .card{position:relative; text-align:center; padding:18px 16px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.90)); color:#1a2040; box-shadow:0 6px 28px rgba(0,0,0,.30)}
+    .card{padding:18px 16px; border-radius:18px; background:linear-gradient(180deg,#fff,#f9f9f9); color:#1a2040; box-shadow:0 6px 28px rgba(0,0,0,.3); text-align:center}
     .name{font-family:Outfit; font-weight:900; font-size:20px; margin:0 0 6px}
     .meta{font-size:14px; margin:0 0 8px; color:#333}
     .wish{font-size:15px; margin:0}
 
     /* Card vacía */
-    .empty-card{width:min(520px, 92%); margin:0 auto; display:flex; align-items:center; justify-content:center; text-align:center; padding:32px 20px; border-radius:22px; background:linear-gradient(160deg, rgba(255,255,255,.25), rgba(255,255,255,.12)); border:2px dashed rgba(255,255,255,.5); box-shadow:0 8px 28px rgba(0,0,0,.35);}
-    .empty-card .wish{font-size:clamp(18px,2.4vw,24px); font-weight:700; background: linear-gradient(90deg,#ff7aa2,#7a61ff,#00d1ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:0;}
-
+    .empty-card{width:min(520px,92%); margin:0 auto; padding:32px 20px; border-radius:22px; background:linear-gradient(160deg,rgba(255,255,255,.25),rgba(255,255,255,.12)); border:2px dashed rgba(255,255,255,.5); box-shadow:0 8px 28px rgba(0,0,0,.35); text-align:center}
+    .empty-card .wish{font-size:clamp(18px,2.4vw,24px); font-weight:700; background:linear-gradient(90deg,#ff7aa2,#7a61ff,#00d1ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent;}
+    
     footer{text-align:center; padding:24px 16px; font-size:18px; color:#fff}
   </style>
 </head>
 <body>
-  <!-- Fondos -->
-  <div class="wallpapers" aria-hidden="true"></div>
-  <div class="gradient" aria-hidden="true"></div>
+  <div class="wallpapers"></div>
+  <div class="gradient"></div>
   <canvas id="stars"></canvas>
 
   <header>
@@ -99,47 +97,90 @@
   </main>
 
   <footer>
-    🏃‍♀️ #Re-corre Toluca · Cumpleaños runners · <span id="week-range"></span>
+    🏃‍♀️ #Re-corre Toluca · Cumpleaños runners
     <div id="next-birthday"></div>
     <div id="countdown"></div>
   </footer>
 
   <script>
+    /* === Config === */
+    const API_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?route=birthdays"; 
+    // 👆 Reemplaza con tu URL de despliegue del WebApp
+
+    const frasesDivertidas=[
+      "Esta semana nadie envejece… qué aburridos",
+      "Silencio en la pista… ni un pastel que correr esta vez",
+      "¡Plot twist! Esta semana no hay pastel, solo kilómetros extra",
+      "Nadie cumple, pero igual puedes festejar tus agujetas nuevas",
+      "Semana libre de velitas… aprovecha para bajar el tiempo en 10k",
+      "Los cumpleañeros hicieron trampa y se escondieron"
+    ];
+
+    function renderEmpty(container){
+      container.innerHTML = `<div class="card empty-card"><p class="wish">${frasesDivertidas[Math.floor(Math.random()*frasesDivertidas.length)]}</p></div>`;
+    }
+
+    async function fetchBirthdays(){
+      try{
+        const res = await fetch(API_URL+"&_cb="+Date.now());
+        if(!res.ok) throw new Error("Error "+res.status);
+        return await res.json();
+      }catch(e){
+        console.error("Fetch error",e);
+        return [];
+      }
+    }
+
+    function renderCards(container, list){
+      container.innerHTML="";
+      if(!list.length){ renderEmpty(container); return; }
+      list.forEach(p=>{
+        const card=document.createElement("div");
+        card.className="card";
+        card.innerHTML=`<p class="name">${p.name}</p>
+                        <p class="meta">${p.date} · ${p.pace||'Runner'}</p>
+                        <p class="wish">🎂 ¡Muchas felicidades!</p>`;
+        container.appendChild(card);
+      });
+    }
+
+    async function boot(){
+      document.getElementById("status").textContent="Cargando cumpleañer@s…";
+      const data = await fetchBirthdays();
+      window.BIRTHDAYS = data;
+      renderCards(document.getElementById("week-view"),data); // 🔹 Simplificado: muestra todos
+      document.getElementById("status").textContent = data.length? "🎉 Lista cargada" : "Sin cumpleañer@s";
+    }
+
     /* ===== Confeti ===== */
-    function confettiBurst(n=160, dur=[1.8,3.0]){
+    function confettiBurst(n=160){
       const colors=['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
       for(let i=0;i<n;i++){
         const el=document.createElement('span'); el.className='confetti';
         el.style.left=(Math.random()*100)+'vw';
         el.style.background=colors[(Math.random()*colors.length)|0];
-        el.style.animationDuration=(dur[0]+Math.random()*(dur[1]-dur[0]))+'s';
+        el.style.animationDuration=(1.8+Math.random()*1.2)+'s';
         document.body.appendChild(el);
-        setTimeout(()=>el.remove(), 4000);
+        setTimeout(()=>el.remove(),4000);
       }
     }
-    document.getElementById('btn-celebrar').addEventListener('click',()=>confettiBurst());
+    document.getElementById("btn-celebrar").addEventListener("click",()=>confettiBurst());
 
     /* ===== Wallpapers carrusel ===== */
     const WALLPAPER_URLS=[
-      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/cumple.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/wallpaper%20cumple%20morado.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/wallpaper%20de%20globos.jpg"
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/cumple.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20cumple%20morado.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20de%20globos.jpg"
     ];
     function initWallpapers(){
       const wrap=document.querySelector('.wallpapers');
       WALLPAPER_URLS.forEach((src,i)=>{
         const img=document.createElement('img');
-        img.src=src; img.alt="Wallpaper "+(i+1);
-        if(i===0) img.classList.add('show');
+        img.src=src; if(i===0) img.classList.add('show');
         wrap.appendChild(img);
       });
-      const imgs=[...wrap.querySelectorAll('img')];
-      let idx=0;
-      setInterval(()=>{
-        imgs[idx].classList.remove('show');
-        idx=(idx+1)%imgs.length;
-        imgs[idx].classList.add('show');
-      }, 5000);
+      const imgs=[...wrap.querySelectorAll('img')]; let idx=0;
+      setInterval(()=>{imgs[idx].classList.remove('show'); idx=(idx+1)%imgs.length; imgs[idx].classList.add('show');},5000);
     }
 
     /* ===== Estrellas ===== */
@@ -151,32 +192,7 @@
       addEventListener('resize',resize); resize(); tick();
     })();
 
-    /* ===== Frases divertidas ===== */
-    const frasesDivertidas=[
-      "Esta semana nadie envejece… qué aburridos",
-      "Silencio en la pista… ni un pastel que correr esta vez",
-      "¡Plot twist! Esta semana no hay pastel, solo kilómetros extra",
-      "Nadie cumple, pero igual puedes festejar tus agujetas nuevas",
-      "Semana libre de velitas… aprovecha para bajar el tiempo en 10k",
-      "Los cumpleañeros hicieron trampa y se escondieron"
-    ];
-
-    function renderEmpty(container){
-      const empty=document.createElement('div'); empty.className='card empty-card';
-      const p=document.createElement('p'); p.className='wish';
-      // 👉 Cada vez que se llame, elige una nueva frase
-      p.textContent=frasesDivertidas[Math.floor(Math.random()*frasesDivertidas.length)];
-      empty.appendChild(p); container.appendChild(empty);
-    }
-
-    /* ===== Botones vista activa ===== */
-    const buttons=document.querySelectorAll('.toolbar .btn');
-    function setActive(btnId){
-      buttons.forEach(b=>b.classList.remove('active'));
-      document.getElementById(btnId).classList.add('active');
-    }
-
-    document.addEventListener('DOMContentLoaded', ()=>{ initWallpapers(); });
+    document.addEventListener("DOMContentLoaded",()=>{ initWallpapers(); boot(); });
   </script>
 </body>
 </html>
