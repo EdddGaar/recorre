@@ -121,7 +121,6 @@
 
   <!-- PapaParse para CSV -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
   <script>
     /* ====== CONFIG ====== */
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTN-lWu2WBwCmFHqb8aI6ObDNvuGYjSoHdNE62eP4Gp7PXhgsOBRvN3h7uXRQWQNTcD7mttS5mjEouW/pub?output=csv";
@@ -142,22 +141,22 @@
       // YYYY-MM-DD / YYYY/MM/DD
       let m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
       if(m) return {m:parseInt(m[2],10), d:parseInt(m[3],10)};
-      // DD/MM/YYYY o MM/DD/YYYY (desempate: si primer nº 10-12 => MM/DD; si no => DD/MM)
+      // DD/MM/YYYY o MM/DD/YYYY
       if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/.test(s)){
-        const [a,b,yyyy] = s.replace(/-/g,'/').split('/').map(n=>parseInt(n,10));
+        const [a,b] = s.replace(/-/g,'/').split('/').map(n=>parseInt(n,10));
         if(a>=10 && a<=12) return {m:a, d:b};
-        if(b>=10 && b<=12) return {m:a, d:b}; // sigue siendo válido
+        if(b>=10 && b<=12) return {m:a, d:b};
         return {m:b, d:a};
       }
       // MM/DD o DD/MM
       if(/^\d{1,2}[\/\-]\d{1,2}$/.test(s)){
         const [a,b] = s.replace(/-/g,'/').split('/').map(n=>parseInt(n,10));
-        if(a>12 && b<=12) return {m:b, d:a}; // DD/MM
-        if(a>=1 && a<=12 && b>=1 && b<=31) return {m:a, d:b}; // MM/DD
+        if(a>12 && b<=12) return {m:b, d:a};
+        if(a>=1 && a<=12 && b>=1 && b<=31) return {m:a, d:b};
       }
       // Dots
       if(/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(s)){
-        const [a,b,yyyy] = s.split('.').map(n=>parseInt(n,10));
+        const [a,b] = s.split('.').map(n=>parseInt(n,10));
         return (a>12) ? {m:b, d:a} : {m:a, d:b};
       }
       return null;
@@ -189,9 +188,9 @@
 
     // Wallpapers carrusel
     const WALLPAPER_URLS=[
-      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/cumple.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/wallpaper%20cumple%20morado.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/9fb60180790371876c4d9b84db2b37396e653d83/wallpaper%20de%20globos.jpg"
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/cumple.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20cumple%20morado.jpg",
+      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20de%20globos.jpg"
     ];
     function initWallpapers(){
       const wrap=document.querySelector('.wallpapers');
@@ -253,7 +252,7 @@
       const NAME_COL = findHeaderIndex(headers, ['nombre','✍️ nombre completo','name']);
       const PACE_COL = findHeaderIndex(headers, ['ritmo','pace']);
       let BIRTH_COL = findHeaderIndex(headers, ['edad','fecha de nacimiento','cumple','cumpleaños']);
-      if(BIRTH_COL === -1) BIRTH_COL = 3; // fallback a Col D si no encontró
+      if(BIRTH_COL === -1) BIRTH_COL = 3; // fallback a Col D
 
       if(NAME_COL === -1 || BIRTH_COL === -1) return [];
 
@@ -274,7 +273,6 @@
       }
       return out;
     }
-
     /* ====== AGRUPACIONES / RENDER ====== */
     function getWeekBlocks(list){
       const today = new Date(); const start = mondayOfWeek(today); const end = sundayOfWeek(today);
@@ -446,16 +444,13 @@
       document.getElementById('year-section').style.display = (view==='year')?'':'none';
       setActive(view==='week'?'btn-week':view==='month'?'btn-month':'btn-year');
       if(view==='week'){
-        // Scroll a HOY si existe
         const hoy=[...document.querySelectorAll('#week-section .title-day')].find(n=> n.textContent.trim()==='HOY');
         if(hoy) hoy.scrollIntoView({behavior:'smooth',block:'start'});
       } else if(view==='month'){
-        // Scroll al día de hoy si existe
         const dd = String(new Date().getDate()).padStart(2,'0');
         const anchor = document.getElementById('day-'+dd);
         if(anchor) anchor.scrollIntoView({behavior:'smooth',block:'center'});
       } else if(view==='year'){
-        // Scroll al mes actual
         const cur = monthNames[new Date().getMonth()];
         const h2 = [...document.querySelectorAll('#year-section h2')].find(h=>h.textContent===cur);
         if(h2) h2.scrollIntoView({behavior:'smooth',block:'start'});
@@ -468,14 +463,12 @@
         status.textContent = force ? 'Actualizando…' : 'Cargando cumpleañer@s…';
         const list = await fetchBirthdaysFromCSV();
         window.BIRTHDAYS = list;
-        // Render inicial de las 3 vistas (para poder alternar sin volver a cargar)
         renderWeek(list);
         renderMonth(list);
         renderYear(list);
         renderCountdown();
 
         status.textContent = list.length ? '🎉 Lista cargada' : 'No se encontraron cumpleañer@s';
-        // Mantener la vista actual al recargar
         showView(CURRENT_VIEW);
       }catch(err){
         console.error(err);
@@ -522,3 +515,4 @@
   </script>
 </body>
 </html>
+
