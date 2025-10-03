@@ -75,7 +75,6 @@
     #countdown{ margin-top:10px; font-family:Outfit; font-weight:900; font-size:clamp(20px,4vw,36px) }
   </style>
 </head>
-
 <body>
   <!-- Fondos -->
   <div class="wallpapers" aria-hidden="true"></div>
@@ -119,7 +118,6 @@
     <div id="next-birthday"></div>
     <div id="countdown"></div>
   </footer>
-
   <!-- PapaParse para CSV -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
@@ -133,92 +131,8 @@
     const at0 = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
     const fmtDM = d => d.toLocaleDateString('es-MX', { day:'2-digit', month:'short' }).replace('.', '');
     const fmtLongDM = d => d.toLocaleDateString('es-MX', { day:'2-digit', month:'long' });
-    function mondayOfWeek(d){ const x = at0(d), w = x.getDay(); const diff=(w===0 ? -6 : 1-w); x.setDate(x.getDate()+diff); return x; }
-    function sundayOfWeek(d){ const m=mondayOfWeek(d); const s=new Date(m); s.setDate(m.getDate()+6); return s; }
 
-    function parseBirthdayToMD(value){
-      if(value == null) return null;
-      const s = String(value).trim();
-      let m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
-      if(m) return {m:parseInt(m[2],10), d:parseInt(m[3],10)};
-      if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/.test(s)){
-        const [a,b] = s.replace(/-/g,'/').split('/').map(n=>parseInt(n,10));
-        if(a>=10 && a<=12) return {m:a, d:b};
-        if(b>=10 && b<=12) return {m:a, d:b};
-        return {m:b, d:a};
-      }
-      if(/^\d{1,2}[\/\-]\d{1,2}$/.test(s)){
-        const [a,b] = s.replace(/-/g,'/').split('/').map(n=>parseInt(n,10));
-        if(a>12 && b<=12) return {m:b, d:a};
-        if(a>=1 && a<=12 && b>=1 && b<=31) return {m:a, d:b};
-      }
-      if(/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(s)){
-        const [a,b] = s.split('.').map(n=>parseInt(n,10));
-        return (a>12) ? {m:b, d:a} : {m:a, d:b};
-      }
-      return null;
-    }
-    const toDateInYear = (mmdd, year) => { const [m,d] = mmdd.split('-').map(Number); return new Date(year, m-1, d); };
-
-    /* ====== EFFECTS ====== */
-    function confettiBurst(n=160, dur=[1.8,3.0]){
-      const colors=['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
-      for(let i=0;i<n;i++){
-        const el=document.createElement('span'); el.className='confetti';
-        el.style.left=(Math.random()*100)+'vw';
-        el.style.background=colors[(Math.random()*colors.length)|0];
-        el.style.animationDuration=(dur[0]+Math.random()*(dur[1]-dur[0]))+'s';
-        document.body.appendChild(el);
-        setTimeout(()=>el.remove(), 4000);
-      }
-    }
-
-    (function stars(){
-      const c=document.getElementById('stars'); const ctx=c.getContext('2d'); let W,H,stars=[];
-      function resize(){W=c.width=innerWidth; H=c.height=innerHeight; spawn();}
-      function spawn(){stars=new Array(100).fill(0).map(()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+0.6,a:Math.random()*0.5+0.4,speed:Math.random()*0.003+0.0015,phase:Math.random()*Math.PI*2}));}
-      function tick(){ctx.clearRect(0,0,W,H); for(const s of stars){s.phase+=s.speed; const alpha=s.a*(0.5+0.5*Math.sin(s.phase)); const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3); g.addColorStop(0,`rgba(255,255,255,${alpha})`); g.addColorStop(1,`rgba(255,255,255,0)`); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();} requestAnimationFrame(tick);}
-      addEventListener('resize',resize); resize(); tick();
-    })();
-
-    const WALLPAPER_URLS=[
-      "https://raw.githubusercontent.com/EdddGaar/recorre/main/cumple.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20cumple%20morado.jpg",
-      "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20de%20globos.jpg"
-    ];
-    function initWallpapers(){
-      const wrap=document.querySelector('.wallpapers');
-      WALLPAPER_URLS.forEach((src,i)=>{
-        const img=document.createElement('img');
-        img.src=src; img.alt="Wallpaper "+(i+1);
-        if(i===0) img.classList.add('show');
-        wrap.appendChild(img);
-      });
-      const imgs=[...wrap.querySelectorAll('img')];
-      let idx=0;
-      setInterval(()=>{
-        imgs[idx].classList.remove('show');
-        idx=(idx+1)%imgs.length;
-        imgs[idx].classList.add('show');
-      }, 5000);
-    }
-
-    const frasesDivertidas=[
-      "Esta semana nadie envejece… qué aburridos",
-      "Silencio en la pista… ni un pastel que correr esta vez",
-      "¡Plot twist! Esta semana no hay pastel, solo kilómetros extra",
-      "Nadie cumple, pero igual puedes festejar tus agujetas nuevas",
-      "Semana libre de velitas… aprovecha para bajar el tiempo en 10k",
-      "Los cumpleañeros hicieron trampa y se escondieron"
-    ];
-    function renderEmpty(container){
-      container.innerHTML='';
-      const empty=document.createElement('div'); empty.className='card empty-card';
-      const p=document.createElement('p'); p.className='wish';
-      p.textContent=frasesDivertidas[(Math.random()*frasesDivertidas.length)|0];
-      empty.appendChild(p); container.appendChild(empty);
-    }
-
+    /* ====== CSV PARSE & MAPEO ====== */
     function stripAccentsLower(s){ return (s ?? '').toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
     function findHeaderIndex(headers, candidates){
       const cleaned = headers.map(h=> stripAccentsLower(h));
@@ -240,94 +154,106 @@
       const headers = rows[0].map(v => (v ?? '').toString().trim());
       const data = rows.slice(1);
 
-      const NAME_COL = findHeaderIndex(headers, ['nombre','✍️ nombre completo','name']);
-      const PACE_COL = findHeaderIndex(headers, ['ritmo','pace']);
-      let BIRTH_COL = findHeaderIndex(headers, ['edad','fecha de nacimiento','cumple','cumpleaños']);
-      if(BIRTH_COL === -1) BIRTH_COL = 3;
+      // Columnas a buscar
+      const NAME_COL  = findHeaderIndex(headers, ['nombre','✍️ nombre completo','name']);
+      const PACE_COL  = findHeaderIndex(headers, ['ritmo','pace']);
+      let BIRTH_COL   = findHeaderIndex(headers, [
+        'cumpleaños normalizado',   // ✅ Columna X limpia
+        'wa cumpleaños',
+        'fecha cumpleaños',
+        'edad',
+        'fecha de nacimiento',
+        'cumple',
+        'cumpleaños'
+      ]);
 
       if(NAME_COL === -1 || BIRTH_COL === -1) return [];
 
       const out=[];
       for(const row of data){
         const name = (row[NAME_COL] ?? '').toString().trim();
-        const birthRaw = row[BIRTH_COL] != null ? String(row[BIRTH_COL]) : '';
+        const birthRaw = row[BIRTH_COL] != null ? String(row[BIRTH_COL]).trim() : '';
         if(!name || !birthRaw) continue;
 
-        const md = parseBirthdayToMD(birthRaw);
-        if(!md || !(md.m>=1 && md.m<=12) || !(md.d>=1 && md.d<=31)) continue;
+        // La columna "cumpleaños normalizado" ya viene en formato MM-DD
+        let mmdd = '';
+        if(/^\d{2}-\d{2}$/.test(birthRaw)){
+          mmdd = birthRaw;
+        } else {
+          // fallback por si viniera fecha distinta
+          const parts = birthRaw.split(/[-\/]/).map(Number);
+          if(parts.length >= 2){
+            const m = String(parts[0]).padStart(2,'0');
+            const d = String(parts[1]).padStart(2,'0');
+            mmdd = `${m}-${d}`;
+          }
+        }
 
-        const mm = String(md.m).padStart(2,'0');
-        const dd = String(md.d).padStart(2,'0');
+        if(!mmdd) continue;
         const pace = (PACE_COL !== -1) ? (row[PACE_COL] ?? '').toString().trim() : '';
 
-        out.push({ name, date:`${mm}-${dd}`, pace, wish:'' });
+        out.push({ name, date:mmdd, pace, wish:'' });
       }
       return out;
     }
+    /* ====== AGRUPACIONES Y RENDER ====== */
+    const toDateInYear = (mmdd, year) => { const [m,d] = mmdd.split('-').map(Number); return new Date(year, m-1, d); };
 
-    /* ====== AGRUPACIONES / RENDER ====== */
-    function getWeekBlocks(list){
-      const today = new Date(); const start = mondayOfWeek(today); const end = sundayOfWeek(today);
-      const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d); }
-      const map = new Map(days.map(d=>[at0(d).getTime(), []]));
-      for(const p of list){
-        const candidates = [0,-1,1].map(off => toDateInYear(p.date, today.getFullYear()+off));
-        const hit = candidates.find(dt => at0(dt) >= at0(start) && at0(dt) <= at0(end));
-        if(hit){ map.get(at0(hit).getTime()).push(p); }
-      }
-      const out=[]; const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
-      for(const d of days){
-        const label = at0(d).getTime()===at0(today).getTime() ? 'HOY'
-                    : at0(d).getTime()===at0(tomorrow).getTime() ? 'Mañana'
-                    : dayNames[d.getDay()];
-        out.push({label, date:d, items:map.get(at0(d).getTime())||[]});
-      }
-      out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
-      return out;
+    function renderEmpty(container){
+      container.innerHTML='';
+      const empty=document.createElement('div'); empty.className='card empty-card';
+      const p=document.createElement('p'); p.className='wish';
+      p.textContent="🎂 No hay cumpleañeros en este periodo";
+      empty.appendChild(p); container.appendChild(empty);
     }
 
     function renderWeek(list){
       const wrap = document.getElementById('week-view');
       wrap.innerHTML = '';
-      const blocks = getWeekBlocks(list);
-      let hadToday=false;
-      blocks.forEach(g=>{
+
+      const today=new Date(); const monday=new Date(today); monday.setDate(today.getDate() - (today.getDay()||7) + 1);
+      const sunday=new Date(monday); sunday.setDate(monday.getDate()+6);
+      const days=[]; for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);days.push(d);}
+
+      days.forEach(d=>{
+        const mmdd = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const items = list.filter(p=>p.date===mmdd);
+
         const section=document.createElement('section'); section.className='section';
-        const h=document.createElement('h2'); h.className='title-day'; h.textContent=g.label; section.appendChild(h);
+        const h=document.createElement('h2'); h.className='title-day'; 
+        h.textContent = (d.toDateString()===today.toDateString()?"HOY":"") || dayNames[d.getDay()];
+        section.appendChild(h);
+
         const cards=document.createElement('div'); cards.className='cards';
-        if(!g.items.length){ renderEmpty(cards); }
+        if(items.length===0){ renderEmpty(cards); }
         else{
-          g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
+          items.forEach(p=>{
             const c=document.createElement('div'); c.className='card';
             c.innerHTML = `
               <p class="name">${p.name}</p>
-              <p class="meta">${fmtDM(toDateInYear(p.date, new Date().getFullYear()))} · ${p.pace||'Runner'}</p>
-              <p class="wish">¡Muchas felicidades!</p>`;
+              <p class="meta">${fmtDM(toDateInYear(p.date, today.getFullYear()))} · ${p.pace||'Runner'}</p>
+              <p class="wish">🎉 ¡Muchas felicidades!</p>`;
             cards.appendChild(c);
           });
         }
         section.appendChild(cards); wrap.appendChild(section);
-        if(g.label==='HOY' && g.items.length) hadToday=true;
       });
-      confettiBurst(hadToday ? 160 : 60, hadToday ? [1.6,2.6] : [1.2,1.8]);
     }
 
     function renderMonth(list){
-      const now=new Date(); const curM = now.getMonth()+1;
-      const thisMonth = list.filter(p => parseInt(p.date.split('-')[0],10) === curM)
-                            .sort((a,b)=> a.date.localeCompare(b.date) || a.name.localeCompare(b.name));
-      const wrap = document.getElementById('month-view');
-      const title = document.getElementById('month-title');
-      title.textContent = `📅 Cumpleaños de ${monthNames[now.getMonth()]}`;
+      const now=new Date(); const curM=now.getMonth()+1;
+      const thisMonth=list.filter(p=>parseInt(p.date.split('-')[0],10)===curM);
+      const wrap=document.getElementById('month-view');
       wrap.innerHTML='';
+
       if(!thisMonth.length){ renderEmpty(wrap); return; }
+
       const cards=document.createElement('div'); cards.className='cards';
       thisMonth.forEach(p=>{
         const [m,d]=p.date.split('-').map(Number);
-        const dt = new Date(now.getFullYear(), m-1, d);
+        const dt=new Date(now.getFullYear(),m-1,d);
         const c=document.createElement('div'); c.className='card';
-        c.id = `day-${String(d).padStart(2,'0')}`;
-        c.innerHTML = `
+        c.innerHTML=`
           <p class="name">${p.name}</p>
           <p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p>
           <p class="wish">🎂 ¡Muchas felicidades!</p>`;
@@ -337,25 +263,21 @@
     }
 
     function renderYear(list){
-      const wrap = document.getElementById('year-view');
-      wrap.innerHTML='';
-      const groups = Array.from({length:12},()=>[]);
-      list.forEach(p=>{
-        const m = parseInt(p.date.split('-')[0],10);
-        groups[m-1].push(p);
-      });
-      let hasAny=false;
-      groups.forEach((arr, i)=>{
+      const wrap=document.getElementById('year-view'); wrap.innerHTML='';
+      const groups=Array.from({length:12},()=>[]);
+      list.forEach(p=>{const m=parseInt(p.date.split('-')[0],10); groups[m-1].push(p);});
+
+      groups.forEach((arr,i)=>{
         if(!arr.length) return;
-        hasAny=true;
         const section=document.createElement('section'); section.className='section';
         const h=document.createElement('h2'); h.className='title-day'; h.textContent=monthNames[i]; section.appendChild(h);
+
         const cards=document.createElement('div'); cards.className='cards';
-        arr.sort((a,b)=> a.date.localeCompare(b.date) || a.name.localeCompare(b.name)).forEach(p=>{
+        arr.forEach(p=>{
           const [m,d]=p.date.split('-').map(Number);
-          const dt = new Date(new Date().getFullYear(), m-1, d);
+          const dt=new Date(new Date().getFullYear(),m-1,d);
           const c=document.createElement('div'); c.className='card';
-          c.innerHTML = `
+          c.innerHTML=`
             <p class="name">${p.name}</p>
             <p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p>
             <p class="wish">🎉 ¡Muchas felicidades!</p>`;
@@ -363,26 +285,26 @@
         });
         section.appendChild(cards); wrap.appendChild(section);
       });
-      if(!hasAny) renderEmpty(wrap);
     }
 
-    function getNextBirthday(birthdays){
+    /* ====== COUNTDOWN ====== */
+    function getNextBirthday(list){
       const today=at0(new Date());
-      const upcoming=birthdays.map(p=>{
+      const upcoming=list.map(p=>{
         const [m,d]=p.date.split('-').map(Number);
-        let next=new Date(today.getFullYear(),m-1,d,0,0,0);
-        if(next<today) next.setFullYear(next.getFullYear()+1);
+        let next=new Date(today.getFullYear(),m-1,d);
+        if(next<today) next.setFullYear(today.getFullYear()+1);
         const diffDays=Math.ceil((next-today)/(1000*60*60*24));
         return {...p,next,diffDays};
       }).sort((a,b)=>a.diffDays-b.diffDays);
       return upcoming.length?upcoming[0]:null;
     }
+
     function startCountdown(date){
       const el=document.getElementById('countdown');
       function tick(){
-        const now=new Date();
-        const diff=date-now;
-        if(diff<=0){ el.textContent="🎉 ¡Es hoy!"; return; }
+        const now=new Date(); const diff=date-now;
+        if(diff<=0){el.textContent="🎉 ¡Es hoy!";return;}
         const d=Math.floor(diff/(1000*60*60*24));
         const h=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
         const m=Math.floor((diff%(1000*60*60))/(1000*60));
@@ -392,17 +314,16 @@
       }
       tick();
     }
+
     function renderCountdown(){
       const next=getNextBirthday(window.BIRTHDAYS||[]);
       const el=document.getElementById('next-birthday');
       if(next){
         if(next.diffDays===0){
-          el.innerHTML=`🎉 Hoy cumple <strong>${next.name}</strong>!`;
-          document.getElementById('countdown').textContent="🎂 ¡Festejando!";
+          el.innerHTML=`🎂 Hoy cumple <strong>${next.name}</strong>!`;
+          document.getElementById('countdown').textContent="🎉 ¡A festejar!";
         } else {
-          const [m,d]=next.date.split('-').map(Number);
-          const dt=new Date(new Date().getFullYear(), m-1, d);
-          el.innerHTML=`🎂 El próximo cumple es de <strong>${next.name}</strong> (${fmtLongDM(dt)})`;
+          el.innerHTML=`🎂 El próximo cumple es de <strong>${next.name}</strong> (${fmtLongDM(next.next)})`;
           startCountdown(next.next);
         }
       } else {
@@ -411,72 +332,33 @@
       }
     }
 
-    /* ====== BOOT / VISTAS ====== */
-    let CURRENT_VIEW='week';
-    function setActive(btnId){
-      document.querySelectorAll('.toolbar .btn').forEach(b=>b.classList.remove('active'));
-      document.getElementById(btnId).classList.add('active');
-    }
-    function showView(view){
-      CURRENT_VIEW=view;
-      document.getElementById('week-section').style.display = (view==='week')?'':'none';
-      document.getElementById('month-section').style.display = (view==='month')?'':'none';
-      document.getElementById('year-section').style.display = (view==='year')?'':'none';
-      setActive(view==='week'?'btn-week':view==='month'?'btn-month':'btn-year');
-    }
+    /* ====== BOOT ====== */
     async function boot(force=false){
-      const status = document.getElementById('status');
+      const status=document.getElementById('status');
       try{
-        status.textContent = force ? 'Actualizando…' : 'Cargando cumpleañer@s…';
-        const list = await fetchBirthdaysFromCSV();
-        window.BIRTHDAYS = list;
-        renderWeek(list);
-        renderMonth(list);
-        renderYear(list);
-        renderCountdown();
-        status.textContent = list.length ? '🎉 Lista cargada' : 'No se encontraron cumpleañer@s';
-        showView(CURRENT_VIEW);
+        status.textContent=force?'Actualizando…':'Cargando cumpleañer@s…';
+        const list=await fetchBirthdaysFromCSV();
+        window.BIRTHDAYS=list;
+        renderWeek(list); renderMonth(list); renderYear(list); renderCountdown();
+        status.textContent=list.length?'🎉 Lista cargada':'No se encontraron cumpleañer@s';
       }catch(err){
         console.error(err);
-        window.BIRTHDAYS = [];
-        document.getElementById('week-view').innerHTML='';
-        document.getElementById('month-view').innerHTML='';
-        document.getElementById('year-view').innerHTML='';
+        window.BIRTHDAYS=[];
         renderEmpty(document.getElementById('week-view'));
-        status.textContent = 'No se pudo cargar la lista de cumpleaños.';
+        renderEmpty(document.getElementById('month-view'));
+        renderEmpty(document.getElementById('year-view'));
+        status.textContent='No se pudo cargar la lista.';
       }
-    }
-    function scheduleMidnightReload(){
-      const now=new Date(); const midnight=new Date(now); midnight.setHours(24,0,0,0);
-      setTimeout(()=>{ boot(true); scheduleMidnightReload(); }, midnight-now);
     }
 
-    /* ====== EVENTOS UI ====== */
-    document.getElementById('btn-celebrar').addEventListener('click',()=>confettiBurst());
-    document.getElementById('btn-hoy').addEventListener('click',()=>{
-      if(CURRENT_VIEW==='week'){
-        const hoy=[...document.querySelectorAll('#week-section .title-day')].find(n=> n.textContent.trim()==='HOY');
-        if(hoy) hoy.scrollIntoView({behavior:'smooth',block:'start'});
-      } else if(CURRENT_VIEW==='month'){
-        const dd = String(new Date().getDate()).padStart(2,'0');
-        const anchor = document.getElementById('day-'+dd);
-        if(anchor) anchor.scrollIntoView({behavior:'smooth',block:'center'});
-      } else {
-        const cur = monthNames[new Date().getMonth()];
-        const h2 = [...document.querySelectorAll('#year-section h2')].find(h=>h.textContent===cur);
-        if(h2) h2.scrollIntoView({behavior:'smooth',block:'start'});
-      }
-    });
-    document.getElementById('btn-week').addEventListener('click',()=>showView('week'));
-    document.getElementById('btn-month').addEventListener('click',()=>showView('month'));
-    document.getElementById('btn-year').addEventListener('click',()=>showView('year'));
+    /* ====== EVENTOS ====== */
+    document.getElementById('btn-week').addEventListener('click',()=>{document.getElementById('week-section').style.display='';document.getElementById('month-section').style.display='none';document.getElementById('year-section').style.display='none';});
+    document.getElementById('btn-month').addEventListener('click',()=>{document.getElementById('week-section').style.display='none';document.getElementById('month-section').style.display='';document.getElementById('year-section').style.display='none';});
+    document.getElementById('btn-year').addEventListener('click',()=>{document.getElementById('week-section').style.display='none';document.getElementById('month-section').style.display='none';document.getElementById('year-section').style.display='';});
     document.getElementById('btn-reload').addEventListener('click',()=>boot(true));
+    document.getElementById('btn-celebrar').addEventListener('click',()=>alert("🎉 Confeti! (puedes animar más aquí)"));
 
-    document.addEventListener('DOMContentLoaded', ()=>{
-      initWallpapers();
-      boot();
-      scheduleMidnightReload();
-    });
+    document.addEventListener('DOMContentLoaded',()=>boot());
   </script>
 </body>
 </html>
