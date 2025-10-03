@@ -137,21 +137,14 @@
     function normalizeToMD(value){
       if(!value) return null;
       const s = String(value).trim();
-      // Si ya viene como MM-DD
-      if(/^\d{2}-\d{2}$/.test(s)) return s;
-      // Si viene como YYYY-MM-DD
-      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if(/^\d{2}-\d{2}$/.test(s)) return s;   // ya correcto
+      let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/); // YYYY-MM-DD
       if(m) return `${m[2]}-${m[3]}`;
       return s;
     }
-
-    const toDateInYear = (mmdd, year) => { 
-      const [m,d] = mmdd.split('-').map(Number); 
-      return new Date(year, m-1, d); 
-    };
+    const toDateInYear = (mmdd, year) => { const [m,d] = mmdd.split('-').map(Number); return new Date(year, m-1, d); };
 
     /* ====== EFFECTS ====== */
-    // Confeti
     function confettiBurst(n=160, dur=[1.8,3.0]){
       const colors=['#6faeff','#5977ff','#7a61ff','#00d1ff','#14e0a1','#ffe066','#ffffff'];
       for(let i=0;i<n;i++){
@@ -163,8 +156,6 @@
         setTimeout(()=>el.remove(), 4000);
       }
     }
-
-    // Estrellas
     (function stars(){
       const c=document.getElementById('stars'); const ctx=c.getContext('2d'); let W,H,stars=[];
       function resize(){W=c.width=innerWidth; H=c.height=innerHeight; spawn();}
@@ -172,8 +163,6 @@
       function tick(){ctx.clearRect(0,0,W,H); for(const s of stars){s.phase+=s.speed; const alpha=s.a*(0.5+0.5*Math.sin(s.phase)); const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3); g.addColorStop(0,`rgba(255,255,255,${alpha})`); g.addColorStop(1,`rgba(255,255,255,0)`); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();} requestAnimationFrame(tick);}
       addEventListener('resize',resize); resize(); tick();
     })();
-
-    // Wallpapers carrusel
     const WALLPAPER_URLS=[
       "https://raw.githubusercontent.com/EdddGaar/recorre/main/cumple.jpg",
       "https://raw.githubusercontent.com/EdddGaar/recorre/main/wallpaper%20cumple%20morado.jpg",
@@ -196,6 +185,23 @@
       }, 5000);
     }
 
+    /* ====== FRASES VACÍO ====== */
+    const frasesDivertidas=[
+      "Esta semana nadie envejece… qué aburridos",
+      "Silencio en la pista… ni un pastel que correr esta vez",
+      "¡Plot twist! Esta semana no hay pastel, solo kilómetros extra",
+      "Nadie cumple, pero igual puedes festejar tus agujetas nuevas",
+      "Semana libre de velitas… aprovecha para bajar el tiempo en 10k",
+      "Los cumpleañeros hicieron trampa y se escondieron"
+    ];
+    function renderEmpty(container){
+      container.innerHTML='';
+      const empty=document.createElement('div'); empty.className='card empty-card';
+      const p=document.createElement('p'); p.className='wish';
+      p.textContent=frasesDivertidas[(Math.random()*frasesDivertidas.length)|0];
+      empty.appendChild(p); container.appendChild(empty);
+    }
+
     /* ====== CARGA CSV ====== */
     function stripAccentsLower(s){ return (s ?? '').toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
     function findHeaderIndex(headers, candidates){
@@ -206,7 +212,6 @@
       }
       return -1;
     }
-
     async function fetchBirthdaysFromCSV(){
       const res = await fetch(CSV_URL + "&_cb=" + Date.now(), {cache:'no-store'});
       if(!res.ok) throw new Error("CSV fetch failed: " + res.status);
@@ -214,30 +219,215 @@
       const parsed = Papa.parse(csvText, { header:true, skipEmptyLines:true });
       const rows = parsed.data || [];
 
-      // Columnas
-      const NAME_COL = findHeaderIndex(Object.keys(rows[0]), ['nombre','name','✍️ nombre completo']);
-      const PACE_COL = findHeaderIndex(Object.keys(rows[0]), ['ritmo','pace']);
-      const BIRTH_COL = findHeaderIndex(Object.keys(rows[0]), ['cumple normalizado','cumpleaños','cumple']);
+      const headers = Object.keys(rows[0]);
+      const NAME_COL = findHeaderIndex(headers, ['nombre','name','✍️ nombre completo']);
+      const PACE_COL = findHeaderIndex(headers, ['ritmo','pace']);
+      const BIRTH_COL = findHeaderIndex(headers, ['cumple normalizado','cumpleaños','cumple']);
 
       if(NAME_COL === -1 || BIRTH_COL === -1) return [];
 
       const out=[];
       for(const row of rows){
-        const name = row[Object.keys(row)[NAME_COL]]?.toString().trim();
-        const birthRaw = row[Object.keys(row)[BIRTH_COL]];
+        const name = row[headers[NAME_COL]]?.toString().trim();
+        const birthRaw = row[headers[BIRTH_COL]];
         if(!name || !birthRaw) continue;
 
         const md = normalizeToMD(birthRaw);
         if(!md || !/^\d{2}-\d{2}$/.test(md)) continue;
 
-        const pace = (PACE_COL !== -1) ? row[Object.keys(row)[PACE_COL]]?.toString().trim() : '';
+        const pace = (PACE_COL !== -1) ? row[headers[PACE_COL]]?.toString().trim() : '';
         out.push({ name, date:md, pace, wish:'' });
       }
       return out;
     }
 
-    /* ====== RESTO DEL SCRIPT (renderWeek, renderMonth, renderYear, countdown, boot, eventos UI) ====== */
-    // ... (mantener igual que antes, solo cambiamos fetchBirthdaysFromCSV con normalizeToMD)
+    /* ====== AGRUPACIONES / RENDER ====== */
+    function getWeekBlocks(list){
+      const today = new Date(); const start = mondayOfWeek(today); const end = sundayOfWeek(today);
+      const days=[]; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); days.push(d); }
+      const map = new Map(days.map(d=>[at0(d).getTime(), []]));
+      for(const p of list){
+        const candidates = [0,-1,1].map(off => toDateInYear(p.date, today.getFullYear()+off));
+        const hit = candidates.find(dt => at0(dt) >= at0(start) && at0(dt) <= at0(end));
+        if(hit){ map.get(at0(hit).getTime()).push(p); }
+      }
+      const out=[]; const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+      for(const d of days){
+        const label = at0(d).getTime()===at0(today).getTime() ? 'HOY'
+                    : at0(d).getTime()===at0(tomorrow).getTime() ? 'Mañana'
+                    : dayNames[d.getDay()];
+        out.push({label, date:d, items:map.get(at0(d).getTime())||[]});
+      }
+      out.sort((a,b)=>{ const rank=v=>v.label==='HOY'?0:v.label==='Mañana'?1:2; return rank(a)-rank(b)||a.date-b.date });
+      return out;
+    }
+    function renderWeek(list){
+      const wrap = document.getElementById('week-view');
+      wrap.innerHTML = '';
+      const blocks = getWeekBlocks(list);
+      let hadToday=false;
+      blocks.forEach(g=>{
+        const section=document.createElement('section'); section.className='section';
+        const h=document.createElement('h2'); h.className='title-day'+(g.label==='HOY'?'':' small'); h.textContent=g.label; section.appendChild(h);
+        const cards=document.createElement('div'); cards.className='cards';
+        if(!g.items.length){ renderEmpty(cards); }
+        else{
+          g.items.sort((a,b)=> a.name.localeCompare(b.name)).forEach(p=>{
+            const c=document.createElement('div'); c.className='card';
+            c.innerHTML = `<p class="name">${p.name}</p>
+              <p class="meta">${fmtDM(toDateInYear(p.date, new Date().getFullYear()))} · ${p.pace||'Runner'}</p>
+              <p class="wish">¡Muchas felicidades!</p>`;
+            cards.appendChild(c);
+          });
+        }
+        section.appendChild(cards); wrap.appendChild(section);
+        if(g.label==='HOY' && g.items.length) hadToday=true;
+      });
+      confettiBurst(hadToday ? 160 : 60, hadToday ? [1.6,2.6] : [1.2,1.8]);
+    }
+    function renderMonth(list){
+      const now=new Date(); const curM = now.getMonth()+1;
+      const thisMonth = list.filter(p => parseInt(p.date.split('-')[0],10) === curM)
+                            .sort((a,b)=> a.date.localeCompare(b.date) || a.name.localeCompare(b.name));
+      const wrap = document.getElementById('month-view');
+      const title = document.getElementById('month-title');
+      title.textContent = `📅 Cumpleaños de ${monthNames[now.getMonth()]}`;
+      wrap.innerHTML='';
+      if(!thisMonth.length){ renderEmpty(wrap); return; }
+      const cards=document.createElement('div'); cards.className='cards';
+      thisMonth.forEach(p=>{
+        const [m,d]=p.date.split('-').map(Number);
+        const dt = new Date(now.getFullYear(), m-1, d);
+        const c=document.createElement('div'); c.className='card';
+        c.id = `day-${String(d).padStart(2,'0')}`;
+        c.innerHTML = `<p class="name">${p.name}</p>
+          <p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p>
+          <p class="wish">🎂 ¡Muchas felicidades!</p>`;
+        cards.appendChild(c);
+      });
+      wrap.appendChild(cards);
+    }
+    function renderYear(list){
+      const wrap = document.getElementById('year-view');
+      wrap.innerHTML='';
+      const groups = Array.from({length:12},()=>[]);
+      list.forEach(p=>{
+        const m = parseInt(p.date.split('-')[0],10);
+        groups[m-1].push(p);
+      });
+      let hasAny=false;
+      groups.forEach((arr, i)=>{
+        if(!arr.length) return;
+        hasAny=true;
+        const section=document.createElement('section'); section.className='section';
+        const h=document.createElement('h2'); h.className='title-day'; h.textContent=monthNames[i]; section.appendChild(h);
+        const cards=document.createElement('div'); cards.className='cards';
+        arr.sort((a,b)=> a.date.localeCompare(b.date) || a.name.localeCompare(b.name)).forEach(p=>{
+          const [m,d]=p.date.split('-').map(Number);
+          const dt = new Date(new Date().getFullYear(), m-1, d);
+          const c=document.createElement('div'); c.className='card';
+          c.innerHTML = `<p class="name">${p.name}</p>
+            <p class="meta">${fmtLongDM(dt)} · ${p.pace||'Runner'}</p>
+            <p class="wish">🎉 ¡Muchas felicidades!</p>`;
+          cards.appendChild(c);
+        });
+        section.appendChild(cards); wrap.appendChild(section);
+      });
+      if(!hasAny) renderEmpty(wrap);
+    }
+
+    /* ====== COUNTDOWN ====== */
+    function getNextBirthday(birthdays){
+      const today=at0(new Date());
+      const upcoming=birthdays.map(p=>{
+        const [m,d]=p.date.split('-').map(Number);
+        let next=new Date(today.getFullYear(),m-1,d,0,0,0);
+        if(next<today) next.setFullYear(next.getFullYear()+1);
+        const diffDays=Math.ceil((next-today)/(1000*60*60*24));
+        return {...p,next,diffDays};
+      }).sort((a,b)=>a.diffDays-b.diffDays);
+      return upcoming.length?upcoming[0]:null;
+    }
+    function startCountdown(date){
+      const el=document.getElementById('countdown');
+      function tick(){
+        const now=new Date();
+        const diff=date-now;
+        if(diff<=0){ el.textContent="🎉 ¡Es hoy!"; return; }
+        const d=Math.floor(diff/(1000*60*60*24));
+        const h=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+        const m=Math.floor((diff%(1000*60*60))/(1000*60));
+        const s=Math.floor((diff%(1000*60))/1000);
+        el.textContent=`⏳ ${d}d ${h}h ${m}m ${s}s`;
+        requestAnimationFrame(tick);
+      }
+      tick();
+    }
+    function renderCountdown(){
+      const next=getNextBirthday(window.BIRTHDAYS||[]);
+      const el=document.getElementById('next-birthday');
+      if(next){
+        if(next.diffDays===0){
+          el.innerHTML=`🎉 Hoy cumple <strong>${next.name}</strong>!`;
+          document.getElementById('countdown').textContent="🎂 ¡Festejando!";
+        } else {
+          const [m,d]=next.date.split('-').map(Number);
+          const dt=new Date(new Date().getFullYear(), m-1, d);
+          el.innerHTML=`🎂 El próximo cumple es de <strong>${next.name}</strong> (${fmtLongDM(dt)})`;
+          startCountdown(next.next);
+        }
+      } else {
+        el.textContent='Sin cumpleañeros próximos 💤';
+        document.getElementById('countdown').textContent='';
+      }
+    }
+
+    /* ====== BOOT / VISTAS ====== */
+    let CURRENT_VIEW='week';
+    function setActive(btnId){
+      document.querySelectorAll('.toolbar .btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById(btnId).classList.add('active');
+    }
+    function showView(view){
+      CURRENT_VIEW=view;
+      document.getElementById('week-section').style.display = (view==='week')?'':'none';
+      document.getElementById('month-section').style.display = (view==='month')?'':'none';
+      document.getElementById('year-section').style.display = (view==='year')?'':'none';
+      setActive(view==='week'?'btn-week':view==='month'?'btn-month':'btn-year');
+    }
+    async function boot(force=false){
+      const status = document.getElementById('status');
+      try{
+        status.textContent = force ? 'Actualizando…' : 'Cargando cumpleañer@s…';
+        const list = await fetchBirthdaysFromCSV();
+        window.BIRTHDAYS = list;
+        renderWeek(list);
+        renderMonth(list);
+        renderYear(list);
+        renderCountdown();
+        status.textContent = list.length ? '🎉 Lista cargada' : 'No se encontraron cumpleañer@s';
+        showView(CURRENT_VIEW);
+      }catch(err){
+        console.error(err);
+        window.BIRTHDAYS = [];
+        document.getElementById('week-view').innerHTML='';
+        document.getElementById('month-view').innerHTML='';
+        document.getElementById('year-view').innerHTML='';
+        renderEmpty(document.getElementById('week-view'));
+        status.textContent = 'No se pudo cargar la lista de cumpleaños.';
+      }
+    }
+    function scheduleMidnightReload(){
+      const now=new Date(); const midnight=new Date(now); midnight.setHours(24,0,0,0);
+      setTimeout(()=>{ boot(true); scheduleMidnightReload(); }, midnight-now);
+    }
+
+    /* ====== EVENTOS UI ====== */
+    document.getElementById('btn-celebrar').addEventListener('click',()=>confettiBurst());
+    document.getElementById('btn-week').addEventListener('click',()=>showView('week'));
+    document.getElementById('btn-month').addEventListener('click',()=>showView('month'));
+    document.getElementById('btn-year').addEventListener('click',()=>showView('year'));
+    document.getElementById('btn-reload').addEventListener('click',()=>boot(true));
 
     document.addEventListener('DOMContentLoaded', ()=>{
       initWallpapers();
