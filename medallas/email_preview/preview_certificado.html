@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reconocimiento - Tu Peque Recorre</title>
   <style>
+    /* --- ESTILOS GENERALES --- */
     body {
       margin: 0;
       padding: 0;
@@ -17,38 +18,74 @@
       align-items: center;
       justify-content: center;
     }
+
     .container {
       text-align: center;
       background-color: rgba(0, 0, 0, 0.35);
       padding: 40px 60px;
       border-radius: 16px;
       max-width: 900px;
+      width: 90%;
+      box-sizing: border-box;
     }
+
     h1 {
       font-size: 42px;
       margin-bottom: 10px;
       font-weight: 700;
     }
+
     h2 {
       font-size: 38px;
       margin: 16px 0;
       font-family: 'Dancing Script', cursive;
       color: #ffffff;
     }
+
     p {
       font-size: 20px;
       margin: 8px 0;
       line-height: 1.5;
     }
+
     .highlight {
       font-size: 24px;
       font-weight: 500;
       color: #ffffff;
     }
+
     .footer {
       margin-top: 20px;
       font-size: 16px;
       color: #ccc;
+    }
+
+    /* --- VERSIÓN RESPONSIVA (TELÉFONOS Y TABLETAS) --- */
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      h2 {
+        font-size: 26px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+
+      .highlight {
+        font-size: 18px;
+      }
+
+      .footer {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
