@@ -5,33 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tu Peque Recorre 2025 – Check-in</title>
 
-<!-- ✅ ESTILOS -->
+<!-- 🌟 ESTILOS PRINCIPALES -->
 <style>
   :root {
     --primary: #7b1fa2;
     --accent: #ffca28;
-    --bg: radial-gradient(circle at top, #2e004f, #000);
+    --bg1: #120024;
+    --bg2: #000000;
   }
 
   body {
-    font-family: 'Poppins', sans-serif;
     margin: 0;
-    background: var(--bg);
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, var(--bg1), var(--bg2));
     color: white;
     text-align: center;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    animation: fadeIn 1s ease-out;
+    overflow-x: hidden;
   }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  header { padding-top: 20px; }
 
   h1 {
     color: var(--accent);
@@ -42,6 +32,14 @@
   @keyframes glow {
     from { text-shadow: 0 0 5px #ffca28, 0 0 15px #ffca28; }
     to { text-shadow: 0 0 20px #ffeb3b, 0 0 30px #ffeb3b; }
+  }
+
+  header { padding-top: 20px; }
+
+  .logo {
+    width: 280px;
+    border-radius: 12px;
+    margin-bottom: 10px;
   }
 
   input {
@@ -94,17 +92,29 @@
     to { box-shadow: 0 0 30px #00e676; }
   }
 
-  select {
-    padding: 6px;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-top: 10px;
+  .checkmark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 120px;
+    color: #00e676;
+    opacity: 0;
+    transition: all 0.6s ease-out;
+    z-index: 10;
+    text-shadow: 0 0 20px #00ff88;
+  }
+
+  .checkmark.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
   }
 
   footer {
     font-size: 13px;
     color: #ccc;
     padding: 20px 0;
+    z-index: 5;
   }
 
   footer a {
@@ -113,24 +123,50 @@
     font-weight: bold;
   }
 
-  .logo {
-    width: 280px;
-    border-radius: 12px;
-    margin-bottom: 10px;
+  /* 🌌 Animación partículas */
+  .particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
   }
+
+  .particle {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: #b388ff;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: float 10s infinite ease-in-out;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0.5); opacity: 0.1; }
+    50% { opacity: 0.9; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0.1; }
+  }
+
+  .category-legend {
+    margin-top: 25px;
+    font-size: 14px;
+    color: #fff;
+    opacity: 0.9;
+  }
+
 </style>
 </head>
 
 <body>
-  <!-- ✅ ENCABEZADO -->
+  <div class="particles" id="particles"></div>
+
   <header>
-    <img src="https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Google%20Encabezado.png"
-         alt="Tu Peque Recorre" class="logo">
+    <img src="https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Google%20Encabezado.png" alt="Tu Peque Recorre" class="logo">
     <h1>🏃 Tu Peque Recorre 2025</h1>
     <p>Escanea el código QR o busca por nombre, número o ID (ej. PEQUE-001).</p>
   </header>
 
-  <!-- ✅ CONTENIDO PRINCIPAL -->
   <main>
     <input id="search" placeholder="Escribe nombre, número o ID...">
     <br>
@@ -146,9 +182,16 @@
     <video id="video" autoplay playsinline muted></video>
     <canvas id="canvas" hidden></canvas>
     <p id="outputMessage" style="margin-top:10px;">Esperando acción...</p>
+
+    <div class="category-legend">
+      <strong>9. Categoría de participación:</strong><br>
+      🟢 4 a 6 años (Verde) &nbsp;|&nbsp;
+      🟡 7 a 9 años (Amarilla) &nbsp;|&nbsp;
+      🟠 10 a 12 años (Naranja) &nbsp;|&nbsp;
+      🔴 13 a 15 años (Roja)
+    </div>
   </main>
 
-  <!-- ✅ PIE DE PÁGINA -->
   <footer>
     © Re-corre Running Club – Tu Peque Recorre 2025<br>
     <a href="https://maps.app.goo.gl/Lv7UhyM3f6Kuzbf17" target="_blank" rel="noopener noreferrer">
@@ -156,10 +199,12 @@
     </a>
   </footer>
 
-  <!-- ✅ LIBRERÍA QR -->
+  <div class="checkmark" id="checkmark">✅</div>
+
+  <!-- Librería QR -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
-  <!-- ✅ SCRIPT PRINCIPAL -->
+  <!-- Script principal -->
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
@@ -168,10 +213,22 @@
     const output = document.getElementById('outputMessage');
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
+    const checkmark = document.getElementById('checkmark');
+    const particlesContainer = document.getElementById('particles');
     let stream;
     let scanning = false;
 
-    // 🔍 BÚSQUEDA MANUAL
+    // Crear partículas flotantes
+    for (let i = 0; i < 35; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.animationDuration = (8 + Math.random() * 8) + 's';
+      particlesContainer.appendChild(p);
+    }
+
+    // Buscar manualmente
     function buscar() {
       const val = document.getElementById('search').value.trim();
       if (val) {
@@ -181,7 +238,7 @@
       }
     }
 
-    // 🎥 LISTAR CÁMARAS
+    // Listar cámaras
     async function listarCamaras() {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === 'videoinput');
@@ -194,7 +251,7 @@
       });
     }
 
-    // ▶️ INICIAR ESCANEO
+    // Iniciar escaneo
     async function startScan() {
       try {
         await listarCamaras();
@@ -204,22 +261,18 @@
             facingMode: cameraSelect.value ? undefined : { ideal: 'environment' }
           }
         };
-
         stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
-
         video.onloadedmetadata = () => {
           video.play().catch(()=>{});
           video.style.opacity = 1;
         };
-
         await video.play();
         scanning = true;
         video.classList.add('scanning');
         startButton.style.display = 'none';
         stopButton.style.display = 'inline-block';
         output.textContent = "📷 Escaneando código QR...";
-
         requestAnimationFrame(scanFrame);
       } catch (err) {
         console.error("Error al iniciar cámara:", err);
@@ -227,7 +280,7 @@
       }
     }
 
-    // ⏹️ DETENER ESCANEO
+    // Detener escaneo
     function stopScan() {
       scanning = false;
       video.classList.remove('scanning');
@@ -237,7 +290,7 @@
       output.textContent = "Cámara detenida.";
     }
 
-    // 🔄 ESCANEAR CADA FRAME
+    // Escanear frame
     function scanFrame() {
       if (!scanning) return;
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -252,19 +305,23 @@
           stopScan();
           output.textContent = "✅ Código detectado: " + code.data;
 
-          // 🔊 SONIDO + VIBRACIÓN
+          // Efecto vibración + sonido + check verde
           if (navigator.vibrate) navigator.vibrate(100);
           const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
           beep.play().catch(()=>{});
+          checkmark.classList.add('show');
+          setTimeout(() => checkmark.classList.remove('show'), 2000);
 
-          // 🔗 REDIRECCIÓN
-          if (code.data.startsWith("https://")) {
-            window.location.href = code.data;
-          } else {
-            window.location.href =
-              "https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec?id=" +
-              encodeURIComponent(code.data.trim());
-          }
+          // Redirección
+          setTimeout(() => {
+            if (code.data.startsWith("https://")) {
+              window.location.href = code.data;
+            } else {
+              window.location.href = 
+                "https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec?id=" + 
+                encodeURIComponent(code.data.trim());
+            }
+          }, 1000);
           return;
         }
       }
