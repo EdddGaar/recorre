@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu Peque Recorre 2025 – Check-in</title>
+
+<!-- ✅ ESTILOS -->
+<style>
+  :root {
+    --primary: #7b1fa2;
+    --accent: #ffca28;
+    --bg: radial-gradient(circle at top, #2e004f, #000);
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: var(--bg);
+    color: white;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: fadeIn 1s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  header { padding-top: 20px; }
+
+  h1 {
+    color: var(--accent);
+    text-shadow: 0 0 10px #ffeb3b;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 5px #ffca28, 0 0 15px #ffca28; }
+    to { text-shadow: 0 0 20px #ffeb3b, 0 0 30px #ffeb3b; }
+  }
+
+  input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    width: 80%;
+    max-width: 320px;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 8px;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  button:hover {
+    background: #9c27b0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(156,39,176,0.4);
+  }
+
+  #video {
+    width: 90%;
+    max-width: 420px;
+    border: 4px solid transparent;
+    border-radius: 12px;
+    margin-top: 18px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.4s ease-in;
+  }
+
+  .scanning {
+    animation: scanBorder 1.2s infinite alternate;
+    border-color: #00e676 !important;
+  }
+
+  @keyframes scanBorder {
+    from { box-shadow: 0 0 10px #00e676; }
+    to { box-shadow: 0 0 30px #00e676; }
+  }
+
+  select {
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-top: 10px;
+  }
+
+  footer {
+    font-size: 13px;
+    color: #ccc;
+    padding: 20px 0;
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .logo {
+    width: 280px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+
+<body>
+  <!-- ✅ ENCABEZADO -->
+  <header>
+    <img src="https://raw.githubusercontent.com/EdddGaar/recorre/main/medallas/Google%20Encabezado.png"
+         alt="Tu Peque Recorre" class="logo">
+    <h1>🏃 Tu Peque Recorre 2025</h1>
+    <p>Escanea el código QR o busca por nombre, número o ID (ej. PEQUE-001).</p>
+  </header>
+
+  <!-- ✅ CONTENIDO PRINCIPAL -->
+  <main>
+    <input id="search" placeholder="Escribe nombre, número o ID...">
+    <br>
+    <button onclick="buscar()">🔍 Buscar</button>
+
+    <h3 style="margin-top:25px;">📷 Escanear código QR</h3>
+    <select id="cameraSelect"></select>
+    <br>
+    <button id="startButton" onclick="startScan()">Iniciar cámara</button>
+    <button id="stopButton" onclick="stopScan()" style="display:none;background:#c62828;">Detener cámara</button>
+    <br>
+
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="canvas" hidden></canvas>
+    <p id="outputMessage" style="margin-top:10px;">Esperando acción...</p>
+  </main>
+
+  <!-- ✅ PIE DE PÁGINA -->
+  <footer>
+    © Re-corre Running Club – Tu Peque Recorre 2025<br>
+    <a href="https://maps.app.goo.gl/Lv7UhyM3f6Kuzbf17" target="_blank" rel="noopener noreferrer">
+      📍 Ver ubicación del evento
+    </a>
+  </footer>
+
+  <!-- ✅ LIBRERÍA QR -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <!-- ✅ SCRIPT PRINCIPAL -->
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const cameraSelect = document.getElementById('cameraSelect');
+    const output = document.getElementById('outputMessage');
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    let stream;
+    let scanning = false;
+
+    // 🔍 BÚSQUEDA MANUAL
+    function buscar() {
+      const val = document.getElementById('search').value.trim();
+      if (val) {
+        window.location.href =
+          'https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec?q=' +
+          encodeURIComponent(val);
+      }
+    }
+
+    // 🎥 LISTAR CÁMARAS
+    async function listarCamaras() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      cameraSelect.innerHTML = '';
+      videoDevices.forEach((d, i) => {
+        const opt = document.createElement('option');
+        opt.value = d.deviceId;
+        opt.text = d.label || `Cámara ${i + 1}`;
+        cameraSelect.appendChild(opt);
+      });
+    }
+
+    // ▶️ INICIAR ESCANEO
+    async function startScan() {
+      try {
+        await listarCamaras();
+        const constraints = {
+          video: {
+            deviceId: cameraSelect.value ? { exact: cameraSelect.value } : undefined,
+            facingMode: cameraSelect.value ? undefined : { ideal: 'environment' }
+          }
+        };
+
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = stream;
+
+        video.onloadedmetadata = () => {
+          video.play().catch(()=>{});
+          video.style.opacity = 1;
+        };
+
+        await video.play();
+        scanning = true;
+        video.classList.add('scanning');
+        startButton.style.display = 'none';
+        stopButton.style.display = 'inline-block';
+        output.textContent = "📷 Escaneando código QR...";
+
+        requestAnimationFrame(scanFrame);
+      } catch (err) {
+        console.error("Error al iniciar cámara:", err);
+        output.textContent = "❌ No se pudo acceder a la cámara.";
+      }
+    }
+
+    // ⏹️ DETENER ESCANEO
+    function stopScan() {
+      scanning = false;
+      video.classList.remove('scanning');
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      startButton.style.display = 'inline-block';
+      stopButton.style.display = 'none';
+      output.textContent = "Cámara detenida.";
+    }
+
+    // 🔄 ESCANEAR CADA FRAME
+    function scanFrame() {
+      if (!scanning) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+
+        if (code) {
+          scanning = false;
+          stopScan();
+          output.textContent = "✅ Código detectado: " + code.data;
+
+          // 🔊 SONIDO + VIBRACIÓN
+          if (navigator.vibrate) navigator.vibrate(100);
+          const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+          beep.play().catch(()=>{});
+
+          // 🔗 REDIRECCIÓN
+          if (code.data.startsWith("https://")) {
+            window.location.href = code.data;
+          } else {
+            window.location.href =
+              "https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec?id=" +
+              encodeURIComponent(code.data.trim());
+          }
+          return;
+        }
+      }
+      requestAnimationFrame(scanFrame);
+    }
+  </script>
+</body>
+</html>
