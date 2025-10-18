@@ -155,6 +155,12 @@
     opacity: 0.9;
   }
 
+  select {
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-top: 10px;
+  }
 </style>
 </head>
 
@@ -218,7 +224,7 @@
     let stream;
     let scanning = false;
 
-    // Crear partículas flotantes
+    // 🌌 Crear partículas flotantes
     for (let i = 0; i < 35; i++) {
       const p = document.createElement('div');
       p.className = 'particle';
@@ -228,7 +234,7 @@
       particlesContainer.appendChild(p);
     }
 
-    // Buscar manualmente
+    // 🔍 Buscar manualmente
     function buscar() {
       const val = document.getElementById('search').value.trim();
       if (val) {
@@ -238,7 +244,7 @@
       }
     }
 
-    // Listar cámaras
+    // 🎥 Listar cámaras
     async function listarCamaras() {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === 'videoinput');
@@ -249,18 +255,21 @@
         opt.text = d.label || `Cámara ${i + 1}`;
         cameraSelect.appendChild(opt);
       });
+
+      // Por defecto, seleccionar la cámara trasera si existe
+      const backCam = videoDevices.find(d => /back|environment/i.test(d.label));
+      if (backCam) cameraSelect.value = backCam.deviceId;
     }
 
-    // Iniciar escaneo
+    // ▶️ Iniciar escaneo
     async function startScan() {
       try {
         await listarCamaras();
+        const selectedDeviceId = cameraSelect.value;
         const constraints = {
-          video: {
-            deviceId: cameraSelect.value ? { exact: cameraSelect.value } : undefined,
-            facingMode: cameraSelect.value ? undefined : { ideal: 'environment' }
-          }
+          video: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : { facingMode: 'environment' }
         };
+
         stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
         video.onloadedmetadata = () => {
@@ -280,7 +289,7 @@
       }
     }
 
-    // Detener escaneo
+    // ⏹️ Detener escaneo
     function stopScan() {
       scanning = false;
       video.classList.remove('scanning');
@@ -290,7 +299,7 @@
       output.textContent = "Cámara detenida.";
     }
 
-    // Escanear frame
+    // 🔄 Escanear frame
     function scanFrame() {
       if (!scanning) return;
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -305,20 +314,18 @@
           stopScan();
           output.textContent = "✅ Código detectado: " + code.data;
 
-          // Efecto vibración + sonido + check verde
           if (navigator.vibrate) navigator.vibrate(100);
           const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
           beep.play().catch(()=>{});
           checkmark.classList.add('show');
           setTimeout(() => checkmark.classList.remove('show'), 2000);
 
-          // Redirección
           setTimeout(() => {
             if (code.data.startsWith("https://")) {
               window.location.href = code.data;
             } else {
-              window.location.href = 
-                "https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec?id=" + 
+              window.location.href =
+                "https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec?id=" +
                 encodeURIComponent(code.data.trim());
             }
           }, 1000);
@@ -327,6 +334,14 @@
       }
       requestAnimationFrame(scanFrame);
     }
+
+    // 🧩 Cambiar cámara en tiempo real
+    cameraSelect.addEventListener('change', () => {
+      if (scanning) {
+        stopScan();
+        startScan();
+      }
+    });
   </script>
 </body>
 </html>
