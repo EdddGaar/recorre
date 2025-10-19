@@ -17,6 +17,7 @@
   select{padding:6px;border-radius:8px;font-size:15px;margin-top:8px}
   footer{font-size:13px;color:#ccc;margin:28px 0 18px}
   footer a{color:#ffca28;text-decoration:none;font-weight:600}
+  .debug{font-size:12px;color:#ddd;margin-top:8px;opacity:0.9}
 </style>
 </head>
 <body>
@@ -38,6 +39,7 @@
   <video id="video" autoplay playsinline muted></video>
   <canvas id="canvas" hidden></canvas>
   <p id="outputMessage"></p>
+  <div class="debug" id="debug"></div>
 
   <footer>
     © Re-corre Running Club – Tu Peque Recorre 2025<br>
@@ -46,7 +48,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <script>
-    // 👉 Pon aquí tu WebApp de Apps Script (…/exec)
+    // 👉 Tu WebApp de Apps Script desplegado como Web app con acceso "Anyone"
+    //    Asegúrate que sea la URL /exec vigente del último deployment
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec";
 
     const video = document.getElementById('video');
@@ -54,13 +57,17 @@
     const ctx = canvas.getContext('2d');
     const cameraSelect = document.getElementById('cameraSelect');
     const output = document.getElementById('outputMessage');
+    const debug = document.getElementById('debug');
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
     let stream, scanning=false;
 
     function buscar(){
       const v = document.getElementById('search').value.trim();
-      if (v) window.location.href = WEBAPP_URL + '?q=' + encodeURIComponent(v);
+      if (v) {
+        // redirección "fuerte"
+        window.location.replace(WEBAPP_URL + '?q=' + encodeURIComponent(v));
+      }
     }
 
     async function listarCamaras(){
@@ -119,12 +126,15 @@
         if(code){
           stopScan();
           output.textContent="✅ Código: " + code.data;
+          debug.textContent = "Decodificado: " + code.data; // ayuda visual
+
           if (navigator.vibrate) navigator.vibrate(80);
-          // Si el QR ya tiene URL del WebApp, ve directo; si solo trae ID, agrega ?id=
+
+          // Redirección "fuerte" para evitar pantallas intermedias
           if (code.data.startsWith("https://script.google.com")) {
-            window.location.href = code.data;
+            window.location.replace(code.data);
           } else {
-            window.location.href = WEBAPP_URL + "?id=" + encodeURIComponent(code.data.trim());
+            window.location.replace(WEBAPP_URL + "?id=" + encodeURIComponent(code.data.trim()));
           }
           return;
         }
