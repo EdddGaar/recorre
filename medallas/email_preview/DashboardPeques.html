@@ -7,118 +7,125 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+  :root {
+    --gold: #F9A825;
+    --bg1: #0f0120;
+    --bg2: #1b0033;
+    --card-bg: rgba(17, 0, 34, 0.7);
+  }
   body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 20px;
     text-align: center;
-    overflow-x: hidden;
-    background: linear-gradient(270deg, #1b0033, #000, #2E004F);
-    background-size: 600% 600%;
-    animation: gradientMove 12s ease infinite;
     color: #fff;
+    background: linear-gradient(120deg, var(--bg1), var(--bg2));
+    background-size: 200% 200%;
+    animation: gradientShift 10s ease infinite;
+    overflow: hidden;
+    height: 100vh;
   }
-  @keyframes gradientMove {
+  @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
   h1 {
-    color: #F9A825;
-    margin-bottom: 0.2em;
-    text-shadow: 0 0 10px #F9A825;
+    font-size: 1.8em;
+    margin: 0;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold);
     animation: glow 2s ease-in-out infinite alternate;
   }
-  @keyframes glow {
-    from { text-shadow: 0 0 5px #F9A825; }
-    to { text-shadow: 0 0 25px #F9A825; }
+  @keyframes glow { from { opacity: .9 } to { opacity: 1 } }
+
+  .subtitle {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-bottom: 20px;
   }
-  .loading {
-    font-size: 1.2em;
-    margin-top: 40px;
-    color: #ffeb3b;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    from { opacity: 0.4; }
-    to { opacity: 1; }
-  }
-  .kpi-container {
+
+  .dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-rows: auto 1fr;
     gap: 16px;
-    margin: 30px 0;
+    height: calc(100vh - 100px);
   }
+
+  .kpi-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
   .kpi {
-    background: rgba(17, 0, 34, 0.8);
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 0 20px rgba(249,168,37,0.3);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    backdrop-filter: blur(8px);
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 12px 16px;
+    min-width: 130px;
+    box-shadow: 0 0 12px rgba(249,168,37,0.25);
+    backdrop-filter: blur(6px);
+    transition: transform 0.3s ease;
   }
-  .kpi:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 40px rgba(249,168,37,0.6);
-  }
+  .kpi:hover { transform: scale(1.03); }
+
   .kpi h2 {
-    font-size: 2.4em;
-    color: #F9A825;
+    font-size: 1.8em;
     margin: 0;
-    animation: pop 1.2s ease-in-out infinite alternate;
-  }
-  @keyframes pop {
-    from { transform: scale(1); }
-    to { transform: scale(1.05); }
+    color: var(--gold);
   }
   .kpi p {
-    margin: 8px 0 0;
-    font-weight: 600;
-    color: #ccc;
+    margin: 4px 0 0;
+    font-size: 0.8em;
+    color: #bbb;
   }
+
+  .charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+    height: 100%;
+  }
+
   canvas {
-    background: rgba(26, 0, 51, 0.8);
+    background: rgba(26, 0, 51, 0.6);
     border-radius: 16px;
-    padding: 10px;
-    margin-top: 30px;
-    box-shadow: 0 0 20px rgba(249,168,37,0.25);
-    animation: fadein 1s ease forwards;
+    box-shadow: 0 0 12px rgba(249,168,37,0.2);
+    padding: 6px;
   }
-  @keyframes fadein {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+
   #lastUpdate {
-    margin-top: 20px;
-    font-size: 0.9em;
+    margin-top: 10px;
+    font-size: 0.8em;
     color: #aaa;
-    opacity: 0.8;
   }
-  .category-section { margin-top: 40px; }
-  .category-title {
-    color: #F9A825;
-    font-size: 1.4em;
-    margin-top: 20px;
-    text-shadow: 0 0 5px #F9A825;
+
+  @media (max-width: 768px) {
+    .charts { grid-template-columns: 1fr; height: auto; }
+    body { overflow-y: auto; height: auto; }
   }
 </style>
 </head>
 <body>
-<h1>🏃‍♀️ Panel en Vivo - Tu Peque Recorre 2025</h1>
-<p>Datos actualizados automáticamente cada 3 minutos</p>
+<h1>🏃‍♀️ Tu Peque Recorre 2025</h1>
+<p class="subtitle">Panel en vivo — actualización automática cada 3 min</p>
 
-<div id="loading" class="loading">Cargando datos...</div>
+<div class="dashboard">
+  <div class="kpi-container" id="kpiContainer">
+    <div class="kpi"><h2 id="inscritos">0</h2><p>Inscritos</p></div>
+    <div class="kpi"><h2 id="correos">0</h2><p>Correos</p></div>
+    <div class="kpi"><h2 id="asistencia">0</h2><p>Asistencias</p></div>
+    <div class="kpi"><h2 id="reconocimientos">0</h2><p>Reconocimientos</p></div>
+  </div>
 
-<div class="kpi-container" style="display:none" id="kpiContainer">
-  <div class="kpi"><h2 id="inscritos">0</h2><p>Total de Inscritos</p></div>
-  <div class="kpi"><h2 id="correos">0</h2><p>Correos Enviados</p></div>
-  <div class="kpi"><h2 id="asistencia">0</h2><p>Asistencias Registradas</p></div>
-  <div class="kpi"><h2 id="reconocimientos">0</h2><p>Reconocimientos Enviados</p></div>
+  <div class="charts">
+    <canvas id="categoriaChart"></canvas>
+    <canvas id="correosDiaChart"></canvas>
+  </div>
 </div>
 
-<canvas id="categoriaChart" height="150"></canvas>
-<canvas id="correosDiaChart" height="150"></canvas>
-<div class="category-section" id="categoryCharts"></div>
 <p id="lastUpdate">Última actualización: --</p>
 
 <script>
@@ -163,7 +170,6 @@ async function fetchSheetData(){
    updateDashboard({ total, correos, asis, recs, categorias, inscritosPorCategoria, dias, correosPorDia });
  } catch (err) {
    console.error("❌ Error al leer hoja:", err);
-   document.getElementById("loading").textContent = "⚠️ Error al cargar datos.";
  }
 }
 
@@ -180,14 +186,10 @@ function animateNumber(id, value){
 }
 
 function updateDashboard(data){
- document.getElementById("loading").style.display = "none";
- document.getElementById("kpiContainer").style.display = "grid";
-
  animateNumber('inscritos', data.total);
  animateNumber('correos', data.correos);
  animateNumber('asistencia', data.asis);
  animateNumber('reconocimientos', data.recs);
-
  document.getElementById('lastUpdate').textContent =
    'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
 
@@ -199,14 +201,17 @@ function updateDashboard(data){
    data: {
      labels: data.categorias,
      datasets: [{
-       label: 'Participantes por Categoría',
+       label: 'Inscritos por categoría',
        data: data.inscritosPorCategoria,
        backgroundColor: ['#00e676','#ffeb3b','#ff9800','#f44336']
      }]
    },
    options: {
-     plugins: { legend: { labels: { color: '#fff' } } },
-     scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } }
+     plugins: { legend: { display: false } },
+     scales: { 
+       x: { ticks: { color: '#fff' } },
+       y: { ticks: { color: '#fff' } }
+     }
    }
  });
 
@@ -215,7 +220,7 @@ function updateDashboard(data){
    data: {
      labels: data.dias,
      datasets: [{
-       label: 'Correos enviados por día',
+       label: 'Correos por día',
        data: data.correosPorDia,
        borderColor: '#F9A825',
        backgroundColor: 'rgba(249,168,37,0.3)',
@@ -224,28 +229,12 @@ function updateDashboard(data){
      }]
    },
    options: {
-     plugins: { legend: { labels: { color: '#fff' } } },
-     scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } }
+     plugins: { legend: { display: false } },
+     scales: { 
+       x: { ticks: { color: '#fff' } },
+       y: { ticks: { color: '#fff' } }
+     }
    }
- });
-
- const catContainer = document.getElementById('categoryCharts');
- catContainer.innerHTML = '';
- data.categorias.forEach((cat, i) => {
-   const div = document.createElement('div');
-   div.innerHTML = `<p class='category-title'>${cat} años</p><canvas id='cat${i}' height='120'></canvas>`;
-   catContainer.appendChild(div);
-   new Chart(document.getElementById(`cat${i}`), {
-     type: 'doughnut',
-     data: {
-       labels: ['Inscritos'],
-       datasets: [{
-         data: [data.inscritosPorCategoria[i]],
-         backgroundColor: [['#00e676','#ffeb3b','#ff9800','#f44336'][i]]
-       }]
-     },
-     options: { plugins: { legend: { display: false } } }
-   });
  });
 }
 
