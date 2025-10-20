@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Re-corre Running Club</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -14,6 +15,14 @@
       padding: 20px;
       text-align: center;
       overflow-x: hidden;
+    }
+    #tsparticles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
     }
     h1 {
       color: #F9A825;
@@ -75,40 +84,49 @@
       color: #aaa;
       opacity: 0.8;
     }
+    .category-section {
+      margin-top: 40px;
+    }
+    .category-title {
+      color: #F9A825;
+      font-size: 1.4em;
+      margin-top: 20px;
+      text-shadow: 0 0 5px #F9A825;
+    }
   </style>
 </head>
 <body>
+  <div id="tsparticles"></div>
   <h1>🏃‍♀️ Panel en Vivo - Tu Peque Recorre 2025</h1>
   <p>Datos actualizados automáticamente cada 3 minutos</p>
 
   <div class="kpi-container">
-    <div class="kpi"><h2 id="inscritos">0</h2><p>Inscritos</p></div>
-    <div class="kpi"><h2 id="correos">0</h2><p>Correos enviados</p></div>
-    <div class="kpi"><h2 id="asistencia">0</h2><p>Asistencias registradas</p></div>
-    <div class="kpi"><h2 id="reconocimientos">0</h2><p>Reconocimientos enviados</p></div>
+    <div class="kpi"><h2 id="inscritos">0</h2><p>Total de Inscritos</p></div>
+    <div class="kpi"><h2 id="correos">0</h2><p>Correos Enviados</p></div>
+    <div class="kpi"><h2 id="asistencia">0</h2><p>Asistencias Registradas</p></div>
+    <div class="kpi"><h2 id="reconocimientos">0</h2><p>Reconocimientos Enviados</p></div>
   </div>
 
   <canvas id="categoriaChart" height="150"></canvas>
   <canvas id="correosDiaChart" height="150"></canvas>
+  
+  <div class="category-section" id="categoryCharts"></div>
+
   <p id="lastUpdate">Última actualización: --</p>
 
   <script>
-    const sheetId = '1A0jhHP-DpIVB8S2ZqL15wf2KGb8vReHAtEQIjGhfhfM'; // tu hoja real
-    const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
-
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/gviz/tq?tqx=out:json';
     let categoriaChart, correosDiaChart;
 
     async function fetchSheetData() {
       try {
         const res = await fetch(sheetUrl);
         const text = await res.text();
-        const json = JSON.parse(text.substr(47).slice(0, -2)); // limpieza del formato GViz
+        const json = JSON.parse(text.substr(47).slice(0, -2));
         const rows = json.table.rows.map(r => r.c.map(c => c ? c.v : ''));
-
         const headers = rows[0];
         const data = rows.slice(1);
 
-        // índices claves
         const iCat = headers.indexOf('9. Categoría ');
         const iCorreo = headers.indexOf('Correo enviado');
         const iAsis = headers.indexOf('Asistencia');
@@ -120,11 +138,9 @@
         const asis = data.filter(r => r[iAsis] === '✅').length;
         const recs = data.filter(r => r[iRec] === '✅').length;
 
-        // Categorías
         const categorias = ['4 a 6 años', '7 a 9 años', '10 a 12 años', '13 a 15 años'];
         const inscritosPorCategoria = categorias.map(cat => data.filter(r => String(r[iCat]).includes(cat)).length);
 
-        // Fechas (para correos enviados por día)
         const fechas = {};
         data.forEach(r => {
           const fecha = r[iFecha] ? new Date(r[iFecha]).toLocaleDateString('es-MX') : null;
@@ -164,7 +180,6 @@
       const now = new Date();
       document.getElementById('lastUpdate').textContent = `Última actualización: ${now.toLocaleTimeString('es-MX')}`;
 
-      // Actualizar o crear gráficos
       if (categoriaChart) categoriaChart.destroy();
       if (correosDiaChart) correosDiaChart.destroy();
 
@@ -173,15 +188,12 @@
         data: {
           labels: data.categorias,
           datasets: [{
-            label: 'Inscritos por Categoría',
+            label: 'Participantes por Categoría',
             data: data.inscritosPorCategoria,
             backgroundColor: ['#00e676', '#ffeb3b', '#ff9800', '#f44336']
           }]
         },
-        options: {
-          plugins: { legend: { labels: { color: '#fff' } } },
-          scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } }
-        }
+        options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
       });
 
       correosDiaChart = new Chart(document.getElementById('correosDiaChart'), {
@@ -197,15 +209,48 @@
             tension: 0.3
           }]
         },
-        options: {
-          plugins: { legend: { labels: { color: '#fff' } } },
-          scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } }
-        }
+        options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
+      });
+
+      // Subgráficos individuales
+      const catContainer = document.getElementById('categoryCharts');
+      catContainer.innerHTML = '';
+      data.categorias.forEach((cat, i) => {
+        const div = document.createElement('div');
+        div.className = 'category-chart';
+        div.innerHTML = `<p class='category-title'>${cat}</p><canvas id='cat${i}' height='120'></canvas>`;
+        catContainer.appendChild(div);
+        new Chart(document.getElementById(`cat${i}`), {
+          type: 'doughnut',
+          data: {
+            labels: ['Inscritos'],
+            datasets: [{
+              data: [data.inscritosPorCategoria[i]],
+              backgroundColor: [ ['#00e676', '#ffeb3b', '#ff9800', '#f44336'][i] ]
+            }]
+          },
+          options: { plugins: { legend: { display: false } } }
+        });
       });
     }
 
-    fetchSheetData(); // primera carga
-    setInterval(fetchSheetData, 180000); // refrescar cada 3 min
+    tsParticles.load('tsparticles', {
+      background: { color: { value: '#000' } },
+      fpsLimit: 60,
+      particles: {
+        number: { value: 80, density: { enable: true, area: 800 } },
+        color: { value: ['#F9A825', '#BB86FC', '#FFD54F'] },
+        shape: { type: 'circle' },
+        opacity: { value: 0.6, random: true },
+        size: { value: { min: 1, max: 4 } },
+        links: { enable: true, distance: 120, color: '#F9A825', opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 1.5, direction: 'none', outModes: { default: 'out' } }
+      },
+      detectRetina: true,
+    });
+
+    fetchSheetData();
+    setInterval(fetchSheetData, 180000);
   </script>
 </body>
 </html>
