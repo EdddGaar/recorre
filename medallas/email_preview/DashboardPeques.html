@@ -22,8 +22,8 @@
     background: linear-gradient(120deg, var(--bg1), var(--bg2));
     background-size: 200% 200%;
     animation: gradientShift 10s ease infinite;
-    overflow: hidden;
     height: 100vh;
+    overflow: hidden;
   }
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
@@ -35,94 +35,67 @@
     margin: 0;
     color: var(--gold);
     text-shadow: 0 0 10px var(--gold);
-    animation: glow 2s ease-in-out infinite alternate;
   }
-  @keyframes glow { from { opacity: .9 } to { opacity: 1 } }
-
   .subtitle {
     font-size: 0.9em;
     color: #ccc;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .dashboard {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    gap: 16px;
-    height: calc(100vh - 100px);
-  }
-
-  .kpi-container {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .kpi {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 12px 16px;
-    min-width: 130px;
-    box-shadow: 0 0 12px rgba(249,168,37,0.25);
-    backdrop-filter: blur(6px);
-    transition: transform 0.3s ease;
-  }
-  .kpi:hover { transform: scale(1.03); }
-
-  .kpi h2 {
-    font-size: 1.8em;
-    margin: 0;
-    color: var(--gold);
-  }
-  .kpi p {
-    margin: 4px 0 0;
-    font-size: 0.8em;
-    color: #bbb;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    height: calc(100vh - 120px);
   }
 
   .charts {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: stretch;
-    height: 100%;
+    gap: 30px;
+    width: 90%;
+    max-width: 900px;
+  }
+
+  .chart-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 12px rgba(249,168,37,0.25);
+    backdrop-filter: blur(6px);
   }
 
   canvas {
-    background: rgba(26, 0, 51, 0.6);
-    border-radius: 16px;
-    box-shadow: 0 0 12px rgba(249,168,37,0.2);
-    padding: 6px;
+    width: 100%;
+    height: 260px;
   }
 
   #lastUpdate {
-    margin-top: 10px;
+    margin-top: 12px;
     font-size: 0.8em;
     color: #aaa;
   }
 
   @media (max-width: 768px) {
-    .charts { grid-template-columns: 1fr; height: auto; }
-    body { overflow-y: auto; height: auto; }
+    .charts { grid-template-columns: 1fr; width: 100%; }
+    canvas { height: 220px; }
   }
 </style>
 </head>
 <body>
 <h1>🏃‍♀️ Tu Peque Recorre 2025</h1>
-<p class="subtitle">Panel en vivo — actualización automática cada 3 min</p>
+<p class="subtitle">Panel en vivo — actualización automática cada 3 minutos</p>
 
 <div class="dashboard">
-  <div class="kpi-container" id="kpiContainer">
-    <div class="kpi"><h2 id="inscritos">0</h2><p>Inscritos</p></div>
-    <div class="kpi"><h2 id="correos">0</h2><p>Correos</p></div>
-    <div class="kpi"><h2 id="asistencia">0</h2><p>Asistencias</p></div>
-    <div class="kpi"><h2 id="reconocimientos">0</h2><p>Reconocimientos</p></div>
-  </div>
-
   <div class="charts">
-    <canvas id="categoriaChart"></canvas>
-    <canvas id="correosDiaChart"></canvas>
+    <div class="chart-card">
+      <canvas id="totalChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <canvas id="categoriaChart"></canvas>
+    </div>
   </div>
 </div>
 
@@ -132,7 +105,7 @@
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/pub?gid=1619875874&single=true&output=csv";
 const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`;
 
-let categoriaChart, correosDiaChart;
+let totalChart, categoriaChart;
 
 async function fetchSheetData(){
  try {
@@ -143,58 +116,47 @@ async function fetchSheetData(){
    const data = rows.slice(1).filter(r => r.length > 1);
 
    const iCat = headers.findIndex(h => h.includes('Categoría'));
-   const iCorreo = headers.findIndex(h => h.includes('Correo'));
-   const iAsis = headers.findIndex(h => h.includes('Asistencia'));
-   const iRec = headers.findIndex(h => h.includes('Reconocimiento'));
-   const iFecha = headers.findIndex(h => h.includes('Fecha'));
-
    const total = data.length;
-   const correos = data.filter(r => r[iCorreo] === '✅').length;
-   const asis = data.filter(r => r[iAsis] === '✅').length;
-   const recs = data.filter(r => r[iRec] === '✅').length;
-
    const categorias = ['4 a 6', '7 a 9', '10 a 12', '13 a 15'];
    const inscritosPorCategoria = categorias.map(cat => data.filter(r => r[iCat]?.includes(cat)).length);
 
-   const fechas = {};
-   data.forEach(r => {
-     const f = r[iFecha];
-     if (f && r[iCorreo] === '✅') {
-       const d = new Date(f).toLocaleDateString('es-MX');
-       fechas[d] = (fechas[d] || 0) + 1;
-     }
-   });
-   const dias = Object.keys(fechas);
-   const correosPorDia = Object.values(fechas);
-
-   updateDashboard({ total, correos, asis, recs, categorias, inscritosPorCategoria, dias, correosPorDia });
+   updateDashboard({ total, categorias, inscritosPorCategoria });
  } catch (err) {
    console.error("❌ Error al leer hoja:", err);
  }
 }
 
-function animateNumber(id, value){
- const el = document.getElementById(id);
- const current = parseInt(el.textContent) || 0;
- const diff = value - current;
- let step = 0; const steps = 25;
- const interval = setInterval(() => {
-   step++;
-   el.textContent = Math.round(current + diff * (step / steps));
-   if (step >= steps) clearInterval(interval);
- }, 40);
-}
-
 function updateDashboard(data){
- animateNumber('inscritos', data.total);
- animateNumber('correos', data.correos);
- animateNumber('asistencia', data.asis);
- animateNumber('reconocimientos', data.recs);
  document.getElementById('lastUpdate').textContent =
    'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
 
+ if (totalChart) totalChart.destroy();
  if (categoriaChart) categoriaChart.destroy();
- if (correosDiaChart) correosDiaChart.destroy();
+
+ totalChart = new Chart(document.getElementById('totalChart'), {
+   type: 'doughnut',
+   data: {
+     labels: ['Inscritos', 'Restante (meta 250)'],
+     datasets: [{
+       data: [data.total, 250 - data.total],
+       backgroundColor: ['#F9A825', '#3a2b52'],
+       borderWidth: 0
+     }]
+   },
+   options: {
+     cutout: '70%',
+     plugins: {
+       legend: { display: false },
+       tooltip: { enabled: false },
+       title: {
+         display: true,
+         text: `${data.total} Inscritos`,
+         color: '#fff',
+         font: { size: 18 }
+       }
+     }
+   }
+ });
 
  categoriaChart = new Chart(document.getElementById('categoriaChart'), {
    type: 'bar',
@@ -208,31 +170,9 @@ function updateDashboard(data){
    },
    options: {
      plugins: { legend: { display: false } },
-     scales: { 
+     scales: {
        x: { ticks: { color: '#fff' } },
-       y: { ticks: { color: '#fff' } }
-     }
-   }
- });
-
- correosDiaChart = new Chart(document.getElementById('correosDiaChart'), {
-   type: 'line',
-   data: {
-     labels: data.dias,
-     datasets: [{
-       label: 'Correos por día',
-       data: data.correosPorDia,
-       borderColor: '#F9A825',
-       backgroundColor: 'rgba(249,168,37,0.3)',
-       fill: true,
-       tension: 0.3
-     }]
-   },
-   options: {
-     plugins: { legend: { display: false } },
-     scales: { 
-       x: { ticks: { color: '#fff' } },
-       y: { ticks: { color: '#fff' } }
+       y: { ticks: { color: '#fff' }, beginAtZero: true }
      }
    }
  });
