@@ -9,7 +9,7 @@
 <style>
   body {
     font-family: 'Poppins', sans-serif;
-    background: #120022;
+    background: #100022;
     color: #fff;
     text-align: center;
     margin: 0;
@@ -39,7 +39,7 @@
   }
 
   .chart-card {
-    background: #1d0133;
+    background: #1c0133;
     border-radius: 12px;
     padding: 20px;
     width: 380px;
@@ -74,7 +74,7 @@
 
 <div class="charts">
   <div class="chart-card">
-    <h3>Total de Inscritos</h3>
+    <h3>Evolución de Inscritos</h3>
     <canvas id="totalChart"></canvas>
   </div>
   <div class="chart-card">
@@ -103,11 +103,25 @@ async function fetchSheetData(){
     const data = rows.slice(1).filter(r => r.length > 1);
 
     const iCat = headers.findIndex(h => h.includes('Categoría'));
+    const iFecha = headers.findIndex(h => h.includes('Fecha'));
+
     const total = data.length;
     const categorias = ['4 a 6', '7 a 9', '10 a 12', '13 a 15'];
     const inscritosPorCategoria = categorias.map(cat => data.filter(r => r[iCat]?.includes(cat)).length);
 
-    updateDashboard({ total, categorias, inscritosPorCategoria });
+    // Agrupar por fecha (para gráfico de líneas)
+    const fechas = {};
+    data.forEach(r => {
+      const f = r[iFecha] ? new Date(r[iFecha]).toLocaleDateString('es-MX') : null;
+      if (f) fechas[f] = (fechas[f] || 0) + 1;
+    });
+
+    // Ordenar fechas y acumular totales
+    const fechasOrdenadas = Object.keys(fechas).sort((a, b) => new Date(a) - new Date(b));
+    let acumulado = 0;
+    const inscritosPorDia = fechasOrdenadas.map(f => acumulado += fechas[f]);
+
+    updateDashboard({ total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia });
   } catch (err) {
     console.error("❌ Error al leer hoja:", err);
   }
@@ -120,30 +134,44 @@ function updateDashboard(data){
   if (totalChart) totalChart.destroy();
   if (categoriaChart) categoriaChart.destroy();
 
+  // 📈 Gráfico de líneas (evolución de inscritos)
   totalChart = new Chart(document.getElementById('totalChart'), {
-    type: 'doughnut',
+    type: 'line',
     data: {
-      labels: ['Inscritos'],
+      labels: data.fechasOrdenadas,
       datasets: [{
-        data: [data.total],
-        backgroundColor: ['#F9A825'],
-        borderWidth: 0
+        label: 'Inscritos acumulados',
+        data: data.inscritosPorDia,
+        borderColor: '#F9A825',
+        backgroundColor: 'rgba(249,168,37,0.25)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#fff'
       }]
     },
     options: {
-      cutout: '75%',
       plugins: {
         legend: { display: false },
         title: {
           display: true,
-          text: `${data.total} participantes`,
+          text: `${data.total} participantes totales`,
           color: '#fff',
-          font: { size: 18 }
+          font: { size: 16 }
         }
+      },
+      scales: {
+        x: { ticks: { color: '#fff' } },
+        y: { ticks: { color: '#fff' }, beginAtZero: true }
+      },
+      animation: {
+        duration: 1000,
+        easing: 'easeOutQuart'
       }
     }
   });
 
+  // 📊 Gráfico de barras (por categoría)
   categoriaChart = new Chart(document.getElementById('categoriaChart'), {
     type: 'bar',
     data: {
@@ -159,6 +187,10 @@ function updateDashboard(data){
       scales: {
         x: { ticks: { color: '#fff' } },
         y: { ticks: { color: '#fff' }, beginAtZero: true }
+      },
+      animation: {
+        duration: 800,
+        easing: 'easeOutQuad'
       }
     }
   });
