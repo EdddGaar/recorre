@@ -1,257 +1,175 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Re-corre Running Club</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top, #21004a, #000);
-      color: #fff;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-      overflow-x: hidden;
-    }
-    #tsparticles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-    h1 {
-      color: #F9A825;
-      margin-bottom: 0.2em;
-      text-shadow: 0 0 10px #F9A825;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-    @keyframes glow {
-      from { text-shadow: 0 0 5px #F9A825; }
-      to { text-shadow: 0 0 25px #F9A825; }
-    }
-    .kpi-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin: 30px 0;
-    }
-    .kpi {
-      background: #110022;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(249, 168, 37, 0.3);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-    }
-    .kpi:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(249, 168, 37, 0.6);
-    }
-    .kpi h2 {
-      font-size: 2.4em;
-      color: #F9A825;
-      margin: 0;
-      animation: pop 1.2s ease-in-out infinite alternate;
-    }
-    @keyframes pop {
-      from { transform: scale(1); }
-      to { transform: scale(1.05); }
-    }
-    .kpi p {
-      margin: 8px 0 0;
-      font-weight: 600;
-      color: #ccc;
-    }
-    canvas {
-      background: #1a0033;
-      border-radius: 16px;
-      padding: 10px;
-      margin-top: 30px;
-      box-shadow: 0 0 20px rgba(249, 168, 37, 0.25);
-      animation: fadein 1s ease forwards;
-    }
-    @keyframes fadein {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    #lastUpdate {
-      margin-top: 20px;
-      font-size: 0.9em;
-      color: #aaa;
-      opacity: 0.8;
-    }
-    .category-section {
-      margin-top: 40px;
-    }
-    .category-title {
-      color: #F9A825;
-      font-size: 1.4em;
-      margin-top: 20px;
-      text-shadow: 0 0 5px #F9A825;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Panel Re-corre Running Club</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
+<style>
+  body {
+    font-family:'Poppins',sans-serif;
+    background:radial-gradient(circle at top,#21004a,#000);
+    color:#fff;margin:0;padding:20px;text-align:center;overflow-x:hidden;
+  }
+  #tsparticles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
+  h1{color:#F9A825;margin-bottom:0.2em;text-shadow:0 0 10px #F9A825;
+     animation:glow 2s ease-in-out infinite alternate;}
+  @keyframes glow{from{text-shadow:0 0 5px #F9A825;}to{text-shadow:0 0 25px #F9A825;}}
+  .kpi-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px;margin:30px 0;}
+  .kpi{background:#110022;border-radius:20px;padding:20px;
+    box-shadow:0 0 20px rgba(249,168,37,0.3);
+    transition:transform .4s,box-shadow .4s;}
+  .kpi:hover{transform:scale(1.05);
+    box-shadow:0 0 40px rgba(249,168,37,0.6);}
+  .kpi h2{font-size:2.4em;color:#F9A825;margin:0;
+    animation:pop 1.2s ease-in-out infinite alternate;}
+  @keyframes pop{from{transform:scale(1);}to{transform:scale(1.05);}}
+  .kpi p{margin:8px 0 0;font-weight:600;color:#ccc;}
+  canvas{background:#1a0033;border-radius:16px;padding:10px;margin-top:30px;
+    box-shadow:0 0 20px rgba(249,168,37,0.25);animation:fadein 1s ease forwards;}
+  @keyframes fadein{from{opacity:0;transform:translateY(20px);}
+                    to{opacity:1;transform:translateY(0);}}
+  #lastUpdate{margin-top:20px;font-size:.9em;color:#aaa;opacity:.8;}
+  .category-section{margin-top:40px;}
+  .category-title{color:#F9A825;font-size:1.4em;margin-top:20px;text-shadow:0 0 5px #F9A825;}
+</style>
 </head>
 <body>
-  <div id="tsparticles"></div>
-  <h1>🏃‍♀️ Panel en Vivo - Tu Peque Recorre 2025</h1>
-  <p>Datos actualizados automáticamente cada 3 minutos</p>
+<div id="tsparticles"></div>
+<h1>🏃‍♀️ Panel en Vivo - Tu Peque Recorre 2025</h1>
+<p>Datos actualizados automáticamente cada 3 minutos</p>
 
-  <div class="kpi-container">
-    <div class="kpi"><h2 id="inscritos">0</h2><p>Total de Inscritos</p></div>
-    <div class="kpi"><h2 id="correos">0</h2><p>Correos Enviados</p></div>
-    <div class="kpi"><h2 id="asistencia">0</h2><p>Asistencias Registradas</p></div>
-    <div class="kpi"><h2 id="reconocimientos">0</h2><p>Reconocimientos Enviados</p></div>
-  </div>
+<div class="kpi-container">
+  <div class="kpi"><h2 id="inscritos">0</h2><p>Total de Inscritos</p></div>
+  <div class="kpi"><h2 id="correos">0</h2><p>Correos Enviados</p></div>
+  <div class="kpi"><h2 id="asistencia">0</h2><p>Asistencias Registradas</p></div>
+  <div class="kpi"><h2 id="reconocimientos">0</h2><p>Reconocimientos Enviados</p></div>
+</div>
 
-  <canvas id="categoriaChart" height="150"></canvas>
-  <canvas id="correosDiaChart" height="150"></canvas>
-  
-  <div class="category-section" id="categoryCharts"></div>
+<canvas id="categoriaChart" height="150"></canvas>
+<canvas id="correosDiaChart" height="150"></canvas>
+<div class="category-section" id="categoryCharts"></div>
+<p id="lastUpdate">Última actualización: --</p>
 
-  <p id="lastUpdate">Última actualización: --</p>
+<script>
+const csvUrl =
+ "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/pub?gid=1619875874&single=true&output=csv";
 
-  <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/gviz/tq?tqx=out:json';
+let categoriaChart, correosDiaChart;
 
-    let categoriaChart, correosDiaChart;
+async function fetchSheetData(){
+ try{
+   const res=await fetch(csvUrl);
+   const text=await res.text();
+   const rows=text.split("\n").map(r=>r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c=>c.replace(/(^"|"$)/g,'')));
+   const headers=rows[0];
+   const data=rows.slice(1).filter(r=>r.length>1);
 
-    async function fetchSheetData() {
-      try {
-        const res = await fetch(sheetUrl);
-        const text = await res.text();
-        const json = JSON.parse(text.substr(47).slice(0, -2));
-        const rows = json.table.rows.map(r => r.c.map(c => c ? c.v : ''));
-        const headers = rows[0];
-        const data = rows.slice(1);
+   const iCat=headers.findIndex(h=>h.includes('Categoría'));
+   const iCorreo=headers.findIndex(h=>h.includes('Correo'));
+   const iAsis=headers.findIndex(h=>h.includes('Asistencia'));
+   const iRec=headers.findIndex(h=>h.includes('Reconocimiento'));
+   const iFecha=headers.findIndex(h=>h.includes('Fecha'));
 
-        const iCat = headers.indexOf('9. Categoría ');
-        const iCorreo = headers.indexOf('Correo enviado');
-        const iAsis = headers.indexOf('Asistencia');
-        const iRec = headers.indexOf('Reconocimiento enviado');
-        const iFecha = headers.indexOf('Fecha de envío');
+   const total=data.length;
+   const correos=data.filter(r=>r[iCorreo]==='✅').length;
+   const asis=data.filter(r=>r[iAsis]==='✅').length;
+   const recs=data.filter(r=>r[iRec]==='✅').length;
 
-        const total = data.length;
-        const correos = data.filter(r => r[iCorreo] === '✅').length;
-        const asis = data.filter(r => r[iAsis] === '✅').length;
-        const recs = data.filter(r => r[iRec] === '✅').length;
+   const categorias=['4 a 6','7 a 9','10 a 12','13 a 15'];
+   const inscritosPorCategoria=categorias.map(cat=>data.filter(r=>r[iCat]?.includes(cat)).length);
 
-        const categorias = ['4 a 6 años', '7 a 9 años', '10 a 12 años', '13 a 15 años'];
-        const inscritosPorCategoria = categorias.map(cat => data.filter(r => String(r[iCat]).includes(cat)).length);
+   const fechas={};
+   data.forEach(r=>{
+     const f=r[iFecha];
+     if(f && r[iCorreo]==='✅'){
+       const d=new Date(f).toLocaleDateString('es-MX');
+       fechas[d]=(fechas[d]||0)+1;
+     }
+   });
+   const dias=Object.keys(fechas);
+   const correosPorDia=Object.values(fechas);
 
-        const fechas = {};
-        data.forEach(r => {
-          const fecha = r[iFecha] ? new Date(r[iFecha]).toLocaleDateString('es-MX') : null;
-          if (fecha && r[iCorreo] === '✅') {
-            fechas[fecha] = (fechas[fecha] || 0) + 1;
-          }
-        });
+   updateDashboard({total,correos,asis,recs,categorias,inscritosPorCategoria,dias,correosPorDia});
+ }catch(err){console.error("Error al leer hoja:",err);}
+}
 
-        const dias = Object.keys(fechas);
-        const correosPorDia = Object.values(fechas);
+function animateNumber(id,value){
+ const el=document.getElementById(id);
+ const current=parseInt(el.textContent)||0;
+ const diff=value-current;let step=0;const steps=25;
+ const interval=setInterval(()=>{
+   step++;
+   el.textContent=Math.round(current+diff*(step/steps));
+   if(step>=steps)clearInterval(interval);
+ },40);
+}
 
-        updateDashboard({ total, correos, asis, recs, categorias, inscritosPorCategoria, dias, correosPorDia });
-      } catch (err) {
-        console.error('Error al leer hoja:', err);
-      }
-    }
+function updateDashboard(data){
+ animateNumber('inscritos',data.total);
+ animateNumber('correos',data.correos);
+ animateNumber('asistencia',data.asis);
+ animateNumber('reconocimientos',data.recs);
+ document.getElementById('lastUpdate').textContent=
+   'Última actualización: '+new Date().toLocaleTimeString('es-MX');
 
-    function animateNumber(id, value) {
-      const el = document.getElementById(id);
-      const current = parseInt(el.textContent) || 0;
-      const diff = value - current;
-      let step = 0;
-      const steps = 25;
-      const interval = setInterval(() => {
-        step++;
-        el.textContent = Math.round(current + diff * (step / steps));
-        if (step >= steps) clearInterval(interval);
-      }, 40);
-    }
+ if(categoriaChart)categoriaChart.destroy();
+ if(correosDiaChart)correosDiaChart.destroy();
 
-    function updateDashboard(data) {
-      animateNumber('inscritos', data.total);
-      animateNumber('correos', data.correos);
-      animateNumber('asistencia', data.asis);
-      animateNumber('reconocimientos', data.recs);
+ categoriaChart=new Chart(document.getElementById('categoriaChart'),{
+   type:'bar',
+   data:{labels:data.categorias,
+         datasets:[{label:'Participantes por Categoría',
+                    data:data.inscritosPorCategoria,
+                    backgroundColor:['#00e676','#ffeb3b','#ff9800','#f44336']}]},
+   options:{plugins:{legend:{labels:{color:'#fff'}}},
+            scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+ });
 
-      const now = new Date();
-      document.getElementById('lastUpdate').textContent = `Última actualización: ${now.toLocaleTimeString('es-MX')}`;
+ correosDiaChart=new Chart(document.getElementById('correosDiaChart'),{
+   type:'line',
+   data:{labels:data.dias,
+         datasets:[{label:'Correos enviados por día',
+                    data:data.correosPorDia,
+                    borderColor:'#F9A825',
+                    backgroundColor:'rgba(249,168,37,0.3)',
+                    fill:true,tension:0.3}]},
+   options:{plugins:{legend:{labels:{color:'#fff'}}},
+            scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+ });
 
-      if (categoriaChart) categoriaChart.destroy();
-      if (correosDiaChart) correosDiaChart.destroy();
+ const catContainer=document.getElementById('categoryCharts');
+ catContainer.innerHTML='';
+ data.categorias.forEach((cat,i)=>{
+   const div=document.createElement('div');
+   div.innerHTML=`<p class='category-title'>${cat} años</p><canvas id='cat${i}' height='120'></canvas>`;
+   catContainer.appendChild(div);
+   new Chart(document.getElementById(`cat${i}`),{
+     type:'doughnut',
+     data:{labels:['Inscritos'],
+           datasets:[{data:[data.inscritosPorCategoria[i]],
+                      backgroundColor:[['#00e676','#ffeb3b','#ff9800','#f44336'][i]]}]},
+     options:{plugins:{legend:{display:false}}}
+   });
+ });
+}
 
-      categoriaChart = new Chart(document.getElementById('categoriaChart'), {
-        type: 'bar',
-        data: {
-          labels: data.categorias,
-          datasets: [{
-            label: 'Participantes por Categoría',
-            data: data.inscritosPorCategoria,
-            backgroundColor: ['#00e676', '#ffeb3b', '#ff9800', '#f44336']
-          }]
-        },
-        options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
-      });
+tsParticles.load("tsparticles",{
+ background:{color:{value:"#000"}},fpsLimit:60,
+ particles:{
+   number:{value:80,density:{enable:true,area:800}},
+   color:{value:["#F9A825","#BB86FC","#FFD54F"]},
+   shape:{type:"circle"},opacity:{value:0.6,random:true},
+   size:{value:{min:1,max:4}},
+   links:{enable:true,distance:120,color:"#F9A825",opacity:0.4,width:1},
+   move:{enable:true,speed:1.5,outModes:{default:"out"}}
+ },detectRetina:true
+});
 
-      correosDiaChart = new Chart(document.getElementById('correosDiaChart'), {
-        type: 'line',
-        data: {
-          labels: data.dias,
-          datasets: [{
-            label: 'Correos enviados por día',
-            data: data.correosPorDia,
-            borderColor: '#F9A825',
-            backgroundColor: 'rgba(249,168,37,0.3)',
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
-      });
-
-      // Subgráficos individuales
-      const catContainer = document.getElementById('categoryCharts');
-      catContainer.innerHTML = '';
-      data.categorias.forEach((cat, i) => {
-        const div = document.createElement('div');
-        div.className = 'category-chart';
-        div.innerHTML = `<p class='category-title'>${cat}</p><canvas id='cat${i}' height='120'></canvas>`;
-        catContainer.appendChild(div);
-        new Chart(document.getElementById(`cat${i}`), {
-          type: 'doughnut',
-          data: {
-            labels: ['Inscritos'],
-            datasets: [{
-              data: [data.inscritosPorCategoria[i]],
-              backgroundColor: [ ['#00e676', '#ffeb3b', '#ff9800', '#f44336'][i] ]
-            }]
-          },
-          options: { plugins: { legend: { display: false } } }
-        });
-      });
-    }
-
-    tsParticles.load('tsparticles', {
-      background: { color: { value: '#000' } },
-      fpsLimit: 60,
-      particles: {
-        number: { value: 80, density: { enable: true, area: 800 } },
-        color: { value: ['#F9A825', '#BB86FC', '#FFD54F'] },
-        shape: { type: 'circle' },
-        opacity: { value: 0.6, random: true },
-        size: { value: { min: 1, max: 4 } },
-        links: { enable: true, distance: 120, color: '#F9A825', opacity: 0.4, width: 1 },
-        move: { enable: true, speed: 1.5, direction: 'none', outModes: { default: 'out' } }
-      },
-      detectRetina: true,
-    });
-
-    fetchSheetData();
-    setInterval(fetchSheetData, 180000);
-  </script>
+fetchSheetData();
+setInterval(fetchSheetData,180000);
+</script>
 </body>
 </html>
