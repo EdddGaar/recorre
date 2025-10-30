@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tu Peque Recorre 2025 – Sistema de Registro</title>
+
+  <!-- Fuente y estilos -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==== ESTILO GENERAL ==== */
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #2E004F 0%, #000 100%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    h1, h2, h3 { color: #F9A825; margin-bottom: 16px; }
+    p { line-height: 1.6; max-width: 700px; margin: 0 auto 20px; }
+    section {
+      min-height: 100vh;
+      padding: 100px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+    img {
+      max-width: 500px;
+      width: 90%;
+      border-radius: 20px;
+      margin: 30px 0;
+      box-shadow: 0 0 25px rgba(255,255,255,0.2);
+    }
+
+    /* ==== MENÚ SUPERIOR ==== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      padding: 14px 0;
+      display: flex;
+      justify-content: center;
+      z-index: 1000;
+    }
+    nav a {
+      color: #f5f5f5;
+      text-decoration: none;
+      margin: 0 16px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #F9A825; }
+
+    /* ==== BOTONES ==== */
+    .btn {
+      display: inline-block;
+      background: #F9A825;
+      color: #000;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s;
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    /* ==== ANIMACIONES ==== */
+    .fade { opacity: 0; transform: translateY(40px); transition: all 1s ease; }
+    .fade.visible { opacity: 1; transform: translateY(0); }
+
+    footer {
+      background: #110022;
+      text-align: center;
+      padding: 30px 20px;
+      color: #aaa;
+      font-size: 0.9em;
+    }
+
+    /* ==== RESPONSIVO ==== */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.6em; }
+      h2 { font-size: 1.3em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MENÚ DE NAVEGACIÓN -->
+  <nav>
+    <a href="#intro">Inicio</a>
+    <a href="#registro">Registro</a>
+    <a href="#qr">QR</a>
+    <a href="#checkin">Check-in</a>
+    <a href="#reconocimientos">Reconocimientos</a>
+    <a href="#final">Resultados</a>
+  </nav>
+
+  <!-- SECCIÓN 1 -->
+  <section id="intro" class="fade">
+    <h1>🏃‍♀️ Tu Peque Recorre 2025</h1>
+    <h2>Sistema Automatizado de Registro y Check-in</h2>
+    <p>
+      Desarrollado por <strong>Ed / Re-corre Running Club</strong>.<br>
+      Un sistema integral para administrar inscripciones, confirmaciones y reconocimientos de manera automática usando Google Apps Script.
+    </p>
+    <img src="../Re corre Logo.jpg" alt="Re-corre Logo" />
+  </section>
+
+  <!-- SECCIÓN 2 -->
+  <section id="registro" class="fade">
+    <h2>1️⃣ Registro Automático</h2>
+    <p>
+      Los tutores completan un formulario en línea. Al enviarlo, el sistema:
+    </p>
+    <ul style="text-align:left;max-width:600px;margin:auto;">
+      <li>✅ Asigna un número de competidor único</li>
+      <li>📧 Envía un correo de confirmación con QR personalizado</li>
+      <li>💾 Guarda la información en Google Sheets</li>
+    </ul>
+    <img src="../medallas/formulario.jpg" alt="Formulario de registro" />
+  </section>
+
+  <!-- SECCIÓN 3 -->
+  <section id="qr" class="fade">
+    <h2>2️⃣ Generación de Código QR</h2>
+    <p>
+      El sistema genera un código QR único para cada participante, vinculado a su ID interno, y lo almacena automáticamente en Google Drive.
+    </p>
+    <img src="../medallas/qr_demo.jpg" alt="Ejemplo de QR" />
+  </section>
+
+  <!-- SECCIÓN 4 -->
+  <section id="checkin" class="fade">
+    <h2>3️⃣ Check-in con Código QR</h2>
+    <p>
+      Durante el evento, los voluntarios escanean el QR desde cualquier dispositivo.  
+      El sistema valida la inscripción, marca asistencia y muestra una interfaz visual con confirmación instantánea.
+    </p>
+    <img src="../medallas/checkin_demo.jpg" alt="Check-in visual" />
+    <a href="https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec" 
+       target="_blank" class="btn">🔗 Ver Demo Real</a>
+  </section>
+
+  <!-- SECCIÓN 5 -->
+  <section id="reconocimientos" class="fade">
+    <h2>4️⃣ Envío Automático de Reconocimientos</h2>
+    <p>
+      Tras el evento, se generan certificados personalizados desde una plantilla de Google Slides y se envían en PDF a cada tutor que registró asistencia.
+    </p>
+    <img src="../medallas/reconocimiento.jpg" alt="Reconocimiento PDF" />
+  </section>
+
+  <!-- SECCIÓN 6 -->
+  <section id="final" class="fade">
+    <h2>✅ Resultados e Impacto</h2>
+    <p>
+      - 100% automatizado con Google Workspace.<br>
+      - Control visual de asistencia y registros en tiempo real.<br>
+      - +250 correos procesados por día.<br>
+      - Sistema reutilizable para futuras ediciones del evento.
+    </p>
+    <a href="https://github.com/EdddGaar/recorre" class="btn" target="_blank">🌐 Ver código en GitHub</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 Re-corre Running Club – Presentación técnica creada por Ed.
+  </footer>
+
+  <!-- SCRIPT DE ANIMACIÓN -->
+  <script>
+    const faders = document.querySelectorAll('.fade');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    faders.forEach(f => observer.observe(f));
+  </script>
+
+</body>
+</html>
