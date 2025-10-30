@@ -18,6 +18,7 @@
   footer{font-size:13px;color:#ccc;margin:28px 0 18px}
   footer a{color:#ffca28;text-decoration:none;font-weight:600}
   .debug{font-size:12px;color:#ddd;margin-top:8px;opacity:0.9}
+  .info{font-size:14px;color:#ccc;margin-top:10px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.4;}
 </style>
 </head>
 <body>
@@ -30,6 +31,9 @@
   <br>
   <button class="btn" onclick="buscar()">🔍 Buscar</button>
   <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdDTz9PVHjsAJ4Npmbt97j-UytmgrdcWOoylQIAIq1yF5ek4w/viewform?usp=sharing" target="_blank" rel="noopener">➕ Registrar otro</a>
+
+  <!-- 🆕 Aviso para voluntarios -->
+  <p class="info">💡 Si hay varios con el mismo nombre, el sistema mostrará una lista para que elijas al participante correcto antes de registrar la asistencia.</p>
 
   <h3 style="margin-top:22px;">📷 Escanear código QR</h3>
   <select id="cameraSelect"></select><br>
@@ -126,11 +130,11 @@
         if(code){
           stopScan();
           output.textContent="✅ Código: " + code.data;
-          debug.textContent = "Decodificado: " + code.data; // ayuda visual
+          debug.textContent = "Decodificado: " + code.data;
 
           if (navigator.vibrate) navigator.vibrate(80);
 
-          // Redirección "fuerte" para evitar pantallas intermedias
+          // Redirección directa al WebApp
           if (code.data.startsWith("https://script.google.com")) {
             window.location.replace(code.data);
           } else {
