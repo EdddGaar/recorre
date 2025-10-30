@@ -3,28 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tu Peque Recorre 2025 – Sistema de Registro</title>
-
-  <!-- Google Fonts -->
+  <title>🎃 Tu Peque Recorre 2025 – Sistema de Registro</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-    /* ==== BASE ==== */
+    /* ==== ESTILO GENERAL ==== */
     * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(180deg, #2E004F 0%, #000 100%);
+      background: radial-gradient(circle at top, #2E004F 0%, #000 80%);
       color: #fff;
       overflow-x: hidden;
     }
-    h1, h2 { color: #F9A825; margin-bottom: 20px; }
-    p { line-height: 1.7; max-width: 720px; margin: 0 auto 20px; text-align: center; }
 
-    /* ==== INTRO (Pantalla de carga) ==== */
+    h1, h2 { color: #F9A825; margin-bottom: 20px; text-shadow: 0 0 10px rgba(249,168,37,0.6); }
+    p { line-height: 1.6; max-width: 720px; margin: 0 auto 20px; text-align: center; }
+
+    /* ==== PARTICULAS HALLOWEEN ==== */
+    #bgCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at top, #21003f, #000);
+    }
+
+    /* ==== INTRO ==== */
     #intro-screen {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #2E004F 0%, #000 100%);
+      background: linear-gradient(180deg,#2E004F 0%,#000 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -38,16 +46,16 @@
       border-radius: 16px;
       animation: pop 1.2s ease-out;
     }
-    @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     #intro-title {
       margin-top: 24px;
-      font-size: 1.6em;
+      font-size: 1.7em;
       font-weight: 600;
-      text-align: center;
       color: #F9A825;
-      animation: fade 2s ease-out;
+      text-align: center;
+      animation: fadeIn 2s ease-out;
     }
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 
     /* ==== NAV ==== */
     nav {
@@ -58,6 +66,7 @@
       display: flex;
       justify-content: center;
       z-index: 1000;
+      border-bottom: 1px solid rgba(255, 136, 0, 0.2);
     }
     nav a {
       color: #f5f5f5;
@@ -83,7 +92,7 @@
       width: 90%;
       border-radius: 20px;
       margin: 30px 0;
-      box-shadow: 0 0 25px rgba(255,255,255,0.2);
+      box-shadow: 0 0 25px rgba(249,168,37,0.3);
     }
     ul {
       list-style: none;
@@ -92,8 +101,8 @@
       margin: 20px auto;
     }
     ul li::before {
-      content: "⭐ ";
-      color: #F9A825;
+      content: "🟣 ";
+      color: #ff9100;
     }
 
     /* ==== BOTONES ==== */
@@ -110,6 +119,7 @@
     .btn:hover {
       background: #fff;
       color: #000;
+      box-shadow: 0 0 10px #ff9100;
     }
 
     /* ==== EFECTO DE APARICIÓN ==== */
@@ -123,17 +133,21 @@
       text-align: center;
       color: #bbb;
       font-size: 0.9em;
+      border-top: 1px solid rgba(255, 136, 0, 0.2);
     }
 
     @media (max-width: 600px) {
-      h1 { font-size: 1.6em; }
+      h1 { font-size: 1.5em; }
       h2 { font-size: 1.2em; }
     }
   </style>
 </head>
 <body>
 
-  <!-- INTRO SCREEN -->
+  <!-- FONDO ANIMADO -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- INTRO -->
   <div id="intro-screen">
     <img id="intro-logo" src="../Re%20corre%20Logo.jpg" alt="Re-corre Running Club">
     <div id="intro-title">Tu Peque Recorre 2025<br><small style="color:#fff;font-weight:400;">Sistema de Registro y Check-in</small></div>
@@ -149,69 +163,64 @@
     <a href="#final">Resultados</a>
   </nav>
 
-  <!-- INICIO -->
+  <!-- SECCIONES -->
   <section id="inicio" class="fade">
-    <h1>🏃‍♀️ Tu Peque Recorre 2025</h1>
-    <h2>Sistema Automatizado de Registro y Check-in</h2>
+    <h1>🎃 Tu Peque Recorre 2025</h1>
+    <h2>Automatización del Registro y Check-in</h2>
     <p>
       Desarrollado por <strong>Ed / Re-corre Running Club</strong>.<br>
-      Un sistema integral que automatiza inscripciones, confirmaciones y reconocimientos usando Google Workspace y Apps Script.
+      Un sistema técnico y visual para administrar inscripciones, confirmaciones y reconocimientos del evento Día de Muertos.
     </p>
     <img src="../medallas/Google%20Encabezado.png" alt="Encabezado Re-corre">
   </section>
 
-  <!-- REGISTRO -->
   <section id="registro" class="fade">
     <h2>1️⃣ Registro Automático</h2>
-    <p>El proceso comienza con un formulario en línea que:</p>
+    <p>Los tutores completan un formulario en línea que:</p>
     <ul>
-      <li>Asigna un número único de competidor</li>
+      <li>Asigna un número de competidor único</li>
       <li>Genera un código QR personalizado</li>
-      <li>Envía un correo de confirmación al tutor</li>
+      <li>Envía un correo de confirmación con el QR adjunto</li>
     </ul>
     <img src="../medallas/formulario_demo.jpg" alt="Formulario de registro">
   </section>
 
-  <!-- QR -->
   <section id="qr" class="fade">
     <h2>2️⃣ Generación de Código QR</h2>
     <p>
-      Cada participante recibe su código QR vinculado a un ID interno.  
-      Este QR se guarda automáticamente en Google Drive y puede descargarse desde el correo de confirmación.
+      Cada participante obtiene un QR vinculado a su ID interno, almacenado en Google Drive.  
+      Esto garantiza control y validación en el check-in.
     </p>
     <img src="../medallas/qr_demo.jpg" alt="QR de participante">
   </section>
 
-  <!-- CHECK-IN -->
   <section id="checkin" class="fade">
-    <h2>3️⃣ Check-in Visual con QR</h2>
+    <h2>3️⃣ Check-in Visual</h2>
     <p>
-      El día del evento, los voluntarios escanean el QR desde el móvil o tablet.  
-      El sistema valida el registro, marca la asistencia y muestra un diseño visual con color por categoría.
+      El día del evento, los voluntarios escanean el QR.  
+      El sistema valida la inscripción, marca asistencia y muestra una interfaz colorida según la categoría.
     </p>
-    <img src="../medallas/checkin_demo.jpg" alt="Check-in en acción">
-    <a href="https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec"
+    <img src="../medallas/checkin_demo.jpg" alt="Check-in visual">
+    <a href="https://script.google.com/macros/s/AKfycbx8SeyAJil3spgt2P8VK4wqR2ZfUwqj04PXpjkXcBxY-MXReUHIXXphO5shKuG9EQnf/exec" 
        target="_blank" class="btn">🔗 Ver Demo Real</a>
   </section>
 
-  <!-- RECONOCIMIENTOS -->
   <section id="reconocimientos" class="fade">
-    <h2>4️⃣ Envío de Reconocimientos</h2>
+    <h2>4️⃣ Reconocimientos Automáticos</h2>
     <p>
-      Una vez finalizado el evento, el sistema genera automáticamente reconocimientos personalizados  
-      desde una plantilla de Google Slides, exporta a PDF y los envía por correo a los tutores.
+      Tras el evento, el sistema genera y envía certificados personalizados en PDF,  
+      creados automáticamente desde una plantilla de Google Slides.
     </p>
     <img src="../medallas/reconocimiento.jpg" alt="Reconocimiento PDF">
   </section>
 
-  <!-- RESULTADOS -->
   <section id="final" class="fade">
     <h2>✅ Resultados e Impacto</h2>
     <p>
       - 100% automatizado con Google Workspace<br>
-      - Control visual en tiempo real de asistencia y registros<br>
+      - Control de asistencia en tiempo real<br>
       - +250 correos diarios procesados<br>
-      - Reutilizable para futuras ediciones y clubes deportivos
+      - Implementación reutilizable para próximos eventos
     </p>
     <a href="https://github.com/EdddGaar/recorre" target="_blank" class="btn">🌐 Ver código en GitHub</a>
   </section>
@@ -220,26 +229,65 @@
     © 2025 Re-corre Running Club – Presentación técnica por Ed.
   </footer>
 
-  <!-- ANIMACIONES JS -->
+  <!-- JS EFECTOS -->
   <script>
-    // Pantalla de carga
+    // Intro fade
     window.addEventListener('load', () => {
       setTimeout(() => {
         document.getElementById('intro-screen').classList.add('fade-out');
-      }, 1800);
+      }, 2000);
     });
 
     // Scroll reveal
     const faders = document.querySelectorAll('.fade');
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
+        if (entry.isIntersecting) entry.target.classList.add('visible');
       });
     }, { threshold: 0.3 });
     faders.forEach(f => observer.observe(f));
-  </script>
 
+    // Fondo animado tipo Halloween 🎃
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    const particles = [];
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 2 + 1,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+        color: Math.random() > 0.5 ? '#F9A825' : '#ff9100'
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > w) p.dx *= -1;
+        if (p.y < 0 || p.y > h) p.dy *= -1;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>
