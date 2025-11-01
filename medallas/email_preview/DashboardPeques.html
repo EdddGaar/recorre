@@ -28,6 +28,34 @@
     font-size: 0.9em;
   }
 
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: #1c0133;
+    border-radius: 12px;
+    padding: 15px 25px;
+    box-shadow: 0 0 12px rgba(249, 168, 37, 0.25);
+    min-width: 150px;
+  }
+
+  .stat-card h3 {
+    color: #F9A825;
+    margin: 0;
+    font-size: 1.2em;
+  }
+
+  .stat-card p {
+    margin: 5px 0 0;
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+
   .charts {
     display: flex;
     justify-content: center;
@@ -57,6 +85,12 @@
     color: #aaa;
   }
 
+  #statusMessage {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #ccc;
+  }
+
   @media (max-width: 768px) {
     .charts {
       flex-direction: column;
@@ -71,6 +105,24 @@
 <body>
 <h1>🏃‍♀️ Tu Peque Recorre 2025</h1>
 <p>Panel en vivo — actualización automática cada 3 minutos</p>
+
+<div id="statusMessage">Cargando datos...</div>
+
+<!-- 📊 NUEVAS ESTADÍSTICAS -->
+<div class="stats">
+  <div class="stat-card">
+    <h3>👦 Niños</h3>
+    <p id="countNinos">--</p>
+  </div>
+  <div class="stat-card">
+    <h3>👧 Niñas</h3>
+    <p id="countNinas">--</p>
+  </div>
+  <div class="stat-card">
+    <h3>♿ Cap. Diferentes</h3>
+    <p id="countCapDif">--</p>
+  </div>
+</div>
 
 <div class="charts">
   <div class="chart-card">
@@ -92,8 +144,11 @@ const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvU
 let totalChart, categoriaChart;
 
 async function fetchSheetData(){
+  const statusMessage = document.getElementById("statusMessage");
+  statusMessage.textContent = "Actualizando datos...";
   try {
     const res = await fetch(proxiedUrl);
+    if (!res.ok) throw new Error("Error al obtener datos del CSV");
     const text = await res.text();
 
     const rows = text.split("\n").map(r =>
@@ -102,28 +157,46 @@ async function fetchSheetData(){
     const headers = rows[0];
     const data = rows.slice(1).filter(r => r.length > 1);
 
-    const iCat = headers.findIndex(h => h.includes('Categoría'));
-    const iFecha = headers.findIndex(h => h.includes('Fecha'));
+    // Índices relevantes
+    const iCat = headers.findIndex(h => h.toLowerCase().includes('categor'));
+    const iFecha = headers.findIndex(h => h.toLowerCase().includes('fecha'));
+    const iSexo = headers.findIndex(h => h.toLowerCase().includes('sexo'));
+    const iCapDif = headers.findIndex(h => h.toLowerCase().includes('cap'));
 
+    if (iCat === -1 || iFecha === -1) {
+      statusMessage.textContent = "Error: No se encontraron columnas requeridas.";
+      console.error("❌ Faltan columnas requeridas");
+      return;
+    }
+
+    // 📊 Totales
     const total = data.length;
     const categorias = ['4 a 6', '7 a 9', '10 a 12', '13 a 15'];
-    const inscritosPorCategoria = categorias.map(cat => data.filter(r => r[iCat]?.includes(cat)).length);
+    const inscritosPorCategoria = categorias.map(cat =>
+      data.filter(r => r[iCat]?.includes(cat)).length
+    );
 
-    // Agrupar por fecha (para gráfico de líneas)
+    // 👦👧 Conteos por género y capacidades
+    const ninos = data.filter(r => r[iSexo]?.toLowerCase().includes('niñ') && !r[iSexo].toLowerCase().includes('a')).length;
+    const ninas = data.filter(r => r[iSexo]?.toLowerCase().includes('niña')).length;
+    const capDif = data.filter(r => r[iCapDif]?.toLowerCase().includes('sí') || r[iCapDif]?.toLowerCase().includes('si')).length;
+
+    // 📈 Agrupar por fecha (para gráfico de evolución)
     const fechas = {};
     data.forEach(r => {
       const f = r[iFecha] ? new Date(r[iFecha]).toLocaleDateString('es-MX') : null;
       if (f) fechas[f] = (fechas[f] || 0) + 1;
     });
 
-    // Ordenar fechas y acumular totales
     const fechasOrdenadas = Object.keys(fechas).sort((a, b) => new Date(a) - new Date(b));
     let acumulado = 0;
     const inscritosPorDia = fechasOrdenadas.map(f => acumulado += fechas[f]);
 
-    updateDashboard({ total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia });
+    updateDashboard({ total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia, ninos, ninas, capDif });
+    statusMessage.textContent = "Datos actualizados correctamente";
   } catch (err) {
     console.error("❌ Error al leer hoja:", err);
+    document.getElementById("statusMessage").textContent = "Error al cargar datos.";
   }
 }
 
@@ -131,6 +204,12 @@ function updateDashboard(data){
   document.getElementById('lastUpdate').textContent =
     'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
 
+  // Actualizar contadores
+  document.getElementById("countNinos").textContent = data.ninos;
+  document.getElementById("countNinas").textContent = data.ninas;
+  document.getElementById("countCapDif").textContent = data.capDif;
+
+  // Destruir gráficos previos
   if (totalChart) totalChart.destroy();
   if (categoriaChart) categoriaChart.destroy();
 
@@ -164,10 +243,7 @@ function updateDashboard(data){
         x: { ticks: { color: '#fff' } },
         y: { ticks: { color: '#fff' }, beginAtZero: true }
       },
-      animation: {
-        duration: 1000,
-        easing: 'easeOutQuart'
-      }
+      animation: { duration: 1000, easing: 'easeOutQuart' }
     }
   });
 
@@ -188,10 +264,7 @@ function updateDashboard(data){
         x: { ticks: { color: '#fff' } },
         y: { ticks: { color: '#fff' }, beginAtZero: true }
       },
-      animation: {
-        duration: 800,
-        easing: 'easeOutQuad'
-      }
+      animation: { duration: 800, easing: 'easeOutQuad' }
     }
   });
 }
