@@ -108,7 +108,7 @@
 
 <div id="statusMessage">Cargando datos...</div>
 
-<!-- 📊 NUEVAS ESTADÍSTICAS -->
+<!-- 📊 Estadísticas principales -->
 <div class="stats">
   <div class="stat-card">
     <h3>👦 Niños</h3>
@@ -133,6 +133,10 @@
     <h3>Inscritos por Categoría</h3>
     <canvas id="categoriaChart"></canvas>
   </div>
+  <div class="chart-card">
+    <h3>Distribución por Género</h3>
+    <canvas id="generoChart"></canvas>
+  </div>
 </div>
 
 <p id="lastUpdate">Última actualización: --</p>
@@ -141,7 +145,14 @@
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/pub?gid=1619875874&single=true&output=csv";
 const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`;
 
-let totalChart, categoriaChart;
+let totalChart, categoriaChart, generoChart;
+
+// Lista simple de nombres femeninos comunes (para mejor precisión)
+const nombresFemeninos = [
+  "ana","maria","sofia","valentina","camila","isabella","paula","diana",
+  "samantha","lucia","andrea","carla","elena","renata","julieta","mariana",
+  "martina","salome","emilia","alexa","natalia","jazmin","eva","bianca","zaira"
+];
 
 async function fetchSheetData(){
   const statusMessage = document.getElementById("statusMessage");
@@ -157,42 +168,64 @@ async function fetchSheetData(){
     const headers = rows[0];
     const data = rows.slice(1).filter(r => r.length > 1);
 
-    // Índices relevantes
-    const iCat = headers.findIndex(h => h.toLowerCase().includes('categor'));
-    const iFecha = headers.findIndex(h => h.toLowerCase().includes('fecha'));
-    const iSexo = headers.findIndex(h => h.toLowerCase().includes('sexo'));
-    const iCapDif = headers.findIndex(h => h.toLowerCase().includes('cap'));
+    // Buscar columnas clave
+    const iCat    = headers.findIndex(h => h.toLowerCase().includes('categor'));
+    const iFecha  = headers.findIndex(h => h.toLowerCase().includes('fecha'));
+    const iNombre = headers.findIndex(h => h.toLowerCase().includes('nombre del menor'));
+    const iCapDif = headers.findIndex(h => h.toLowerCase().includes('capacidad diferente'));
 
-    if (iCat === -1 || iFecha === -1) {
+    if (iCat === -1 || iFecha === -1 || iNombre === -1 || iCapDif === -1) {
       statusMessage.textContent = "Error: No se encontraron columnas requeridas.";
-      console.error("❌ Faltan columnas requeridas");
       return;
     }
 
-    // 📊 Totales
+    // Totales por categoría
     const total = data.length;
     const categorias = ['4 a 6', '7 a 9', '10 a 12', '13 a 15'];
     const inscritosPorCategoria = categorias.map(cat =>
       data.filter(r => r[iCat]?.includes(cat)).length
     );
 
-    // 👦👧 Conteos por género y capacidades
-    const ninos = data.filter(r => r[iSexo]?.toLowerCase().includes('niñ') && !r[iSexo].toLowerCase().includes('a')).length;
-    const ninas = data.filter(r => r[iSexo]?.toLowerCase().includes('niña')).length;
-    const capDif = data.filter(r => r[iCapDif]?.toLowerCase().includes('sí') || r[iCapDif]?.toLowerCase().includes('si')).length;
+    // 👦👧 Determinar género por nombre
+    const ninos = data.filter(r => {
+      const nombre = r[iNombre]?.toLowerCase().trim() || "";
+      if (!nombre) return false;
+      return !nombresFemeninos.some(f => nombre.includes(f)) && !nombre.endsWith("a");
+    }).length;
 
-    // 📈 Agrupar por fecha (para gráfico de evolución)
+    const ninas = data.filter(r => {
+      const nombre = r[iNombre]?.toLowerCase().trim() || "";
+      if (!nombre) return false;
+      return nombresFemeninos.some(f => nombre.includes(f)) || nombre.endsWith("a");
+    }).length;
+
+    // ♿ Capacidades diferentes
+    const capDif = data.filter(r =>
+      r[iCapDif]?.toLowerCase().includes('sí') ||
+      r[iCapDif]?.toLowerCase().includes('si')
+    ).length;
+
+    // 📈 Evolución por fecha
     const fechas = {};
     data.forEach(r => {
       const f = r[iFecha] ? new Date(r[iFecha]).toLocaleDateString('es-MX') : null;
       if (f) fechas[f] = (fechas[f] || 0) + 1;
     });
 
-    const fechasOrdenadas = Object.keys(fechas).sort((a, b) => new Date(a) - new Date(b));
+    const fechasOrdenadas = Object.keys(fechas).sort((a,b) => new Date(a)-new Date(b));
     let acumulado = 0;
     const inscritosPorDia = fechasOrdenadas.map(f => acumulado += fechas[f]);
 
-    updateDashboard({ total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia, ninos, ninas, capDif });
+    updateDashboard({
+      total,
+      categorias,
+      inscritosPorCategoria,
+      fechasOrdenadas,
+      inscritosPorDia,
+      ninos,
+      ninas,
+      capDif
+    });
     statusMessage.textContent = "Datos actualizados correctamente";
   } catch (err) {
     console.error("❌ Error al leer hoja:", err);
@@ -209,11 +242,11 @@ function updateDashboard(data){
   document.getElementById("countNinas").textContent = data.ninas;
   document.getElementById("countCapDif").textContent = data.capDif;
 
-  // Destruir gráficos previos
   if (totalChart) totalChart.destroy();
   if (categoriaChart) categoriaChart.destroy();
+  if (generoChart) generoChart.destroy();
 
-  // 📈 Gráfico de líneas (evolución de inscritos)
+  // 📈 Línea: evolución
   totalChart = new Chart(document.getElementById('totalChart'), {
     type: 'line',
     data: {
@@ -247,7 +280,7 @@ function updateDashboard(data){
     }
   });
 
-  // 📊 Gráfico de barras (por categoría)
+  // 📊 Barras: categorías
   categoriaChart = new Chart(document.getElementById('categoriaChart'), {
     type: 'bar',
     data: {
@@ -265,6 +298,29 @@ function updateDashboard(data){
         y: { ticks: { color: '#fff' }, beginAtZero: true }
       },
       animation: { duration: 800, easing: 'easeOutQuad' }
+    }
+  });
+
+  // 🟣 Pie: distribución de género
+  generoChart = new Chart(document.getElementById('generoChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Niños', 'Niñas'],
+      datasets: [{
+        data: [data.ninos, data.ninas],
+        backgroundColor: ['#4FC3F7', '#E91E63']
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: '#fff' } },
+        title: {
+          display: true,
+          text: 'Distribución por Género',
+          color: '#fff'
+        }
+      },
+      animation: { duration: 900, easing: 'easeOutBack' }
     }
   });
 }
