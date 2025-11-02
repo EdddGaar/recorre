@@ -47,7 +47,10 @@
   .stat-card h3 {
     color: #F9A825;
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1.1em;
+    line-height: 1.3em;
+    white-space: normal;
+    word-wrap: break-word;
   }
 
   .stat-card p {
@@ -122,6 +125,14 @@
     <h3>♿ Participantes inclusivos</h3>
     <p id="countCapDif">--</p>
   </div>
+  <div class="stat-card">
+    <h3>🏅 Reconocimientos enviados</h3>
+    <p id="countReconocimientos">--</p>
+  </div>
+  <div class="stat-card">
+    <h3>✅ Asistencia</h3>
+    <p id="countAsistencia">--</p>
+  </div>
 </div>
 
 <div class="charts">
@@ -147,7 +158,7 @@ const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvU
 
 let totalChart, categoriaChart, generoChart;
 
-// Lista simple de nombres femeninos comunes (para mejor precisión)
+// Lista de nombres femeninos comunes
 const nombresFemeninos = [
   "ana","maria","sofia","valentina","camila","isabella","paula","diana",
   "samantha","lucia","andrea","carla","elena","renata","julieta","mariana",
@@ -173,13 +184,14 @@ async function fetchSheetData(){
     const iFecha  = headers.findIndex(h => h.toLowerCase().includes('fecha'));
     const iNombre = headers.findIndex(h => h.toLowerCase().includes('nombre del menor'));
     const iCapDif = headers.findIndex(h => h.toLowerCase().includes('capacidad diferente'));
+    const iRecono = headers.findIndex(h => h.toLowerCase().includes('reconocimiento'));
+    const iAsis   = headers.findIndex(h => h.toLowerCase().includes('asistencia'));
 
-    if (iCat === -1 || iFecha === -1 || iNombre === -1 || iCapDif === -1) {
+    if (iCat === -1 || iFecha === -1 || iNombre === -1) {
       statusMessage.textContent = "Error: No se encontraron columnas requeridas.";
       return;
     }
 
-    // Totales por categoría
     const total = data.length;
     const categorias = ['4 a 6', '7 a 9', '10 a 12', '13 a 15'];
     const inscritosPorCategoria = categorias.map(cat =>
@@ -199,10 +211,21 @@ async function fetchSheetData(){
       return nombresFemeninos.some(f => nombre.includes(f)) || nombre.endsWith("a");
     }).length;
 
-    // ♿ Capacidades diferentes
-    const capDif = data.filter(r =>
-      r[iCapDif]?.toLowerCase().includes('sí') ||
-      r[iCapDif]?.toLowerCase().includes('si')
+    // ♿ Inclusivos
+    const capDif = iCapDif === -1 ? 0 : data.filter(r =>
+      r[iCapDif]?.toLowerCase().includes('sí') || r[iCapDif]?.toLowerCase().includes('si')
+    ).length;
+
+    // 🏅 Reconocimientos enviados
+    const reconocimientos = iRecono === -1 ? 0 : data.filter(r =>
+      r[iRecono] && r[iRecono].trim() !== ""
+    ).length;
+
+    // ✅ Asistencia
+    const asistencia = iAsis === -1 ? 0 : data.filter(r =>
+      r[iAsis]?.toLowerCase().includes('sí') ||
+      r[iAsis]?.toLowerCase().includes('si') ||
+      r[iAsis]?.toLowerCase().includes('x')
     ).length;
 
     // 📈 Evolución por fecha
@@ -217,14 +240,8 @@ async function fetchSheetData(){
     const inscritosPorDia = fechasOrdenadas.map(f => acumulado += fechas[f]);
 
     updateDashboard({
-      total,
-      categorias,
-      inscritosPorCategoria,
-      fechasOrdenadas,
-      inscritosPorDia,
-      ninos,
-      ninas,
-      capDif
+      total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia,
+      ninos, ninas, capDif, reconocimientos, asistencia
     });
     statusMessage.textContent = "Datos actualizados correctamente";
   } catch (err) {
@@ -237,16 +254,16 @@ function updateDashboard(data){
   document.getElementById('lastUpdate').textContent =
     'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
 
-  // Actualizar contadores
   document.getElementById("countNinos").textContent = data.ninos;
   document.getElementById("countNinas").textContent = data.ninas;
   document.getElementById("countCapDif").textContent = data.capDif;
+  document.getElementById("countReconocimientos").textContent = data.reconocimientos;
+  document.getElementById("countAsistencia").textContent = data.asistencia;
 
   if (totalChart) totalChart.destroy();
   if (categoriaChart) categoriaChart.destroy();
   if (generoChart) generoChart.destroy();
 
-  // 📈 Línea: evolución
   totalChart = new Chart(document.getElementById('totalChart'), {
     type: 'line',
     data: {
@@ -280,7 +297,6 @@ function updateDashboard(data){
     }
   });
 
-  // 📊 Barras: categorías
   categoriaChart = new Chart(document.getElementById('categoriaChart'), {
     type: 'bar',
     data: {
@@ -301,7 +317,6 @@ function updateDashboard(data){
     }
   });
 
-  // 🟣 Pie: distribución de género
   generoChart = new Chart(document.getElementById('generoChart'), {
     type: 'pie',
     data: {
