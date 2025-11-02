@@ -1,364 +1,507 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Panel Tu Peque Recorre 2025</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Tu Peque Recorre 2025</title>
+  <!-- Fuente Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: #100022;
-    color: #fff;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-  }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-  h1 {
-    color: #F9A825;
-    margin-bottom: 10px;
-  }
-
-  p {
-    color: #ccc;
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 0.9em;
-  }
-
-  .stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
-  }
-
-  .stat-card {
-    background: #1c0133;
-    border-radius: 12px;
-    padding: 15px 25px;
-    box-shadow: 0 0 12px rgba(249, 168, 37, 0.25);
-    min-width: 150px;
-  }
-
-  .stat-card h3 {
-    color: #F9A825;
-    margin: 0;
-    font-size: 1.1em;
-    line-height: 1.3em;
-    white-space: normal;
-    word-wrap: break-word;
-  }
-
-  .stat-card p {
-    margin: 5px 0 0;
-    font-size: 1.4em;
-    font-weight: bold;
-  }
-
-  .charts {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 40px;
-    max-width: 900px;
-    margin: auto;
-  }
-
-  .chart-card {
-    background: #1c0133;
-    border-radius: 12px;
-    padding: 20px;
-    width: 380px;
-    box-shadow: 0 0 15px rgba(249, 168, 37, 0.3);
-  }
-
-  canvas {
-    width: 100%;
-    height: 260px;
-  }
-
-  #lastUpdate {
-    margin-top: 25px;
-    font-size: 0.85em;
-    color: #aaa;
-  }
-
-  #statusMessage {
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #ccc;
-  }
-
-  @media (max-width: 768px) {
-    .charts {
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0d001a, #1a002e);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
       flex-direction: column;
       align-items: center;
     }
+
+    h1 {
+      color: #FFD54F;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 2.2em;
+      text-shadow: 0 0 10px rgba(255, 213, 79, 0.4);
+    }
+
+    p {
+      color: #bbb;
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 0.95em;
+    }
+
+    /* Spinner de carga */
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #FFD54F;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #statusMessage {
+      margin-top: 10px;
+      font-size: 0.95em;
+      color: #ccc;
+      min-height: 24px;
+      transition: color 0.3s ease;
+    }
+
+    #statusMessage.error {
+      color: #ff6b6b;
+    }
+
+    #statusMessage.success {
+      color: #69f0ae;
+    }
+
+    /* Botón de actualización */
+    #refreshBtn {
+      background: #FFD54F;
+      color: #1a002e;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 24px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 1em;
+      cursor: pointer;
+      margin: 15px auto;
+      display: block;
+      box-shadow: 0 4px 12px rgba(255, 213, 79, 0.3);
+      transition: all 0.3s ease;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 0.5s;
+    }
+
+    #refreshBtn:hover:not(:disabled) {
+      background: #FFE57F;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 213, 79, 0.4);
+    }
+
+    #refreshBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards 0.2s;
+    }
+
+    .stat-card {
+      background: rgba(28, 1, 51, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      padding: 18px 25px;
+      box-shadow: 0 6px 20px rgba(249, 168, 37, 0.2);
+      min-width: 150px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(249, 168, 37, 0.15);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(249, 168, 37, 0.35);
+      background: rgba(35, 2, 65, 0.85);
+    }
+
+    .stat-card h3 {
+      color: #FFD54F;
+      margin: 0;
+      font-size: 1.1em;
+      line-height: 1.3em;
+      white-space: normal;
+      word-wrap: break-word;
+    }
+
+    .stat-card p {
+      margin: 8px 0 0;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .charts {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 30px;
+      max-width: 1200px;
+      margin: auto;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 0.4s;
+    }
+
     .chart-card {
-      width: 90%;
-    }
-  }
-</style>
-</head>
-<body>
-<h1>🏃‍♀️ Tu Peque Recorre 2025</h1>
-<p>Panel en vivo — actualización automática cada 3 minutos</p>
-
-<div id="statusMessage">Cargando datos...</div>
-
-<!-- 📊 Estadísticas principales -->
-<div class="stats">
-  <div class="stat-card">
-    <h3>👦 Niños</h3>
-    <p id="countNinos">--</p>
-  </div>
-  <div class="stat-card">
-    <h3>👧 Niñas</h3>
-    <p id="countNinas">--</p>
-  </div>
-  <div class="stat-card">
-    <h3>♿ Participantes inclusivos</h3>
-    <p id="countCapDif">--</p>
-  </div>
-  <div class="stat-card">
-    <h3>🏅 Reconocimientos enviados</h3>
-    <p id="countReconocimientos">--</p>
-  </div>
-</div>
-
-<div class="charts">
-  <div class="chart-card">
-    <h3>Evolución de Inscritos</h3>
-    <canvas id="totalChart"></canvas>
-  </div>
-  <div class="chart-card">
-    <h3>Inscritos por Categoría</h3>
-    <canvas id="categoriaChart"></canvas>
-  </div>
-  <div class="chart-card">
-    <h3>Distribución por Género</h3>
-    <canvas id="generoChart"></canvas>
-  </div>
-  <div class="chart-card">
-    <h3>🏅 Progreso de Reconocimientos</h3>
-    <canvas id="reconoChart"></canvas>
-  </div>
-</div>
-
-<p id="lastUpdate">Última actualización: --</p>
-
-<script>
-const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/pub?gid=1619875874&single=true&output=csv";
-const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`;
-
-let totalChart, categoriaChart, generoChart, reconoChart;
-
-// Lista de nombres femeninos comunes
-const nombresFemeninos = [
-  "ana","maria","sofia","valentina","camila","isabella","paula","diana",
-  "samantha","lucia","andrea","carla","elena","renata","julieta","mariana",
-  "martina","salome","emilia","alexa","natalia","jazmin","eva","bianca","zaira"
-];
-
-async function fetchSheetData(){
-  const statusMessage = document.getElementById("statusMessage");
-  statusMessage.textContent = "Actualizando datos...";
-  try {
-    const res = await fetch(proxiedUrl);
-    if (!res.ok) throw new Error("Error al obtener datos del CSV");
-    const text = await res.text();
-
-    const rows = text.split("\n").map(r =>
-      r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/(^"|"$)/g,''))
-    );
-    const headers = rows[0];
-    const data = rows.slice(1).filter(r => r.length > 1);
-
-    // Buscar columnas clave
-    const iCat    = headers.findIndex(h => h.toLowerCase().includes('categor'));
-    const iFecha  = headers.findIndex(h => h.toLowerCase().includes('fecha'));
-    const iNombre = headers.findIndex(h => h.toLowerCase().includes('nombre del menor'));
-    const iCapDif = headers.findIndex(h => h.toLowerCase().includes('capacidad diferente'));
-    const iRecono = headers.findIndex(h => h.toLowerCase().includes('reconocimiento'));
-
-    if (iCat === -1 || iFecha === -1 || iNombre === -1) {
-      statusMessage.textContent = "Error: No se encontraron columnas requeridas.";
-      return;
+      background: rgba(28, 1, 51, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      padding: 22px;
+      width: 380px;
+      box-shadow: 0 6px 20px rgba(249, 168, 37, 0.2);
+      border: 1px solid rgba(249, 168, 37, 0.1);
+      transition: transform 0.3s ease;
     }
 
-    const total = data.length;
-    const categorias = ['4 a 6', '7 a 9', '10 a 12', '13 a 15'];
-    const inscritosPorCategoria = categorias.map(cat =>
-      data.filter(r => r[iCat]?.includes(cat)).length
-    );
-
-    // 👦👧 Determinar género por nombre
-    const ninos = data.filter(r => {
-      const nombre = r[iNombre]?.toLowerCase().trim() || "";
-      if (!nombre) return false;
-      return !nombresFemeninos.some(f => nombre.includes(f)) && !nombre.endsWith("a");
-    }).length;
-
-    const ninas = data.filter(r => {
-      const nombre = r[iNombre]?.toLowerCase().trim() || "";
-      if (!nombre) return false;
-      return nombresFemeninos.some(f => nombre.includes(f)) || nombre.endsWith("a");
-    }).length;
-
-    // ♿ Inclusivos
-    const capDif = iCapDif === -1 ? 0 : data.filter(r =>
-      r[iCapDif]?.toLowerCase().includes('sí') || r[iCapDif]?.toLowerCase().includes('si')
-    ).length;
-
-    // 🏅 Reconocimientos enviados
-    const reconocimientos = iRecono === -1 ? 0 : data.filter(r =>
-      r[iRecono] && r[iRecono].trim() !== ""
-    ).length;
-
-    // 📈 Evolución por fecha
-    const fechas = {};
-    data.forEach(r => {
-      const f = r[iFecha] ? new Date(r[iFecha]).toLocaleDateString('es-MX') : null;
-      if (f) fechas[f] = (fechas[f] || 0) + 1;
-    });
-
-    const fechasOrdenadas = Object.keys(fechas).sort((a,b) => new Date(a)-new Date(b));
-    let acumulado = 0;
-    const inscritosPorDia = fechasOrdenadas.map(f => acumulado += fechas[f]);
-
-    updateDashboard({
-      total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia,
-      ninos, ninas, capDif, reconocimientos
-    });
-    statusMessage.textContent = "Datos actualizados correctamente";
-  } catch (err) {
-    console.error("❌ Error al leer hoja:", err);
-    document.getElementById("statusMessage").textContent = "Error al cargar datos.";
-  }
-}
-
-function updateDashboard(data){
-  document.getElementById('lastUpdate').textContent =
-    'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
-
-  document.getElementById("countNinos").textContent = data.ninos;
-  document.getElementById("countNinas").textContent = data.ninas;
-  document.getElementById("countCapDif").textContent = data.capDif;
-  document.getElementById("countReconocimientos").textContent = data.reconocimientos;
-
-  if (totalChart) totalChart.destroy();
-  if (categoriaChart) categoriaChart.destroy();
-  if (generoChart) generoChart.destroy();
-  if (reconoChart) reconoChart.destroy();
-
-  totalChart = new Chart(document.getElementById('totalChart'), {
-    type: 'line',
-    data: {
-      labels: data.fechasOrdenadas,
-      datasets: [{
-        label: 'Inscritos acumulados',
-        data: data.inscritosPorDia,
-        borderColor: '#F9A825',
-        backgroundColor: 'rgba(249,168,37,0.25)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 4,
-        pointBackgroundColor: '#fff'
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: `${data.total} participantes totales`,
-          color: '#fff',
-          font: { size: 16 }
-        }
-      },
-      scales: {
-        x: { ticks: { color: '#fff' } },
-        y: { ticks: { color: '#fff' }, beginAtZero: true }
-      },
-      animation: { duration: 1000, easing: 'easeOutQuart' }
+    .chart-card:hover {
+      transform: scale(1.02);
     }
-  });
 
-  categoriaChart = new Chart(document.getElementById('categoriaChart'), {
-    type: 'bar',
-    data: {
-      labels: data.categorias,
-      datasets: [{
-        label: 'Inscritos',
-        data: data.inscritosPorCategoria,
-        backgroundColor: ['#00e676','#ffeb3b','#ff9800','#f44336']
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { color: '#fff' } },
-        y: { ticks: { color: '#fff' }, beginAtZero: true }
-      },
-      animation: { duration: 800, easing: 'easeOutQuad' }
+    canvas {
+      width: 100% !important;
+      height: 260px !important;
     }
-  });
 
-  generoChart = new Chart(document.getElementById('generoChart'), {
-    type: 'pie',
-    data: {
-      labels: ['Niños', 'Niñas'],
-      datasets: [{
-        data: [data.ninos, data.ninas],
-        backgroundColor: ['#4FC3F7', '#E91E63']
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { labels: { color: '#fff' } },
-        title: {
-          display: true,
-          text: 'Distribución por Género',
-          color: '#fff'
-        }
-      },
-      animation: { duration: 900, easing: 'easeOutBack' }
+    #lastUpdate {
+      margin-top: 25px;
+      font-size: 0.9em;
+      color: #aaa;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards 0.6s;
     }
-  });
 
-  // 🏅 Progreso de Reconocimientos
-  const progresoRecono = (data.reconocimientos / data.total) * 100;
-  reconoChart = new Chart(document.getElementById('reconoChart'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Enviados', 'Pendientes'],
-      datasets: [{
-        data: [data.reconocimientos, data.total - data.reconocimientos],
-        backgroundColor: ['#FFD54F', '#333'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      cutout: '70%',
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: `${progresoRecono.toFixed(1)}% enviados`,
-          color: '#fff'
-        }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
-  });
-}
 
-fetchSheetData();
-setInterval(fetchSheetData, 180000);
-</script>
+    @media (max-width: 768px) {
+      .charts {
+        flex-direction: column;
+        align-items: center;
+      }
+      .chart-card {
+        width: 95%;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🏃‍♀️ Tu Peque Recorre 2025</h1>
+  <p>Panel en vivo — actualización automática cada 3 minutos</p>
+
+  <div class="spinner" id="loadingSpinner"></div>
+  <div id="statusMessage">Cargando datos...</div>
+  <button id="refreshBtn" onclick="manualRefresh()">↻ Actualizar ahora</button>
+
+  <div class="stats">
+    <div class="stat-card">
+      <h3>👦 Niños</h3>
+      <p id="countNinos">--</p>
+    </div>
+    <div class="stat-card">
+      <h3>👧 Niñas</h3>
+      <p id="countNinas">--</p>
+    </div>
+    <div class="stat-card">
+      <h3>♿ Participantes inclusivos</h3>
+      <p id="countCapDif">--</p>
+    </div>
+    <div class="stat-card">
+      <h3>🏅 Reconocimientos enviados</h3>
+      <p id="countReconocimientos">--</p>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card">
+      <h3>Evolución de Inscritos</h3>
+      <canvas id="totalChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Inscritos por Categoría</h3>
+      <canvas id="categoriaChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Distribución por Género</h3>
+      <canvas id="generoChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>🏅 Progreso de Reconocimientos</h3>
+      <canvas id="reconoChart"></canvas>
+    </div>
+  </div>
+
+  <p id="lastUpdate">Última actualización: --</p>
+
+  <script>
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/pub?gid=1619875874&single=true&output=csv";
+    const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`;
+
+    let totalChart, categoriaChart, generoChart, reconoChart;
+
+    const nombresFemeninos = [
+      "ana","maria","sofia","valentina","camila","isabella","paula","diana",
+      "samantha","lucia","andrea","carla","elena","renata","julieta","mariana",
+      "martina","salome","emilia","alexa","natalia","jazmin","eva","bianca","zaira"
+    ];
+
+    const statusEl = document.getElementById("statusMessage");
+    const spinnerEl = document.getElementById("loadingSpinner");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    function showLoading() {
+      spinnerEl.style.display = "block";
+      statusEl.textContent = "Actualizando datos...";
+      statusEl.className = "";
+      if (refreshBtn) refreshBtn.disabled = true;
+    }
+
+    function hideLoading() {
+      spinnerEl.style.display = "none";
+      if (refreshBtn) refreshBtn.disabled = false;
+    }
+
+    function manualRefresh() {
+      fetchSheetData();
+    }
+
+    async function fetchSheetData() {
+      showLoading();
+      try {
+        const res = await fetch(proxiedUrl);
+        if (!res.ok) throw new Error("Error al obtener datos del CSV");
+        const text = await res.text();
+
+        const rows = text.split("\n").map(r =>
+          r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/(^"|"$)/g,''))
+        ).filter(r => r.length > 1 && r.some(cell => cell.trim() !== ""));
+
+        if (rows.length === 0) throw new Error("No hay datos en la hoja");
+
+        const headers = rows[0];
+        const data = rows.slice(1);
+
+        const iCat    = headers.findIndex(h => h.toLowerCase().includes('categor'));
+        const iFecha  = headers.findIndex(h => h.toLowerCase().includes('fecha'));
+        const iNombre = headers.findIndex(h => h.toLowerCase().includes('nombre del menor'));
+        const iCapDif = headers.findIndex(h => h.toLowerCase().includes('capacidad diferente'));
+        const iRecono = headers.findIndex(h => h.toLowerCase().includes('reconocimiento'));
+
+        if (iCat === -1 || iFecha === -1 || iNombre === -1) {
+          throw new Error("Faltan columnas requeridas");
+        }
+
+        const total = data.length;
+        const categorias = ['4 a 6', '7 a 9', '10 a 12', '13 a 15'];
+        const inscritosPorCategoria = categorias.map(cat =>
+          data.filter(r => r[iCat]?.includes(cat)).length
+        );
+
+        const ninos = data.filter(r => {
+          const nombre = (r[iNombre] || "").toLowerCase().trim();
+          if (!nombre) return false;
+          return !nombresFemeninos.some(f => nombre.includes(f)) && !nombre.endsWith("a");
+        }).length;
+
+        const ninas = data.filter(r => {
+          const nombre = (r[iNombre] || "").toLowerCase().trim();
+          if (!nombre) return false;
+          return nombresFemeninos.some(f => nombre.includes(f)) || nombre.endsWith("a");
+        }).length;
+
+        const capDif = iCapDif === -1 ? 0 : data.filter(r =>
+          r[iCapDif]?.toLowerCase().includes('sí') || r[iCapDif]?.toLowerCase().includes('si')
+        ).length;
+
+        const reconocimientos = iRecono === -1 ? 0 : data.filter(r =>
+          r[iRecono] && r[iRecono].trim() !== ""
+        ).length;
+
+        const fechas = {};
+        data.forEach(r => {
+          const f = r[iFecha] ? new Date(r[iFecha]).toLocaleDateString('es-MX') : null;
+          if (f) fechas[f] = (fechas[f] || 0) + 1;
+        });
+
+        const fechasOrdenadas = Object.keys(fechas).sort((a,b) => new Date(a)-new Date(b));
+        let acumulado = 0;
+        const inscritosPorDia = fechasOrdenadas.map(f => acumulado += fechas[f]);
+
+        updateDashboard({
+          total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia,
+          ninos, ninas, capDif, reconocimientos
+        });
+
+        statusEl.textContent = "✅ Datos actualizados correctamente";
+        statusEl.className = "success";
+      } catch (err) {
+        console.error("❌ Error:", err);
+        statusEl.textContent = "⚠️ Error al cargar datos. Reintentando...";
+        statusEl.className = "error";
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function updateDashboard(data) {
+      document.getElementById('lastUpdate').textContent =
+        'Última actualización: ' + new Date().toLocaleTimeString('es-MX');
+
+      document.getElementById("countNinos").textContent = data.ninos;
+      document.getElementById("countNinas").textContent = data.ninas;
+      document.getElementById("countCapDif").textContent = data.capDif;
+      document.getElementById("countReconocimientos").textContent = data.reconocimientos;
+
+      // Destruir gráficos anteriores
+      [totalChart, categoriaChart, generoChart, reconoChart].forEach(chart => {
+        if (chart) chart.destroy();
+      });
+
+      const commonAnimation = {
+        duration: 1000,
+        easing: 'easeOutQuart',
+        delay: 200
+      };
+
+      totalChart = new Chart(document.getElementById('totalChart'), {
+        type: 'line',
+        data: {
+          labels: data.fechasOrdenadas,
+          datasets: [{
+            label: 'Inscritos acumulados',
+            data: data.inscritosPorDia,
+            borderColor: '#FFD54F',
+            backgroundColor: 'rgba(255, 213, 79, 0.2)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#fff',
+            pointBorderColor: '#FFD54F'
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: `${data.total} participantes totales`,
+              color: '#fff',
+              font: { size: 16, weight: '600' }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#ddd' } },
+            y: { ticks: { color: '#ddd' }, beginAtZero: true }
+          },
+          animation: commonAnimation
+        }
+      });
+
+      categoriaChart = new Chart(document.getElementById('categoriaChart'), {
+        type: 'bar',
+        data: {
+          labels: data.categorias,
+          datasets: [{
+            label: 'Inscritos',
+            data: data.inscritosPorCategoria,
+            backgroundColor: ['#4CAF50','#FFC107','#FF9800','#F44336']
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#ddd' } },
+            y: { ticks: { color: '#ddd' }, beginAtZero: true }
+          },
+          animation: { ...commonAnimation, duration: 900 }
+        }
+      });
+
+      generoChart = new Chart(document.getElementById('generoChart'), {
+        type: 'pie',
+        data: {
+          labels: ['Niños', 'Niñas'],
+          datasets: [{
+            data: [data.ninos, data.ninas],
+            backgroundColor: ['#4FC3F7', '#E91E63']
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { labels: { color: '#fff', font: { size: 13 } } },
+            title: {
+              display: true,
+              text: 'Distribución por Género',
+              color: '#fff',
+              font: { size: 15 }
+            }
+          },
+          animation: { ...commonAnimation, duration: 1000, easing: 'easeOutBack' }
+        }
+      });
+
+      const progresoRecono = data.total ? (data.reconocimientos / data.total) * 100 : 0;
+      reconoChart = new Chart(document.getElementById('reconoChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Enviados', 'Pendientes'],
+          datasets: [{
+            data: [data.reconocimientos, Math.max(0, data.total - data.reconocimientos)],
+            backgroundColor: ['#FFD54F', '#444'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '70%',
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: `${progresoRecono.toFixed(1)}% enviados`,
+              color: '#fff',
+              font: { size: 15, weight: '600' }
+            }
+          },
+          animation: { ...commonAnimation, duration: 1100 }
+        }
+      });
+    }
+
+    // Carga inicial
+    fetchSheetData();
+
+    // Actualización automática cada 3 minutos
+    setInterval(fetchSheetData, 180000);
+  </script>
 </body>
 </html>
+
