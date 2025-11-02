@@ -129,10 +129,6 @@
     <h3>🏅 Reconocimientos enviados</h3>
     <p id="countReconocimientos">--</p>
   </div>
-  <div class="stat-card">
-    <h3>✅ Asistencia</h3>
-    <p id="countAsistencia">--</p>
-  </div>
 </div>
 
 <div class="charts">
@@ -148,6 +144,10 @@
     <h3>Distribución por Género</h3>
     <canvas id="generoChart"></canvas>
   </div>
+  <div class="chart-card">
+    <h3>🏅 Progreso de Reconocimientos</h3>
+    <canvas id="reconoChart"></canvas>
+  </div>
 </div>
 
 <p id="lastUpdate">Última actualización: --</p>
@@ -156,7 +156,7 @@
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZO2qvxTwuib5-PUJT28eWfGqftGIn-5pt4e1yh9C0LKEgJAV8u7gmmHpcOjJZKQzd1D8yrrqlFZVb/pub?gid=1619875874&single=true&output=csv";
 const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`;
 
-let totalChart, categoriaChart, generoChart;
+let totalChart, categoriaChart, generoChart, reconoChart;
 
 // Lista de nombres femeninos comunes
 const nombresFemeninos = [
@@ -185,7 +185,6 @@ async function fetchSheetData(){
     const iNombre = headers.findIndex(h => h.toLowerCase().includes('nombre del menor'));
     const iCapDif = headers.findIndex(h => h.toLowerCase().includes('capacidad diferente'));
     const iRecono = headers.findIndex(h => h.toLowerCase().includes('reconocimiento'));
-    const iAsis   = headers.findIndex(h => h.toLowerCase().includes('asistencia'));
 
     if (iCat === -1 || iFecha === -1 || iNombre === -1) {
       statusMessage.textContent = "Error: No se encontraron columnas requeridas.";
@@ -221,13 +220,6 @@ async function fetchSheetData(){
       r[iRecono] && r[iRecono].trim() !== ""
     ).length;
 
-    // ✅ Asistencia
-    const asistencia = iAsis === -1 ? 0 : data.filter(r =>
-      r[iAsis]?.toLowerCase().includes('sí') ||
-      r[iAsis]?.toLowerCase().includes('si') ||
-      r[iAsis]?.toLowerCase().includes('x')
-    ).length;
-
     // 📈 Evolución por fecha
     const fechas = {};
     data.forEach(r => {
@@ -241,7 +233,7 @@ async function fetchSheetData(){
 
     updateDashboard({
       total, categorias, inscritosPorCategoria, fechasOrdenadas, inscritosPorDia,
-      ninos, ninas, capDif, reconocimientos, asistencia
+      ninos, ninas, capDif, reconocimientos
     });
     statusMessage.textContent = "Datos actualizados correctamente";
   } catch (err) {
@@ -258,11 +250,11 @@ function updateDashboard(data){
   document.getElementById("countNinas").textContent = data.ninas;
   document.getElementById("countCapDif").textContent = data.capDif;
   document.getElementById("countReconocimientos").textContent = data.reconocimientos;
-  document.getElementById("countAsistencia").textContent = data.asistencia;
 
   if (totalChart) totalChart.destroy();
   if (categoriaChart) categoriaChart.destroy();
   if (generoChart) generoChart.destroy();
+  if (reconoChart) reconoChart.destroy();
 
   totalChart = new Chart(document.getElementById('totalChart'), {
     type: 'line',
@@ -336,6 +328,31 @@ function updateDashboard(data){
         }
       },
       animation: { duration: 900, easing: 'easeOutBack' }
+    }
+  });
+
+  // 🏅 Progreso de Reconocimientos
+  const progresoRecono = (data.reconocimientos / data.total) * 100;
+  reconoChart = new Chart(document.getElementById('reconoChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Enviados', 'Pendientes'],
+      datasets: [{
+        data: [data.reconocimientos, data.total - data.reconocimientos],
+        backgroundColor: ['#FFD54F', '#333'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: `${progresoRecono.toFixed(1)}% enviados`,
+          color: '#fff'
+        }
+      }
     }
   });
 }
